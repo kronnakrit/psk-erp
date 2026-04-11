@@ -1,0 +1,124 @@
+<%# Sidebar navigation — data-controller="sidebar" is on the <aside> parent %>
+<nav class="w-64 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
+  <ul class="flex-1 px-3 py-4 space-y-1">
+
+    <%# Dashboard %>
+    <li>
+      <%= link_to root_path,
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors #{active_nav_classes(root_path)}" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="lg:block">Dashboard</span>
+      <% end %>
+    </li>
+
+    <%# Orders %>
+    <li>
+      <%= link_to "#",
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <span>Orders</span>
+      <% end %>
+    </li>
+
+    <%# Catalog — collapsible group with localStorage persistence %>
+    <li data-controller="sidebar-group"
+        data-sidebar-group-key-value="catalog_expanded">
+      <button data-action="click->sidebar-group#toggle"
+              class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+        <span class="flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+          Catalog
+        </span>
+        <svg data-sidebar-group-target="chevron"
+             class="w-4 h-4 transition-transform duration-200"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+
+      <ul data-sidebar-group-target="items"
+          class="hidden pl-8 mt-1 space-y-1">
+        <li>
+          <%= link_to "Products", "#",
+                      class: "block px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors" %>
+        </li>
+        <li>
+          <%= link_to "Product Classes", "#",
+                      class: "block px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors" %>
+        </li>
+        <li>
+          <%= link_to "Product Categories", "#",
+                      class: "block px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors" %>
+        </li>
+        <li>
+          <%= link_to "Suppliers", "#",
+                      class: "block px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors" %>
+        </li>
+        <li>
+          <%= link_to "Brands", "#",
+                      class: "block px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors" %>
+        </li>
+      </ul>
+    </li>
+
+    <%# User Group %>
+    <li>
+      <%= link_to "#",
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span>User Group</span>
+      <% end %>
+    </li>
+
+    <%# Users %>
+    <li>
+      <%= link_to "#",
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        <span>Users</span>
+      <% end %>
+    </li>
+
+    <%# Customers %>
+    <li>
+      <%= link_to "#",
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        <span>Customers</span>
+      <% end %>
+    </li>
+
+    <%# Logistic Company %>
+    <li>
+      <%= link_to "#",
+                  class: "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors" do %>
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M14 4v4h4M12 11v6M9 14l3-3 3 3"/>
+        </svg>
+        <span>Logistic Company</span>
+      <% end %>
+    </li>
+
+  </ul>
+</nav>

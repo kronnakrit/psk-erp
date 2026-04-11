@@ -1,0 +1,73 @@
+{
+  "RSpec": {
+    "coverage": {
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/helpers/application_helper.rb": {
+        "lines": [
+          1,
+          null
+        ]
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/helpers/navigation_helper.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          0,
+          null,
+          null,
+          null
+        ]
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/controllers/dashboard_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ]
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/controllers/application_controller.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          null,
+          null,
+          1,
+          null
+        ]
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/jobs/application_job.rb": {
+        "lines": [
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/mailers/application_mailer.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kronnakrit/workspace/thegang/psk/psk-erp/app/models/application_record.rb": {
+        "lines": [
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      }
+    },
+    "timestamp": 1775899107
+  }
+}

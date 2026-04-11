@@ -1,31 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title><%= content_for(:title) || "Psk Erp" %></title>
+    <title><%= content_for(:title) || "PSK ERP" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Psk Erp">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PSK ERP">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-gray-50 min-h-screen">
+    <%= render "layouts/header" %>
+
+    <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <%# Sidebar — hidden on mobile, toggled via stimulus %>
+      <aside id="sidebar"
+             class="hidden lg:flex lg:flex-shrink-0"
+             data-controller="sidebar">
+        <%= render "layouts/sidebar" %>
+      </aside>
+
+      <%# Mobile overlay backdrop %>
+      <div id="sidebar-overlay"
+           class="fixed inset-0 z-20 bg-black/40 lg:hidden hidden"
+           data-action="click->sidebar#close"></div>
+
+      <%# Main content %>
+      <main class="flex-1 overflow-y-auto p-6">
+        <%= render "layouts/flash" %>
+        <%= turbo_frame_tag "main_content" do %>
+          <%= yield %>
+        <% end %>
+      </main>
+    </div>
   </body>
+</html>
 </html>
