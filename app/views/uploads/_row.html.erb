@@ -1,0 +1,50 @@
+<%# Partial: _row.html.erb — individual upload row, targetable by Turbo Stream %>
+<%
+  status_colors = {
+    "pending"    => "bg-gray-100 text-gray-700",
+    "processing" => "bg-yellow-100 text-yellow-700",
+    "completed"  => "bg-green-100 text-green-700",
+    "failed"     => "bg-red-100 text-red-700"
+  }
+  summary = upload.result_summary || {}
+%>
+<tr id="<%= dom_id(upload) %>"
+    data-upload-status="<%= upload.status %>"
+    data-upload-processed="<%= summary['rows_processed'].to_i %>"
+    data-upload-failed="<%= summary['rows_failed'].to_i %>"
+    data-controller="upload-notification">
+  <td class="px-4 py-3 text-gray-900 max-w-xs truncate">
+    <% if upload.file.attached? %>
+      <%= upload.file.filename %>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+  <td class="px-4 py-3 text-gray-600">
+    <%= upload.user&.profile&.full_name.presence || upload.user&.email %>
+  </td>
+  <td class="px-4 py-3">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_colors[upload.status] || 'bg-gray-100 text-gray-700' %>">
+      <%= upload.status&.capitalize %>
+    </span>
+  </td>
+  <td class="px-4 py-3 text-gray-600 text-xs">
+    <% if summary.present? %>
+      <%= summary["rows_processed"].to_i %> processed,
+      <%= summary["rows_failed"].to_i %> failed
+      <% if summary["errors"].present? %>
+        <details class="mt-1">
+          <summary class="cursor-pointer text-red-600 hover:underline">View errors</summary>
+          <ul class="mt-1 list-disc list-inside text-red-500">
+            <% Array(summary["errors"]).first(5).each do |err| %>
+              <li><%= err %></li>
+            <% end %>
+          </ul>
+        </details>
+      <% end %>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+  <td class="px-4 py-3 text-gray-500"><%= upload.created_at.strftime("%b %d, %Y %H:%M") %></td>
+</tr>

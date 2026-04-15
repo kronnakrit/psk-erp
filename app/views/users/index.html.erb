@@ -1,0 +1,84 @@
+<% content_for :title, "Users" %>
+
+<div class="p-6">
+  <%# Page header %>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Users</h1>
+    <%= link_to "New User", new_user_path,
+                class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+  </div>
+
+  <%# Search bar — Ransack %>
+  <%= search_form_for @ransack, url: users_path do |f| %>
+    <div class="flex gap-3 mb-4">
+      <%= f.search_field :username_or_email_or_profile_first_name_or_profile_last_name_or_profile_telephone_cont,
+                         placeholder: "Search username, name, email, telephone…",
+                         class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition-colors" %>
+      <%= link_to "Clear", users_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <%# Data table %>
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @users.each do |user| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium text-gray-900"><%= user.username %></td>
+            <td class="px-4 py-3 text-gray-600"><%= user.email %></td>
+            <td class="px-4 py-3 text-gray-600"><%= user.profile&.full_name.presence || "—" %></td>
+            <td class="px-4 py-3 text-gray-600"><%= user.profile&.role&.name || "—" %></td>
+            <td class="px-4 py-3">
+              <% if user.is_active? %>
+                <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+              <% else %>
+                <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Inactive</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to "Edit", edit_user_path(user), class: "text-blue-600 hover:underline text-xs" %>
+                <% if user.is_active? %>
+                  <%= button_to "Deactivate", deactivate_user_path(user), method: :patch,
+                                class: "text-yellow-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                data: { turbo_confirm: "Deactivate #{user.username}?" } %>
+                <% else %>
+                  <%= button_to "Activate", activate_user_path(user), method: :patch,
+                                class: "text-green-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0" %>
+                <% end %>
+                <%= button_to "Delete", user_path(user), method: :delete,
+                              class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                              data: { turbo_confirm: "Delete #{user.username}? This cannot be undone." } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @users.empty? %>
+          <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-gray-400">No users found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Pagination %>
+  <div class="mt-4 flex items-center justify-between">
+    <p class="text-sm text-gray-500">
+      Showing <span class="font-medium text-gray-700"><%= @pagy.from %>–<%= @pagy.to %></span>
+      of <span class="font-medium text-gray-700"><%= @pagy.count %></span>
+    </p>
+    <%== @pagy.series_nav if @pagy.pages > 1 %>
+  </div>
+</div>

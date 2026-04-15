@@ -1,1 +1,101 @@
 @import "tailwindcss";
+
+@layer components {
+  /* ── Pagy pagination ──────────────────────────────────────────── */
+  nav.pagy {
+    @apply flex items-center gap-1;
+  }
+
+  nav.pagy a {
+    @apply inline-flex items-center justify-center min-w-8 h-8 px-2.5
+           rounded-md text-sm font-medium no-underline transition-colors;
+  }
+
+  /* Clickable page links */
+  nav.pagy a[href] {
+    @apply text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer;
+  }
+
+  /* Current / active page */
+  nav.pagy a[aria-current="page"] {
+    @apply bg-blue-600 text-white cursor-default pointer-events-none ring-1 ring-blue-600;
+  }
+
+  /* Gap separator ( … ) */
+  nav.pagy a[role="separator"] {
+    @apply text-gray-400 pointer-events-none min-w-6 px-1;
+  }
+
+  /* Disabled prev / next (first or last page) */
+  nav.pagy a[aria-disabled="true"]:not([aria-current="page"]):not([role="separator"]) {
+    @apply text-gray-300 cursor-not-allowed pointer-events-none;
+  }
+
+  /* ── Tom Select — match Tailwind design system ──────────────────────── */
+  .ts-wrapper {
+    @apply w-full;
+  }
+  .ts-wrapper .ts-control {
+    @apply w-full border border-gray-300 rounded-md text-sm bg-white cursor-default;
+    padding: 0.5rem 0.75rem; /* py-2 px-3 — matches text inputs */
+    min-height: unset;
+    box-shadow: none;
+    gap: 0.25rem;
+  }
+  /* Focus state — same blue ring as text inputs */
+  .ts-wrapper.focus .ts-control,
+  .ts-wrapper .ts-control:focus-within {
+    @apply border-blue-500 outline-none ring-0;
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.15);
+  }
+  .ts-wrapper .ts-control input {
+    @apply text-sm text-gray-900;
+    line-height: 1.5;
+    padding: 0 !important;
+    min-height: unset;
+  }
+  /* Selected item text */
+  .ts-wrapper.single .ts-control .item {
+    @apply text-sm text-gray-900;
+    padding: 0;
+  }
+  /* Placeholder */
+  .ts-wrapper .ts-control > input::placeholder,
+  .ts-wrapper .ts-control .placeholder {
+    @apply text-gray-400;
+  }
+  /* Dropdown panel */
+  .ts-wrapper .ts-dropdown {
+    @apply border border-gray-200 rounded-md bg-white text-sm z-50;
+    margin-top: 2px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  .ts-wrapper .ts-dropdown-content {
+    @apply max-h-60 overflow-y-auto p-1;
+  }
+  .ts-wrapper .ts-dropdown .option {
+    @apply px-3 py-2 text-sm text-gray-700 cursor-pointer rounded;
+  }
+  .ts-wrapper .ts-dropdown .option:hover,
+  .ts-wrapper .ts-dropdown .option.active {
+    @apply bg-blue-50 text-blue-700;
+  }
+  .ts-wrapper .ts-dropdown .option.selected {
+    @apply bg-gray-100 text-gray-900;
+  }
+  .ts-wrapper .ts-dropdown .option.selected.active {
+    @apply bg-blue-100 text-blue-800;
+  }
+  /* Caret arrow — single select */
+  .ts-wrapper.single .ts-control::after {
+    border-color: #9ca3af transparent transparent;
+    margin-top: -2px;
+  }
+  .ts-wrapper.single.focus .ts-control::after {
+    border-color: #3b82f6 transparent transparent;
+  }
+  /* Hide the clear button (×) padding issue */
+  .ts-wrapper .ts-control .clear-button {
+    @apply text-gray-400 hover:text-gray-600;
+  }
+}

@@ -1,0 +1,18 @@
+<%# Status badge partial — usage: render "orders/status_badge", status: order.status %>
+<%
+  classes = case status
+            when "Dr" then "bg-gray-100 text-gray-700"
+            when "Pd" then "bg-blue-100 text-blue-700"
+            when "Cp" then "bg-green-100 text-green-700"
+            when "Cc" then "bg-red-100 text-red-700"
+            else           "bg-yellow-100 text-yellow-700"
+            end
+  label = case status
+          when "Dr" then "Draft"
+          when "Pd" then "Paid"
+          when "Cp" then "Completed"
+          when "Cc" then "Cancelled"
+          else status
+          end
+%>
+<span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full <%= classes %>"><%= label %></span>

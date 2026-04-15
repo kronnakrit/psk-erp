@@ -1,7 +1,7 @@
 # PSK ERP — Project Summary
 
 > Master progress tracker. Lists all epics, stories, and tasks with current status.  
-> Last updated: 2026-04-10  
+> Last updated: 2026-04-11  
 > **Update this file whenever a task or story status changes.**
 
 ---
@@ -23,183 +23,183 @@
 
 | Epic | Stories | Tasks | Completed Tasks | Progress |
 |---|---|---|---|---|
-| EPIC-01 Project Bootstrap | 4 | 30 | 0 | 0% |
-| EPIC-02 Auth & User Management | 4 | 38 | 0 | 0% |
-| EPIC-03 Country / Logistic / Customer | 3 | 30 | 0 | 0% |
+| EPIC-01 Project Bootstrap | 4 | 40 | 40 | 100% |
+| EPIC-02 Auth & User Management | 4 | 38 | 38 | 100% |
+| EPIC-03 Country / Logistic / Customer | 3 | 30 | 30 | 100% |
 | EPIC-04 Product Catalog | 5 | 48 | 0 | 0% |
 | EPIC-05 Stock Management | 3 | 26 | 0 | 0% |
 | EPIC-06 Order Module | 6 | 53 | 0 | 0% |
 | EPIC-07 Excel Export & Reporting | 4 | 30 | 0 | 0% |
 | EPIC-08 Bulk Import | 3 | 24 | 0 | 0% |
 | EPIC-09 Polish & Deployment | 3 | 38 | 0 | 0% |
-| **TOTAL** | **35** | **317** | **0** | **0%** |
+| **TOTAL** | **35** | **327** | **108** | **33%** |
 
 ---
 
 ## EPIC-01 — Project Bootstrap & Infrastructure
-**Status:** 🔴 Not Started | [Full details](./EPIC-01/stories.md)
+**Status:** � Completed | [Full details](./EPIC-01/stories.md)
 
-### STORY-01-01 — Rails Application Initialisation 🔴
+### STORY-01-01 — Rails Application Initialisation �
 | Task | Status |
 |---|---|
-| T-01-01-01 Run `rails new psk-erp` | `[ ]` |
-| T-01-01-02 Commit initial skeleton to version control | `[ ]` |
-| T-01-01-03 Configure `database.yml` | `[ ]` |
-| T-01-01-04 Run `rails db:create` and verify databases | `[ ]` |
-| T-01-01-05 Set up `.env` and `dotenv-rails` | `[ ]` |
-| T-01-01-06 Store credentials in `.env` | `[ ]` |
+| T-01-01-01 Run `rails new psk-erp` | `[x]` |
+| T-01-01-02 Commit initial skeleton to version control | `[x]` |
+| T-01-01-03 Configure `database.yml` | `[x]` |
+| T-01-01-04 Run `rails db:create` and verify databases | `[x]` |
+| T-01-01-05 Set up `.env` and `dotenv-rails` | `[x]` |
+| T-01-01-06 Store credentials in `.env` | `[x]` |
 
-### STORY-01-02 — Gem Dependencies Installation 🔴
+### STORY-01-02 — Gem Dependencies Installation �
 | Task | Status |
 |---|---|
-| T-01-02-01 Add `devise`, `devise-jwt` | `[ ]` |
-| T-01-02-02 Add `pundit` | `[ ]` |
-| T-01-02-03 Add `pagy` | `[ ]` |
-| T-01-02-04 Add `ransack` | `[ ]` |
-| T-01-02-05 Add `railsblocks` | `[ ]` |
-| T-01-02-06 Add `caxlsx`, `caxlsx-rails` | `[ ]` |
-| T-01-02-07 Add `roo` | `[ ]` |
-| T-01-02-08 Add `sidekiq`, `redis` | `[ ]` |
-| T-01-02-09 Add `chartkick`, `groupdate` | `[ ]` |
-| T-01-02-10 Add testing gems | `[ ]` |
-| T-01-02-11 Add RuboCop gems | `[ ]` |
-| T-01-02-12 Add `rswag` | `[ ]` |
-| T-01-02-13 Run `bundle install` | `[ ]` |
+| T-01-02-01 Add `devise`, `devise-jwt` | `[x]` |
+| T-01-02-02 Add `pundit` | `[x]` |
+| T-01-02-03 Add `pagy` | `[x]` |
+| T-01-02-04 Add `ransack` | `[x]` |
+| T-01-02-05 Add `railsblocks` | `[x]` |
+| T-01-02-06 Add `caxlsx`, `caxlsx-rails` | `[x]` |
+| T-01-02-07 Add `roo` | `[x]` |
+| T-01-02-08 Add `sidekiq`, `redis` | `[x]` |
+| T-01-02-09 Add `chartkick`, `groupdate` | `[x]` |
+| T-01-02-10 Add testing gems | `[x]` |
+| T-01-02-11 Add RuboCop gems | `[x]` |
+| T-01-02-12 Add `rswag` | `[x]` |
+| T-01-02-13 Run `bundle install` | `[x]` |
 
-### STORY-01-03 — Infrastructure & Tooling Configuration 🔴
+### STORY-01-03 — Infrastructure & Tooling Configuration �
 | Task | Status |
 |---|---|
-| T-01-03-01 Run `rails active_storage:install` | `[ ]` |
-| T-01-03-02 Configure `config/storage.yml` | `[ ]` |
-| T-01-03-03 Create `config/sidekiq.yml` | `[ ]` |
-| T-01-03-04 Mount Sidekiq Web UI | `[ ]` |
-| T-01-03-05 Configure Redis URL | `[ ]` |
-| T-01-03-06 Run Tailwind CSS install | `[ ]` |
-| T-01-03-07 Install Railsblocks | `[ ]` |
-| T-01-03-08 Add `Procfile` | `[ ]` |
-| T-01-03-09 Generate RuboCop baseline config | `[ ]` |
-| T-01-03-10 Configure Pagy initialiser | `[ ]` |
+| T-01-03-01 Run `rails active_storage:install` | `[x]` |
+| T-01-03-02 Configure `config/storage.yml` | `[x]` |
+| T-01-03-03 Create `config/sidekiq.yml` | `[x]` |
+| T-01-03-04 Mount Sidekiq Web UI | `[x]` |
+| T-01-03-05 Configure Redis URL | `[x]` |
+| T-01-03-06 Run Tailwind CSS install | `[x]` |
+| T-01-03-07 Install Railsblocks | `[x]` |
+| T-01-03-08 Add `Procfile` | `[x]` |
+| T-01-03-09 Generate RuboCop baseline config | `[x]` |
+| T-01-03-10 Configure Pagy initialiser | `[x]` |
 
-### STORY-01-04 — Base Application Layout 🔴
+### STORY-01-04 — Base Application Layout �
 | Task | Status |
 |---|---|
-| T-01-04-01 Create `application.html.erb` | `[ ]` |
-| T-01-04-02 Create `_header.html.erb` partial | `[ ]` |
-| T-01-04-03 Create `_sidebar.html.erb` with full menu | `[ ]` |
-| T-01-04-04 Wrap main content in turbo_frame_tag | `[ ]` |
-| T-01-04-05 Create `_flash.html.erb` | `[ ]` |
-| T-01-04-06 Create `sidebar_controller.js` Stimulus | `[ ]` |
-| T-01-04-07 Create `flash_controller.js` Stimulus | `[ ]` |
-| T-01-04-08 Implement mobile-responsive sidebar | `[ ]` |
-| T-01-04-09 RSpec install and configure | `[ ]` |
-| T-01-04-10 Write smoke test for root route | `[ ]` |
-| T-01-04-11 Verify server boots cleanly | `[ ]` |
+| T-01-04-01 Create `application.html.erb` | `[x]` |
+| T-01-04-02 Create `_header.html.erb` partial | `[x]` |
+| T-01-04-03 Create `_sidebar.html.erb` with full menu | `[x]` |
+| T-01-04-04 Wrap main content in turbo_frame_tag | `[x]` |
+| T-01-04-05 Create `_flash.html.erb` | `[x]` |
+| T-01-04-06 Create `sidebar_controller.js` Stimulus | `[x]` |
+| T-01-04-07 Create `flash_controller.js` Stimulus | `[x]` |
+| T-01-04-08 Implement mobile-responsive sidebar | `[x]` |
+| T-01-04-09 RSpec install and configure | `[x]` |
+| T-01-04-10 Write smoke test for root route | `[x]` |
+| T-01-04-11 Verify server boots cleanly | `[x]` |
 
 ---
 
 ## EPIC-02 — Authentication & User Management
-**Status:** 🔴 Not Started | [Full details](./EPIC-02/stories.md)
+**Status:** � Completed | [Full details](./EPIC-02/stories.md)
 
-### STORY-02-01 — Devise & JWT Authentication Setup 🔴
+### STORY-02-01 — Devise & JWT Authentication Setup �
 | Task | Status |
 |---|---|
-| T-02-01-01 Run `rails generate devise:install` | `[ ]` |
-| T-02-01-02 Generate `User` model via Devise | `[ ]` |
-| T-02-01-03 Add `username` and `is_active` columns | `[ ]` |
-| T-02-01-04 Add `jti` column for JTI Matcher | `[ ]` |
-| T-02-01-05 Configure `devise-jwt` in initialiser | `[ ]` |
-| T-02-01-06 Configure JTI Matcher strategy | `[ ]` |
-| T-02-01-07 Override `active_for_authentication?` | `[ ]` |
-| T-02-01-08 Create `Api::V1::Auth::SessionsController` | `[ ]` |
-| T-02-01-09 Implement refresh token endpoint | `[ ]` |
-| T-02-01-10 Implement verify endpoint | `[ ]` |
-| T-02-01-11 Create login view styled with Railsblocks | `[ ]` |
-| T-02-01-12 Write RSpec request specs for auth | `[ ]` |
+| T-02-01-01 Run `rails generate devise:install` | `[x]` |
+| T-02-01-02 Generate `User` model via Devise | `[x]` |
+| T-02-01-03 Add `username` and `is_active` columns | `[x]` |
+| T-02-01-04 Add `jti` column for JTI Matcher | `[x]` |
+| T-02-01-05 Configure `devise-jwt` in initialiser | `[x]` |
+| T-02-01-06 Configure JTI Matcher strategy | `[x]` |
+| T-02-01-07 Override `active_for_authentication?` | `[x]` |
+| T-02-01-08 Create `Api::V1::Auth::SessionsController` | `[x]` |
+| T-02-01-09 Implement refresh token endpoint | `[x]` |
+| T-02-01-10 Implement verify endpoint | `[x]` |
+| T-02-01-11 Create login view styled with Railsblocks | `[x]` |
+| T-02-01-12 Write RSpec request specs for auth | `[x]` |
 
-### STORY-02-02 — User Profile & Role Model 🔴
+### STORY-02-02 — User Profile & Role Model �
 | Task | Status |
 |---|---|
-| T-02-02-01 Generate `Role` model | `[ ]` |
-| T-02-02-02 Generate `Profile` model | `[ ]` |
-| T-02-02-03 Add associations User ↔ Profile ↔ Role | `[ ]` |
-| T-02-02-04 Add `has_many :profiles` to `Role` | `[ ]` |
-| T-02-02-05 Implement `Profile#full_name` | `[ ]` |
-| T-02-02-06 Add `after_create` callback for auto-Profile | `[ ]` |
-| T-02-02-07 Seed admin user and Admin Role | `[ ]` |
-| T-02-02-08 Write RSpec model specs | `[ ]` |
+| T-02-02-01 Generate `Role` model | `[x]` |
+| T-02-02-02 Generate `Profile` model | `[x]` |
+| T-02-02-03 Add associations User ↔ Profile ↔ Role | `[x]` |
+| T-02-02-04 Add `has_many :profiles` to `Role` | `[x]` |
+| T-02-02-05 Implement `Profile#full_name` | `[x]` |
+| T-02-02-06 Add `after_create` callback for auto-Profile | `[x]` |
+| T-02-02-07 Seed admin user and Admin Role | `[x]` |
+| T-02-02-08 Write RSpec model specs | `[x]` |
 
-### STORY-02-03 — Pundit Authorisation Framework 🔴
+### STORY-02-03 — Pundit Authorisation Framework �
 | Task | Status |
 |---|---|
-| T-02-03-01 Run `rails generate pundit:install` | `[ ]` |
-| T-02-03-02 Implement `ApplicationPolicy` base | `[ ]` |
-| T-02-03-03 Add `verify_authorized` after_actions | `[ ]` |
-| T-02-03-04 Create `PermissionCheckable` concern | `[ ]` |
-| T-02-03-05 Create `ProductPolicy` with `can_view_cost?` | `[ ]` |
-| T-02-03-06 Create `OrderPolicy` with `report?` | `[ ]` |
-| T-02-03-07 Rescue `NotAuthorizedError` → 403 JSON | `[ ]` |
-| T-02-03-08 Write RSpec policy specs | `[ ]` |
+| T-02-03-01 Run `rails generate pundit:install` | `[x]` |
+| T-02-03-02 Implement `ApplicationPolicy` base | `[x]` |
+| T-02-03-03 Add `verify_authorized` after_actions | `[x]` |
+| T-02-03-04 Create `PermissionCheckable` concern | `[x]` |
+| T-02-03-05 Create `ProductPolicy` with `can_view_cost?` | `[x]` |
+| T-02-03-06 Create `OrderPolicy` with `report?` | `[x]` |
+| T-02-03-07 Rescue `NotAuthorizedError` → 403 JSON | `[x]` |
+| T-02-03-08 Write RSpec policy specs | `[x]` |
 
-### STORY-02-04 — User & Role Management UI 🔴
+### STORY-02-04 — User & Role Management UI �
 | Task | Status |
 |---|---|
-| T-02-04-01 Implement `UsersController` | `[ ]` |
-| T-02-04-02 Implement force password controller | `[ ]` |
-| T-02-04-03 Implement `ProfilesController` | `[ ]` |
-| T-02-04-04 Build User list view | `[ ]` |
-| T-02-04-05 Build User form view | `[ ]` |
-| T-02-04-06 Implement `RolesController` CRUD | `[ ]` |
-| T-02-04-07 Implement `PermissionsController` | `[ ]` |
-| T-02-04-08 Add permission guards to sidebar | `[ ]` |
-| T-02-04-09 Add API routes for user/role actions | `[ ]` |
-| T-02-04-10 Write RSpec request specs | `[ ]` |
+| T-02-04-01 Implement `UsersController` | `[x]` |
+| T-02-04-02 Implement force password controller | `[x]` |
+| T-02-04-03 Implement `ProfilesController` | `[x]` |
+| T-02-04-04 Build User list view | `[x]` |
+| T-02-04-05 Build User form view | `[x]` |
+| T-02-04-06 Implement `RolesController` CRUD | `[x]` |
+| T-02-04-07 Implement `PermissionsController` | `[x]` |
+| T-02-04-08 Add permission guards to sidebar | `[x]` |
+| T-02-04-09 Add API routes for user/role actions | `[x]` |
+| T-02-04-10 Write RSpec request specs | `[x]` |
 
 ---
 
 ## EPIC-03 — Country, Logistic Company & Customer
-**Status:** 🔴 Not Started | [Full details](./EPIC-03/stories.md)
+**Status:** � Completed | [Full details](./EPIC-03/stories.md)
 
-### STORY-03-01 — Country Module 🔴
+### STORY-03-01 — Country Module �
 | Task | Status |
 |---|---|
-| T-03-01-01 Generate `Country` model | `[ ]` |
-| T-03-01-02 Configure natural PK migration | `[ ]` |
-| T-03-01-03 Add validations | `[ ]` |
-| T-03-01-04 Create country seeds | `[ ]` |
-| T-03-01-05 Implement `CountriesController` | `[ ]` |
-| T-03-01-06 Set public access on index/show | `[ ]` |
-| T-03-01-07 Expose public API endpoint | `[ ]` |
-| T-03-01-08 Build Country list view | `[ ]` |
-| T-03-01-09 Write RSpec specs | `[ ]` |
+| T-03-01-01 Generate `Country` model | `[x]` |
+| T-03-01-02 Configure natural PK migration | `[x]` |
+| T-03-01-03 Add validations | `[x]` |
+| T-03-01-04 Create country seeds | `[x]` |
+| T-03-01-05 Implement `CountriesController` | `[x]` |
+| T-03-01-06 Set public access on index/show | `[x]` |
+| T-03-01-07 Expose public API endpoint | `[x]` |
+| T-03-01-08 Build Country list view | `[x]` |
+| T-03-01-09 Write RSpec specs | `[x]` |
 
-### STORY-03-02 — Logistic Company Module 🔴
+### STORY-03-02 — Logistic Company Module �
 | Task | Status |
 |---|---|
-| T-03-02-01 Generate `LogisticCompany` model | `[ ]` |
-| T-03-02-02 Add validations | `[ ]` |
-| T-03-02-03 Implement `LogisticCompaniesController` | `[ ]` |
-| T-03-02-04 Add Ransack search | `[ ]` |
-| T-03-02-05 Implement filter endpoint | `[ ]` |
-| T-03-02-06 Build list view | `[ ]` |
-| T-03-02-07 Build form view | `[ ]` |
-| T-03-02-08 Add `LogisticCompanyPolicy` | `[ ]` |
-| T-03-02-09 Write RSpec specs | `[ ]` |
+| T-03-02-01 Generate `LogisticCompany` model | `[x]` |
+| T-03-02-02 Add validations | `[x]` |
+| T-03-02-03 Implement `LogisticCompaniesController` | `[x]` |
+| T-03-02-04 Add Ransack search | `[x]` |
+| T-03-02-05 Implement filter endpoint | `[x]` |
+| T-03-02-06 Build list view | `[x]` |
+| T-03-02-07 Build form view | `[x]` |
+| T-03-02-08 Add `LogisticCompanyPolicy` | `[x]` |
+| T-03-02-09 Write RSpec specs | `[x]` |
 
-### STORY-03-03 — Customer Module 🔴
+### STORY-03-03 — Customer Module �
 | Task | Status |
 |---|---|
-| T-03-03-01 Generate `Customer` model | `[ ]` |
-| T-03-03-02 Include `SoftDeletable` concern | `[ ]` |
-| T-03-03-03 Implement `SoftDeletable` concern | `[ ]` |
-| T-03-03-04 Implement `Customer#get_fullname` | `[ ]` |
-| T-03-03-05 Implement `CustomersController` | `[ ]` |
-| T-03-03-06 Implement filter endpoint | `[ ]` |
-| T-03-03-07 Add Ransack search | `[ ]` |
-| T-03-03-08 Build list view with soft-delete | `[ ]` |
-| T-03-03-09 Build form view | `[ ]` |
-| T-03-03-10 Add `CustomerPolicy` | `[ ]` |
-| T-03-03-11 Write RSpec model specs | `[ ]` |
-| T-03-03-12 Write RSpec request specs | `[ ]` |
+| T-03-03-01 Generate `Customer` model | `[x]` |
+| T-03-03-02 Include `SoftDeletable` concern | `[x]` |
+| T-03-03-03 Implement `SoftDeletable` concern | `[x]` |
+| T-03-03-04 Implement `Customer#get_fullname` | `[x]` |
+| T-03-03-05 Implement `CustomersController` | `[x]` |
+| T-03-03-06 Implement filter endpoint | `[x]` |
+| T-03-03-07 Add Ransack search | `[x]` |
+| T-03-03-08 Build list view with soft-delete | `[x]` |
+| T-03-03-09 Build form view | `[x]` |
+| T-03-03-10 Add `CustomerPolicy` | `[x]` |
+| T-03-03-11 Write RSpec model specs | `[x]` |
+| T-03-03-12 Write RSpec request specs | `[x]` |
 
 ---
 

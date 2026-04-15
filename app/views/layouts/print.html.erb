@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <title><%= content_for(:title) || "PSK ERP" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://unpkg.com/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-white">
+    <%= yield %>
+  </body>
+</html>

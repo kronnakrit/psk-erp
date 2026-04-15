@@ -1,0 +1,143 @@
+<% content_for :title, "Orders" %>
+
+<div class="p-6" data-controller="bulk-action">
+  <%# Header %>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Orders</h1>
+    <% if policy(Order).create? %>
+      <%= link_to "New Order", new_order_path,
+                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+    <% end %>
+  </div>
+
+  <%# Status tabs %>
+  <div class="flex gap-1 mb-4 border-b border-gray-200">
+    <%= link_to "All", orders_path,
+                class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ params[:status].blank? && action_name == 'index' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
+    <%= link_to "Draft",     draft_orders_path,
+                class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'draft'     ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
+    <%= link_to "Paid",      paid_orders_path,
+                class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'paid'      ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
+    <%= link_to "Completed", completed_orders_path,
+                class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'completed' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
+    <%= link_to "Cancelled", cancelled_orders_path,
+                class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'cancelled' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
+  </div>
+
+  <%# Search – Ransack %>
+  <%= search_form_for @ransack, url: orders_path do |f| %>
+    <div class="flex gap-3 mb-4">
+      <%= f.search_field :order_number_or_customer_first_name_or_customer_last_name_cont,
+                         placeholder: "Search order number, customer name…",
+                         class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition-colors" %>
+      <%= link_to "Clear", orders_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <%# Bulk action bar (shown only when bulk_update_status? allowed) %>
+  <% if policy(Order).bulk_update_status? %>
+    <div id="bulk_action_bar" class="hidden mb-4 flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+      <span class="text-sm text-gray-700"><span id="selected_count">0</span> selected</span>
+      <select id="bulk_status_select" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm">
+        <% Order::STATUSES.each do |s| %>
+          <option value="<%= s %>"><%= s %></option>
+        <% end %>
+      </select>
+      <%= button_to "Update Status", bulk_update_status_orders_path,
+                    method: :post,
+                    form: { id: "bulk_status_form" },
+                    class: "px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors" %>
+      <% if policy(Order).combine_bills? %>
+        <%= button_to "Combine Bills", combine_bills_orders_path,
+                      method: :post,
+                      form: { id: "combine_bills_form" },
+                      class: "px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Table %>
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <% if policy(Order).bulk_update_status? %>
+            <th class="w-8 px-4 py-3">
+              <input type="checkbox" id="select_all_checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+            </th>
+          <% end %>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logistic</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @orders.each do |order| %>
+          <tr class="hover:bg-gray-50">
+            <% if policy(Order).bulk_update_status? %>
+              <td class="px-4 py-3">
+                <input type="checkbox" name="ids[]" value="<%= order.id %>"
+                       class="order_checkbox h-4 w-4 text-blue-600 border-gray-300 rounded">
+              </td>
+            <% end %>
+            <td class="px-4 py-3 font-mono font-medium text-gray-900">
+              <%= link_to order.order_number, order_path(order), class: "text-blue-600 hover:underline" %>
+              <% if order.is_possible_duplicate? %>
+                <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
+                      title="This order may be a duplicate of a recent order for the same customer">
+                  Possible Duplicate
+                </span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-gray-600"><%= order.running_date&.strftime("%d/%m/%Y") %></td>
+            <td class="px-4 py-3 text-gray-600"><%= order.customer&.fullname %></td>
+            <td class="px-4 py-3">
+              <%= render "orders/status_badge", status: order.status %>
+            </td>
+            <td class="px-4 py-3 text-gray-600"><%= logistic_status_label(order.logistic_status) %></td>
+            <td class="px-4 py-3 text-right font-medium text-gray-900">
+              ฿<%= number_with_precision(order.grand_total.to_f, precision: 2, delimiter: ",") %>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to "View", order_path(order), class: "text-blue-600 hover:underline text-xs" %>
+                <% if policy(order).delivery_order? %>
+                  <%= link_to "Print", delivery_order_order_path(order), target: "_blank", class: "text-purple-600 hover:underline text-xs" %>
+                <% end %>
+                <% if policy(order).edit? %>
+                  <%= link_to "Edit", edit_order_path(order), class: "text-gray-600 hover:underline text-xs" %>
+                <% end %>
+                <% if policy(order).destroy? %>
+                  <%= button_to "Delete", order_path(order), method: :delete,
+                                class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                data: { turbo_confirm: "Delete order #{order.order_number}? This cannot be undone." } %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @orders.empty? %>
+          <tr>
+            <td colspan="<%= policy(Order).bulk_update_status? ? 8 : 7 %>" class="px-4 py-8 text-center text-gray-400">
+              No orders found.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Pagination %>
+  <div class="mt-4 flex items-center justify-between">
+    <p class="text-sm text-gray-500">
+      Showing <span class="font-medium text-gray-700"><%= @pagy.from %>–<%= @pagy.to %></span>
+      of <span class="font-medium text-gray-700"><%= @pagy.count %></span>
+    </p>
+    <%== @pagy.series_nav if @pagy.pages > 1 %>
+  </div>
+</div>

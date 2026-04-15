@@ -1,0 +1,804 @@
+---
+openapi: 3.0.1
+info:
+  title: PSK ERP API V1
+  version: v1
+  description: PSK ERP wholesale order management API
+paths:
+  "/api/v1/auth/sign_in":
+    post:
+      summary: Sign in
+      tags:
+      - Auth
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: signed in
+        '401':
+          description: invalid credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: admin@psk.com
+                    password:
+                      type: string
+                      example: Admin@12345!
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+  "/api/v1/auth/sign_out":
+    delete:
+      summary: Sign out
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: signed out
+  "/api/v1/auth/refresh":
+    post:
+      summary: Refresh token
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: token valid
+  "/api/v1/auth/verify":
+    post:
+      summary: Verify token
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: token is valid
+  "/api/v1/catalogs/list_product_categories":
+    get:
+      summary: List product categories
+      tags:
+      - Catalog
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: categories returned
+  "/api/v1/catalogs/products":
+    get:
+      summary: List products
+      tags:
+      - Catalog
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: product list returned
+  "/api/v1/catalogs/products/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Show product
+      tags:
+      - Catalog
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: product returned
+  "/api/v1/catalogs/products/{id}/parent":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get parent product
+      tags:
+      - Catalog
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: parent returned
+  "/api/v1/catalogs/products/filters":
+    post:
+      summary: Filter products
+      tags:
+      - Catalog
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: filtered products returned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: object
+                  properties:
+                    name_cont:
+                      type: string
+  "/api/v1/customers":
+    get:
+      summary: List customers
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: customer list returned
+    post:
+      summary: Create customer
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: customer created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    telephone:
+                      type: string
+                  required:
+                  - first_name
+  "/api/v1/customers/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Show customer
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: customer returned
+    patch:
+      summary: Update customer
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: customer updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+    delete:
+      summary: Delete customer
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: customer deleted
+  "/api/v1/customers/filter":
+    post:
+      summary: Filter customers by name
+      tags:
+      - Customers
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: filtered customers returned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search_text:
+                  type: string
+  "/api/v1/logistic_companies":
+    get:
+      summary: List logistic companies
+      tags:
+      - Logistic Companies
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: logistic companies returned
+    post:
+      summary: Create logistic company
+      tags:
+      - Logistic Companies
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: logistic company created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logistic_company:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                  required:
+                  - name
+  "/api/v1/logistic_companies/filter":
+    post:
+      summary: Filter logistic companies
+      tags:
+      - Logistic Companies
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: filtered list returned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search_text:
+                  type: string
+  "/api/v1/orders":
+    get:
+      summary: List orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: orders list returned
+    post:
+      summary: Create order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: order created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    customer_id:
+                      type: integer
+                    running_date:
+                      type: string
+                      format: date
+                  required:
+                  - customer_id
+                  - running_date
+  "/api/v1/orders/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Show order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: order returned
+    patch:
+      summary: Update order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: order updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+    delete:
+      summary: Delete order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: order deleted
+  "/api/v1/orders/draft":
+    get:
+      summary: List draft orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: draft orders returned
+  "/api/v1/orders/paid":
+    get:
+      summary: List paid orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: paid orders returned
+  "/api/v1/orders/completed":
+    get:
+      summary: List completed orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: completed orders returned
+  "/api/v1/orders/cancelled":
+    get:
+      summary: List cancelled orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: cancelled orders returned
+  "/api/v1/orders/dashboard":
+    get:
+      summary: Orders dashboard stats
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: dashboard stats returned
+  "/api/v1/orders/advance_search":
+    post:
+      summary: Advance search orders
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: search results returned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: object
+  "/api/v1/orders/bulk_update_status":
+    post:
+      summary: Bulk update order statuses
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: statuses updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_ids:
+                  type: array
+                  items:
+                    type: integer
+                status:
+                  type: string
+  "/api/v1/roles":
+    get:
+      summary: List roles
+      tags:
+      - Roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: roles list returned
+    post:
+      summary: Create role
+      tags:
+      - Roles
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: role created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    permissions:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                  - name
+  "/api/v1/roles/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Show role
+      tags:
+      - Roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: role returned
+    patch:
+      summary: Update role
+      tags:
+      - Roles
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: role updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+    delete:
+      summary: Delete role
+      tags:
+      - Roles
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: role deleted
+  "/api/v1/permissions":
+    get:
+      summary: List all permissions
+      tags:
+      - Permissions
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: permissions list returned
+  "/api/v1/countries":
+    get:
+      summary: List countries
+      tags:
+      - Countries
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: countries returned
+  "/api/v1/countries/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: ISO 3166-1 alpha-2 code (e.g. TH)
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Show country
+      tags:
+      - Countries
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: country returned
+  "/api/v1/users":
+    get:
+      summary: List users
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: user list returned
+    post:
+      summary: Create user
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: user created
+        '422':
+          description: invalid params
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    username:
+                      type: string
+                    password:
+                      type: string
+                  required:
+                  - email
+                  - username
+                  - password
+  "/api/v1/users/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update user
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: user updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+    delete:
+      summary: Delete user
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: user deleted
+  "/api/v1/users/{id}/activate":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Activate user
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: user activated
+  "/api/v1/users/{id}/deactivate":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Deactivate user
+      tags:
+      - Users
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: user deactivated
+  "/api/v1/profile":
+    get:
+      summary: Show own profile
+      tags:
+      - Profile
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: profile returned
+    patch:
+      summary: Update own profile
+      tags:
+      - Profile
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: profile updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    error_response:
+      type: object
+      properties:
+        error:
+          type: string
+    pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        total_count:
+          type: integer
+security:
+- bearerAuth: []
+servers:
+- url: "{scheme}://{defaultHost}"
+  variables:
+    scheme:
+      default: http
+    defaultHost:
+      default: localhost:3000

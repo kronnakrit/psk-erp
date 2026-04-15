@@ -1,0 +1,42 @@
+<% content_for :title, "Bulk Import" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Bulk Product Import</h1>
+      <p class="text-sm text-gray-500 mt-1">Upload an <code>.xlsx</code> file to import products in bulk.</p>
+    </div>
+  </div>
+
+  <%# Dismissable completion banner — shown when a broadcast updates an upload %>
+  <div id="import_notification_banner" class="hidden mb-4"></div>
+
+  <%# Upload form %>
+  <% if policy(Upload).create? %>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 mb-6">
+      <h2 class="text-sm font-semibold text-gray-700 mb-3">Upload File</h2>
+      <%= form_with url: uploads_path, method: :post, multipart: true, class: "flex items-center gap-4" do |f| %>
+        <label class="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 transition-colors">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+          <span class="text-sm text-gray-500" id="file-label">Choose .xlsx file…</span>
+          <%= f.file_field :file, accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                  class: "hidden",
+                                  onchange: "document.getElementById('file-label').textContent = this.files[0]?.name || 'Choose .xlsx file…'" %>
+        </label>
+        <%= f.submit "Upload & Import",
+                     class: "px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Import history — subscribed to live updates via Turbo Streams %>
+  <%= turbo_stream_from "import_status_#{current_user.id}" %>
+
+  <div id="upload_history">
+    <%= render "uploads/list", uploads: @uploads, pagy: @pagy %>
+  </div>
+</div>
+

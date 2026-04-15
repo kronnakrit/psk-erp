@@ -1,0 +1,14 @@
+<% content_for :title, "Permissions" %>
+
+<div class="p-6">
+  <h1 class="text-xl font-semibold text-gray-900 mb-6">Permission Codenames</h1>
+
+  <div class="bg-white border border-gray-200 rounded-lg p-5">
+    <p class="text-sm text-gray-500 mb-4">These are the available permission codenames. Assign them to roles.</p>
+    <div class="grid grid-cols-3 gap-2">
+      <% @permissions.each do |perm| %>
+        <span class="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"><%= perm %></span>
+      <% end %>
+    </div>
+  </div>
+</div>

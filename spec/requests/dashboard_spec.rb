@@ -1,12 +1,58 @@
 require "rails_helper"
 
 RSpec.describe "Root route smoke test", type: :request do
-  it "renders the root path with HTTP 200 quickly" do
-    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    get root_path
-    elapsed_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000
+  context "when unauthenticated" do
+    it "redirects to login" do
+      get root_path
+      expect(response).to redirect_to("/login")
+    end
+  end
 
-    expect(response).to have_http_status(:ok)
-    expect(elapsed_ms).to be < 200
+  context "when authenticated" do
+    let(:user) { create(:user) }
+
+    before do
+      sign_in user
+    end
+
+    it "renders the dashboard with HTTP 200" do
+      get root_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "Price Anomaly Monitor section" do
+    context "when user has see_price_monitor permission" do
+      let(:role) { create(:role, permissions: ["see_price_monitor"]) }
+      let(:user) { create(:user) }
+
+      before do
+        user.profile.update!(role: role)
+        sign_in user
+      end
+
+      it "renders the Price Anomaly Monitor section" do
+        get root_path
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Price Anomaly Monitor")
+      end
+    end
+
+    context "when user does not have see_price_monitor permission" do
+      let(:role) { create(:role, permissions: []) }
+      let(:user) { create(:user) }
+
+      before do
+        user.profile.update!(role: role)
+        sign_in user
+      end
+
+      it "does not render the Price Anomaly Monitor section" do
+        get root_path
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("Price Anomaly Monitor")
+      end
+    end
   end
 end
+

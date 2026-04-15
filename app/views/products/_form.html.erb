@@ -1,0 +1,170 @@
+<%# Validation errors %>
+<% if f.object.errors.any? %>
+  <div class="p-4 bg-red-50 border border-red-200 rounded-md">
+    <p class="text-sm font-medium text-red-800 mb-1">Please fix the following errors:</p>
+    <ul class="list-disc list-inside text-sm text-red-700 space-y-0.5">
+      <% f.object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="space-y-6"
+     data-controller="product-attributes"
+     data-product-attributes-existing-attributes-value="<%= f.object.product_attributes.map { |pa| { id: pa.id, attribute_id: pa.attribute_id, value: pa.value } }.to_json %>">
+
+    <%# Product Information %>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700">Product Information</h2>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :name, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          <% if f.object.errors[:name].any? %>
+            <p class="mt-1 text-xs text-red-600"><%= f.object.errors[:name].first %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <%= f.label :product_type, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.select :product_type,
+                       [["Standalone", "Sa"], ["Parent", "Pr"], ["Child", "Ch"]],
+                       { include_blank: "— select —" },
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                       data: { controller: "tom-select" } %>
+          <% if f.object.errors[:product_type].any? %>
+            <p class="mt-1 text-xs text-red-600"><%= f.object.errors[:product_type].first %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :sku, "SKU (auto-generated if blank)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :sku, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :barcode, "Barcode (auto-generated if blank)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :barcode, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <%= f.label :vendor_id, "Supplier (Vendor)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.select :vendor_id,
+                       options_from_collection_for_select(@vendors, :id, :name, f.object.vendor_id),
+                       { include_blank: "— none —" },
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                       data: { controller: "tom-select" } %>
+        </div>
+
+        <div>
+          <%= f.label :brand_id, "Brand", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.select :brand_id,
+                       options_from_collection_for_select(@brands, :id, :name, f.object.brand_id),
+                       { include_blank: "— none —" },
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                       data: { controller: "tom-select" } %>
+        </div>
+
+        <div>
+          <%= f.label :product_class_id, "Product Class", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.select :product_class_id,
+                       options_from_collection_for_select(@product_classes, :id, :name, f.object.product_class_id),
+                       { include_blank: "— none —" },
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                       data: { controller: "tom-select",
+                               product_attributes_target: "productClassSelect",
+                               action: "change->product-attributes#productClassChanged" } %>
+        </div>
+      </div>
+    </div>
+
+    <%# Pricing %>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700">Pricing</h2>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <%= f.label :unit, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :unit, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :price, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.number_field :price, step: "0.01", class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+
+        <% if policy(f.object.new_record? ? Product.new : f.object).can_view_cost? %>
+          <div>
+            <%= f.label :cost, class: "block text-xs font-medium text-gray-700 mb-1" %>
+            <%= f.number_field :cost, step: "0.01", class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Details %>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700">Details</h2>
+
+      <div>
+        <%= f.label :product_category_ids, "Categories", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <div class="flex flex-wrap gap-3">
+          <% @product_categories.each do |category| %>
+            <label class="inline-flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer">
+              <%= check_box_tag "product[product_category_ids][]", category.id,
+                                f.object.product_category_ids.include?(category.id),
+                                class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500",
+                                id: "product_category_#{category.id}" %>
+              <%= category.name %>
+            </label>
+          <% end %>
+        </div>
+        <% if @product_categories.empty? %>
+          <p class="text-sm text-gray-400 italic">No categories defined yet</p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :description, "Description (EN)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :description, rows: 3, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :description_th, "Description (TH)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :description_th, rows: 3, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :remark, class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :remark, rows: 2, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :enable_stock, class: "h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+        <%= f.label :enable_stock, "Enable stock tracking", class: "text-sm font-medium text-gray-700" %>
+      </div>
+    </div>
+
+    <%# Custom Attributes %>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700">Custom Attributes</h2>
+      <div data-product-attributes-target="container">
+        <% if f.object.product_class_id.blank? %>
+          <p class="text-sm text-gray-400 italic">Select a Product Class to see custom attributes.</p>
+        <% end %>
+      </div>
+    </div>
+
+</div>
+
+<div class="flex gap-3 pt-4">
+  <%= f.submit f.object.new_record? ? "Create Product" : "Update Product",
+               class: "inline-flex items-center px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer" %>
+  <%= link_to "Cancel", products_path, class: "inline-flex items-center px-5 py-2 border border-gray-300 text-sm text-gray-700 rounded-md hover:bg-gray-50 transition-colors" %>
+</div>

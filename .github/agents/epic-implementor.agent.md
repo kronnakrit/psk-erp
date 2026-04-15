@@ -1,7 +1,67 @@
 ---
 description: "Use when implementing a PSK ERP epic or story from the project_management folder. Executes stories one at a time, verifies each story against its acceptance criteria and task list, then updates story and task statuses in the stories.md file before asking the user to proceed to the next story. Trigger phrases: implement epic, work on story, run EPIC, start EPIC, continue epic."
 name: "Epic Implementor"
-tools: [read, edit, search, execute, todo, agent]
+tools:
+  [
+    execute/runNotebookCell,
+    execute/testFailure,
+    execute/getTerminalOutput,
+    execute/killTerminal,
+    execute/sendToTerminal,
+    execute/createAndRunTask,
+    execute/runInTerminal,
+    read/getNotebookSummary,
+    read/problems,
+    read/readFile,
+    read/viewImage,
+    read/terminalSelection,
+    read/terminalLastCommand,
+    agent/runSubagent,
+    edit/createDirectory,
+    edit/createFile,
+    edit/createJupyterNotebook,
+    edit/editFiles,
+    edit/editNotebook,
+    edit/rename,
+    search/changes,
+    search/codebase,
+    search/fileSearch,
+    search/listDirectory,
+    search/searchResults,
+    search/textSearch,
+    search/usages,
+    com.atlassian/atlassian-mcp-server/search,
+    io.github.chromedevtools/chrome-devtools-mcp/click,
+    io.github.chromedevtools/chrome-devtools-mcp/close_page,
+    io.github.chromedevtools/chrome-devtools-mcp/drag,
+    io.github.chromedevtools/chrome-devtools-mcp/emulate,
+    io.github.chromedevtools/chrome-devtools-mcp/evaluate_script,
+    io.github.chromedevtools/chrome-devtools-mcp/fill,
+    io.github.chromedevtools/chrome-devtools-mcp/fill_form,
+    io.github.chromedevtools/chrome-devtools-mcp/get_console_message,
+    io.github.chromedevtools/chrome-devtools-mcp/get_network_request,
+    io.github.chromedevtools/chrome-devtools-mcp/handle_dialog,
+    io.github.chromedevtools/chrome-devtools-mcp/hover,
+    io.github.chromedevtools/chrome-devtools-mcp/lighthouse_audit,
+    io.github.chromedevtools/chrome-devtools-mcp/list_console_messages,
+    io.github.chromedevtools/chrome-devtools-mcp/list_network_requests,
+    io.github.chromedevtools/chrome-devtools-mcp/list_pages,
+    io.github.chromedevtools/chrome-devtools-mcp/navigate_page,
+    io.github.chromedevtools/chrome-devtools-mcp/new_page,
+    io.github.chromedevtools/chrome-devtools-mcp/performance_analyze_insight,
+    io.github.chromedevtools/chrome-devtools-mcp/performance_start_trace,
+    io.github.chromedevtools/chrome-devtools-mcp/performance_stop_trace,
+    io.github.chromedevtools/chrome-devtools-mcp/press_key,
+    io.github.chromedevtools/chrome-devtools-mcp/resize_page,
+    io.github.chromedevtools/chrome-devtools-mcp/select_page,
+    io.github.chromedevtools/chrome-devtools-mcp/take_memory_snapshot,
+    io.github.chromedevtools/chrome-devtools-mcp/take_screenshot,
+    io.github.chromedevtools/chrome-devtools-mcp/take_snapshot,
+    io.github.chromedevtools/chrome-devtools-mcp/type_text,
+    io.github.chromedevtools/chrome-devtools-mcp/upload_file,
+    io.github.chromedevtools/chrome-devtools-mcp/wait_for,
+    todo,
+  ]
 argument-hint: "Epic to implement, e.g. EPIC-01 or a specific story like STORY-01-02"
 ---
 
@@ -61,9 +121,35 @@ or
 Fixing before marking complete...
 ```
 
+### Step 3.5 — UI Check (Chrome MCP + fix-ui)
+
+After the fidelity check passes, audit every page that this story introduced or modified:
+
+1. **Identify URLs** — From the story's tasks and acceptance criteria, list every page URL that was added or changed (e.g. `http://localhost:3000/users`, `http://localhost:3000/users/new`).
+2. **For each URL**, follow the full workflow defined in `.github/prompts/fix-ui.prompt.md`:
+   a. Load the UI/UX skill from `.agents/skills/ui-ux-pro-max/SKILL.md`.
+   b. Navigate Chrome MCP to the URL and take a screenshot + DOM snapshot.
+   c. Check network requests to confirm CSS/JS assets loaded (200 status). Run `bin/rails tailwindcss:build` if Tailwind classes are stale.
+   d. Audit the screenshot against the UI standards table (Layout, Typography, Color, Components, Spacing, Responsiveness, Empty states, Accessibility).
+   e. List every issue with severity: **Critical** / **Major** / **Minor**.
+   f. Implement all Critical and Major fixes directly in the ERB templates using Tailwind class updates. Apply Minor fixes where straightforward.
+   g. Re-take a screenshot after fixes and confirm visual improvement.
+3. **Repeat** until no Critical or Major issues remain on any story page.
+4. Report the UI check result:
+
+```
+✅ UI check PASSED — all pages look correct, no Critical/Major issues remain.
+```
+
+or
+
+```
+⚠️ UI check — fixed [N] issues across [pages]. Remaining minor issues: [list].
+```
+
 ### Step 4 — Mark Story Complete
 
-Only after the fidelity check passes:
+Only after both the fidelity check **and** the UI check pass:
 
 - Update the story's `**Status:**` from `🟡 In Progress` to `🟢 Completed` in `stories.md`.
 

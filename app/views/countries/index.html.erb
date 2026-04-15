@@ -1,0 +1,72 @@
+<% content_for :title, "Countries" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Countries</h1>
+    <% if user_signed_in? && policy(Country).create? %>
+      <%= link_to "New Country", new_country_path,
+                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+    <% end %>
+  </div>
+
+  <%= search_form_for @ransack, url: countries_path do |f| %>
+    <div class="flex gap-3 mb-4">
+      <%= f.search_field :printable_name_or_iso_3166_1_a2_cont,
+                         placeholder: "Search country name or code…",
+                         class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300" %>
+      <%= link_to "Clear", countries_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alpha-2</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alpha-3</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numeric</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Printable Name</th>
+          <% if user_signed_in? && policy(Country).update? %>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @countries.each do |country| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-mono font-medium text-gray-900"><%= country.iso_3166_1_a2 %></td>
+            <td class="px-4 py-3 font-mono text-gray-600"><%= country.iso_3166_1_a3 %></td>
+            <td class="px-4 py-3 text-gray-600"><%= country.iso_3166_1_numeric %></td>
+            <td class="px-4 py-3 text-gray-900"><%= country.printable_name %></td>
+            <% if user_signed_in? && policy(Country).update? %>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <%= link_to "Edit", edit_country_path(country), class: "text-blue-600 hover:underline text-xs" %>
+                  <% if policy(Country).destroy? %>
+                    <%= button_to "Delete", country_path(country), method: :delete,
+                                  class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                  data: { turbo_confirm: "Delete #{country.printable_name}?" } %>
+                  <% end %>
+                </div>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+        <% if @countries.empty? %>
+          <tr>
+            <td colspan="5" class="px-4 py-8 text-center text-gray-400">No countries found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 flex items-center justify-between">
+    <p class="text-sm text-gray-500">
+      Showing <span class="font-medium text-gray-700"><%= @pagy.from %>–<%= @pagy.to %></span>
+      of <span class="font-medium text-gray-700"><%= @pagy.count %></span>
+    </p>
+    <%== @pagy.series_nav if @pagy.pages > 1 %>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<% content_for :title, "Stock" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Stock</h1>
+  </div>
+
+  <%# Search / filter bar %>
+  <%= search_form_for @ransack, url: stocks_path do |f| %>
+    <div class="flex flex-wrap gap-3 mb-4">
+      <%= f.search_field :product_name_or_product_sku_cont,
+                         placeholder: "Search by product name or SKU…",
+                         class: "flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.select :branch_id_eq,
+                   options_from_collection_for_select(@branches, :id, :name, params.dig(:q, :branch_id_eq)),
+                   { include_blank: "All Branches" },
+                   class: "px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 cursor-pointer" %>
+      <%= link_to "Clear", stocks_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Holding</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Available</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @stocks.each do |stock| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 font-medium text-gray-900">
+              <%= stock.product.name %>
+              <span class="ml-1 text-xs text-gray-400 font-mono"><%= stock.product.sku %></span>
+            </td>
+            <td class="px-4 py-3 text-gray-600"><%= stock.branch.name %></td>
+            <td class="px-4 py-3 text-right font-mono text-gray-700"><%= number_with_precision(stock.amount, precision: 2) %></td>
+            <td class="px-4 py-3 text-right font-mono text-orange-600"><%= number_with_precision(stock.holding_amount, precision: 2) %></td>
+            <td class="px-4 py-3 text-right font-mono <%= stock.total_amount < 0 ? "text-red-600 font-semibold" : "text-green-700" %>">
+              <%= number_with_precision(stock.total_amount, precision: 2) %>
+            </td>
+            <td class="px-4 py-3 text-right text-xs text-gray-500"><%= stock.updated_at.strftime("%d %b %Y %H:%M") %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "Detail", stock_path(stock), class: "text-blue-600 hover:underline text-xs" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @stocks.empty? %>
+    <div class="mt-8 text-center py-12 text-gray-400">
+      <p class="text-sm">No stock records found.</p>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%== @pagy.series_nav %>
+  </div>
+</div>

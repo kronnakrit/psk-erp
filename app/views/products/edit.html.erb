@@ -1,0 +1,12 @@
+<% content_for :title, "Edit Product" %>
+
+<div class="p-6 max-w-3xl">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Edit Product — <%= @product.name %></h1>
+    <%= link_to "← Back to Products", products_path, class: "text-sm text-blue-600 hover:underline" %>
+  </div>
+
+  <%= form_with model: @product, local: true, class: "space-y-6" do |f| %>
+    <%= render "form", f: f %>
+  <% end %>
+</div>

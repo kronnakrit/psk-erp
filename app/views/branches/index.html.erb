@@ -1,0 +1,66 @@
+<% content_for :title, "Branches" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Branches</h1>
+    <% if policy(Branch).create? %>
+      <%= link_to "New Branch", new_branch_path,
+                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+    <% end %>
+  </div>
+
+  <%= search_form_for @ransack, url: branches_path do |f| %>
+    <div class="flex gap-3 mb-4">
+      <%= f.search_field :name_cont,
+                         placeholder: "Search by name…",
+                         class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300" %>
+      <%= link_to "Clear", branches_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @branches.each do |branch| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 font-medium text-gray-900">
+              <%= branch.name %>
+              <% if branch.name == "Main Branch" %>
+                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">Default</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <% if policy(branch).update? %>
+                  <%= link_to "Edit", edit_branch_path(branch), class: "text-blue-600 hover:underline text-xs" %>
+                <% end %>
+                <% if policy(branch).destroy? %>
+                  <%= button_to "Delete", branch_path(branch), method: :delete,
+                                class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                data: { turbo_confirm: "Delete branch #{branch.name}?" } %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @branches.empty? %>
+    <div class="mt-8 text-center py-12 text-gray-400">
+      <p class="text-sm">No branches found.</p>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%== @pagy.series_nav %>
+  </div>
+</div>

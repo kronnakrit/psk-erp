@@ -1,0 +1,312 @@
+<%# Order form — redesigned for EPIC-11: 3-section full-width layout %>
+<%= form_with model: order,
+              class: "space-y-0",
+              data: { controller: "order-form" } do |f| %>
+
+  <%# Validation errors %>
+  <% if order.errors.any? %>
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+      <p class="text-sm font-medium text-red-800 mb-1">Please fix the following errors:</p>
+      <ul class="list-disc list-inside text-sm text-red-700 space-y-0.5">
+        <% order.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# ══ SECTION 1: HEADER ══ %>
+  <section id="order-header" class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+    <h2 class="text-sm font-semibold text-gray-700">Order Information</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <%# Customer typeahead %>
+      <div class="relative" data-controller="customer-search">
+        <%= f.label :customer_id, "Customer", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <input type="text"
+               placeholder="Type name or phone…"
+               autocomplete="off"
+               value="<%= order.customer&.fullname %>"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+               data-customer-search-target="input"
+               data-action="input->customer-search#onInput">
+        <%= f.hidden_field :customer_id,
+                           data: {
+                             "customer-search-target": "hidden",
+                             "order-form-target": "customerId"
+                           } %>
+        <div class="hidden absolute z-50 left-0 top-full mt-0.5 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto text-sm"
+             data-customer-search-target="dropdown"></div>
+      </div>
+
+      <%# Order Date %>
+      <div>
+        <%= f.label :running_date, "Order Date", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.date_field :running_date, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+      <%# Status %>
+      <div>
+        <%= f.label :status, class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <% if f.object.status == "Cc" %>
+          <%= f.select :status,
+                       [["Cancelled", "Cc"]],
+                       {},
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-100 text-gray-500 cursor-not-allowed",
+                       disabled: true %>
+          <%= f.hidden_field :status %>
+        <% else %>
+          <%= f.select :status,
+                       [["Draft", "Dr"], ["Paid", "Pd"], ["Completed", "Cp"], ["Cancelled", "Cc"]],
+                       {},
+                       class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <% end %>
+      </div>
+
+      <%# Telephone — autofilled from customer %>
+      <div>
+        <%= f.label :telephone, class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.telephone_field :telephone,
+                              class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                              data: { "order-form-target": "telephone" } %>
+      </div>
+
+    </div>
+
+    <%# Address — full width, autofilled from customer %>
+    <div>
+      <%= f.label :address, class: "block text-xs font-medium text-gray-700 mb-1" %>
+      <%= f.text_area :address, rows: 2,
+                      class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      data: { "order-form-target": "address" } %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <%# Logistic Company — autofilled from customer %>
+      <div>
+        <%= f.label :logistic_company_id, "Logistic Company", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.collection_select :logistic_company_id, @logistic_companies, :id, :name,
+                                { include_blank: "— None —" },
+                                class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+                                data: {
+                                  "order-form-target": "logisticSelect",
+                                  action: "change->order-form#logisticManuallyChanged"
+                                } %>
+      </div>
+
+      <%# Logistic Status %>
+      <div>
+        <%= f.label :logistic_status, class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.select :logistic_status,
+                     Order::LOGISTIC_STATUS_LABELS.map { |code, label| [label, code] },
+                     { include_blank: "— None —" },
+                     class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+    </div>
+  </section>
+
+  <%# ══ SECTION 2: ORDER LINES ══ %>
+  <section id="order-body" class="mt-4 bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-700">Order Lines</h2>
+      <button type="button"
+              data-action="click->order-form#addLine"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-md hover:bg-blue-100 transition-colors">
+        + Add Line
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-100">
+          <tr>
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase min-w-[180px]">Product</th>
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase min-w-[220px]">Description</th>
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase w-20">Unit</th>
+            <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-20">Qty</th>
+            <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-32">Unit Price</th>
+            <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-28">Discount</th>
+            <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-28">Total</th>
+            <th class="w-8"></th>
+          </tr>
+        </thead>
+        <tbody data-order-form-target="linesContainer">
+          <%= f.fields_for :order_lines do |lf| %>
+            <%= render "orders/order_line_fields", f: lf %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# Hidden template for JS new-line insertion %>
+    <template data-order-form-target="lineTemplate">
+      <%= f.fields_for :order_lines, OrderLine.new, child_index: "NEW_LINE_RECORD" do |lf| %>
+        <%= render "orders/order_line_fields", f: lf %>
+      <% end %>
+    </template>
+  </section>
+
+  <%# ══ SECTION 3: FOOTER ══ %>
+  <section id="order-footer" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <%# Left — Pricing options + notes %>
+    <div class="space-y-4">
+
+      <%# Pricing options card %>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
+        <h2 class="text-sm font-semibold text-gray-700">Pricing Options</h2>
+
+        <%# VAT toggle %>
+        <div class="flex items-center gap-2">
+          <%= f.check_box :has_vat,
+                          class: "h-4 w-4 text-blue-600 border-gray-300 rounded",
+                          data: {
+                            "order-form-target": "vatCheckbox",
+                            action: "change->order-form#toggleVat"
+                          } %>
+          <%= f.label :has_vat, "Apply VAT (7%)", class: "text-sm text-gray-700" %>
+        </div>
+
+        <%# VAT-included sub-toggle (hidden until VAT enabled) %>
+        <div class="pl-6 hidden" data-order-form-target="includedVatRow">
+          <div class="flex items-center gap-2">
+            <%= f.check_box :is_included_vat,
+                            class: "h-4 w-4 text-blue-600 border-gray-300 rounded",
+                            data: { "order-form-target": "includedVatCheckbox",
+                                    action: "change->order-form#computeOrderSummary" } %>
+            <%= f.label :is_included_vat, "VAT already included in prices", class: "text-sm text-gray-600" %>
+          </div>
+        </div>
+
+        <%# WHT toggle %>
+        <div class="flex items-center gap-2">
+          <%= f.check_box :is_withholding_tax,
+                          class: "h-4 w-4 text-blue-600 border-gray-300 rounded",
+                          data: { "order-form-target": "whtCheckbox",
+                                  action: "change->order-form#toggleWht" } %>
+          <%= f.label :is_withholding_tax, "Withholding Tax", class: "text-sm text-gray-700" %>
+        </div>
+
+        <%# WHT rate row (hidden until WHT enabled) %>
+        <div class="pl-6 hidden" data-order-form-target="whtRow">
+          <%= f.label :withholding_tax, "WHT Rate (%)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :withholding_tax, inputmode: "decimal",
+                             class: "w-32 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500",
+                             data: { "order-form-target": "whtInput",
+                                     action: "input->order-form#computeOrderSummary focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+        </div>
+
+        <%# Discount toggle %>
+        <div class="flex items-center gap-2">
+          <%= f.check_box :is_discount_percentage,
+                          class: "h-4 w-4 text-blue-600 border-gray-300 rounded",
+                          data: { "order-form-target": "discountPctCheckbox",
+                                  action: "change->order-form#toggleDiscountMode" } %>
+          <%= f.label :is_discount_percentage, "Order Discount (%)", class: "text-sm text-gray-700" %>
+        </div>
+
+        <%# Discount % row (shown when discount % mode active) %>
+        <div class="pl-6" data-discount-pct-row>
+          <%= f.label :discount_percentage, "Discount %", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :discount_percentage, inputmode: "decimal",
+                             class: "w-32 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500",
+                             data: { "order-form-target": "discountPctInput",
+                                     action: "input->order-form#computeOrderSummary focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+        </div>
+
+        <%# Discount amount row (shown when discount amount mode active) %>
+        <div class="pl-6" data-discount-amt-row>
+          <%= f.label :discount_price, "Discount Amount (฿)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :discount_price, inputmode: "decimal",
+                             class: "w-48 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500",
+                             data: { "order-form-target": "discountAmtInput",
+                                     action: "input->order-form#computeOrderSummary focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+        </div>
+      </div>
+
+      <%# Notes card %>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+        <h2 class="text-sm font-semibold text-gray-700">Notes</h2>
+        <div>
+          <%= f.label :remark, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_area :remark, rows: 2,
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+        <div>
+          <%= f.label :internal_note, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.text_area :internal_note, rows: 2,
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+      </div>
+
+    </div>
+
+    <%# Right — Live summary card + order images %>
+    <div class="space-y-4">
+
+      <%# Live summary %>
+      <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-2 text-sm sticky top-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-3">Summary</h2>
+
+        <div class="flex justify-between text-gray-600">
+          <span>Subtotal</span>
+          <span data-order-form-target="summarySubtotal">฿0.00</span>
+        </div>
+
+        <div class="hidden" data-order-form-target="summaryDiscountRow">
+          <div class="flex justify-between text-gray-600">
+            <span>Discount</span>
+            <span class="text-red-600" data-order-form-target="summaryDiscount">−฿0.00</span>
+          </div>
+        </div>
+
+        <div class="hidden" data-order-form-target="summaryAfterDiscountRow">
+          <div class="flex justify-between text-gray-600">
+            <span>After Discount</span>
+            <span data-order-form-target="summaryAfterDiscount">฿0.00</span>
+          </div>
+        </div>
+
+        <div class="hidden" data-order-form-target="summaryExclVatRow">
+          <div class="flex justify-between text-gray-600">
+            <span>Excl. VAT</span>
+            <span data-order-form-target="summaryExclVat">฿0.00</span>
+          </div>
+        </div>
+
+        <div class="hidden" data-order-form-target="summaryVatRow">
+          <div class="flex justify-between text-gray-600">
+            <span>VAT (7%)</span>
+            <span data-order-form-target="summaryVat">฿0.00</span>
+          </div>
+        </div>
+
+        <div class="hidden" data-order-form-target="summaryWhtRow">
+          <div class="flex justify-between text-gray-600">
+            <span>Withholding Tax</span>
+            <span class="text-red-600" data-order-form-target="summaryWht">−฿0.00</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between font-semibold text-gray-900 pt-2 border-t border-gray-200 mt-2">
+          <span>Grand Total</span>
+          <span class="text-lg" data-order-form-target="summaryGrandTotal">฿0.00</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <%# Form actions — must come before the images partial to avoid nested-form HTML violation %>
+  <div class="flex items-center justify-between pt-4">
+    <%= link_to "Cancel", order.new_record? ? orders_path : order_path(order),
+                class: "px-5 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors" %>
+    <%= f.submit order.new_record? ? "Create Order" : "Update Order",
+                 class: "px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer" %>
+  </div>
+
+<% end %>

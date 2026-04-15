@@ -1,0 +1,218 @@
+<% content_for :title, @product.name %>
+
+<div class="px-6 py-6 max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900"><%= @product.name %></h1>
+      <p class="text-xs text-gray-500 font-mono mt-1"><%= @product.sku %></p>
+    </div>
+    <div class="flex items-center gap-2">
+      <% if policy(@product).update? %>
+        <%= link_to "Edit", edit_product_path(@product),
+                    class: "px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+      <% end %>
+      <%= link_to "← Back", products_path, class: "text-sm text-blue-600 hover:underline" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Left panel: images + upload -->
+    <div class="lg:col-span-1 space-y-4">
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <h2 class="text-sm font-semibold text-gray-700">Images</h2>
+        </div>
+        <div class="p-3 space-y-3">
+          <% if @product.featured_image.attached? %>
+            <%= image_tag @product.featured_image, class: "w-full rounded-md object-cover" %>
+          <% end %>
+          <div id="product_images" class="grid grid-cols-2 gap-2">
+            <% @product.product_images.each do |pi| %>
+              <% if pi.image.attached? %>
+                <%= render "product_images/product_image", product: @product, product_image: pi %>
+              <% end %>
+            <% end %>
+          </div>
+          <% unless @product.featured_image.attached? || @product.product_images.any? %>
+            <div class="flex items-center justify-center h-36 bg-gray-50 rounded-md text-gray-400 text-sm">No image</div>
+          <% end %>
+        </div>
+        <% if policy(@product).update? %>
+          <div class="px-3 pb-3 pt-2 border-t border-gray-100">
+            <%= form_with url: product_product_images_path(@product), scope: :product_image, multipart: true,
+                          data: { controller: "product-image-upload", "product-image-upload-target": "form" } do |f| %>
+              <div class="space-y-2">
+                <%= f.file_field :image, accept: "image/*",
+                                 data: { action: "change->product-image-upload#toggle", "product-image-upload-target": "fileInput" },
+                                 class: "block w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" %>
+                <%= f.submit "Upload Image", disabled: true,
+                             data: { "product-image-upload-target": "submitBtn" },
+                             class: "w-full px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Right panel: all information -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Core Info + Attributes -->
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <h2 class="text-sm font-semibold text-gray-700">Product Info</h2>
+        </div>
+        <dl class="divide-y divide-gray-100">
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Type</dt>
+            <dd class="col-span-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                           <%= @product.product_type == 'Sa' ? 'bg-green-100 text-green-700' : (@product.product_type == 'Pr' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600') %>">
+                <%= { 'Sa' => 'Standalone', 'Pr' => 'Parent', 'Ch' => 'Child' }[@product.product_type] %>
+              </span>
+            </dd>
+          </div>
+
+          <% if @product.parent.present? %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase">Parent</dt>
+              <dd class="col-span-2 text-sm text-gray-900">
+                <%= link_to @product.parent.name, product_path(@product.parent), class: "text-blue-600 hover:underline" %>
+              </dd>
+            </div>
+          <% end %>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Barcode</dt>
+            <dd class="col-span-2 text-sm font-mono text-gray-700"><%= @product.barcode.presence || "—" %></dd>
+          </div>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Unit</dt>
+            <dd class="col-span-2 text-sm text-gray-700"><%= @product.unit.presence || "—" %></dd>
+          </div>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Price</dt>
+            <dd class="col-span-2 text-sm text-gray-700"><%= number_to_currency(@product.price, unit: "฿") %></dd>
+          </div>
+
+          <% if policy(@product).can_view_cost? %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase">Cost</dt>
+              <dd class="col-span-2 text-sm text-gray-700"><%= number_to_currency(@product.cost, unit: "฿") %></dd>
+            </div>
+          <% end %>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Brand</dt>
+            <dd class="col-span-2 text-sm text-gray-700"><%= @product.brand&.name.presence || "—" %></dd>
+          </div>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Supplier</dt>
+            <dd class="col-span-2 text-sm text-gray-700"><%= @product.vendor&.name.presence || "—" %></dd>
+          </div>
+
+          <div class="px-4 py-3 grid grid-cols-3 gap-4">
+            <dt class="text-xs font-medium text-gray-500 uppercase">Class</dt>
+            <dd class="col-span-2 text-sm text-gray-700"><%= @product.product_class&.name.presence || "—" %></dd>
+          </div>
+
+          <% if @product.product_categories.any? %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase">Categories</dt>
+              <dd class="col-span-2 flex flex-wrap gap-1">
+                <% @product.product_categories.each do |cat| %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700"><%= cat.name %></span>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @product.remark.present? %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase">Remark</dt>
+              <dd class="col-span-2 text-sm text-gray-700"><%= @product.remark %></dd>
+            </div>
+          <% end %>
+
+          <% if @product.description.present? %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase">Description</dt>
+              <dd class="col-span-2 text-sm text-gray-700 whitespace-pre-wrap"><%= @product.description %></dd>
+            </div>
+          <% end %>
+
+          <% @product.product_attributes.each do |attr| %>
+            <div class="px-4 py-3 grid grid-cols-3 gap-4">
+              <dt class="text-xs font-medium text-gray-500 uppercase"><%= attr.product_attr.name %></dt>
+              <dd class="col-span-2 text-sm text-gray-700"><%= attr.value %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+
+      <!-- Stock -->
+      <% if @product.enable_stock? %>
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-sm font-semibold text-gray-700">Stock</h2>
+          </div>
+          <% stocks = @product.product_stocks %>
+          <% if stocks.any? %>
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">On Hand</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Holding</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Available</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <% stocks.each do |stock| %>
+                  <tr>
+                    <td class="px-4 py-2 text-gray-700"><%= stock.branch.name %></td>
+                    <td class="px-4 py-2 text-right text-gray-700"><%= stock.amount %></td>
+                    <td class="px-4 py-2 text-right text-gray-500"><%= stock.holding_amount %></td>
+                    <td class="px-4 py-2 text-right font-medium <%= stock.total_amount > 0 ? 'text-green-700' : 'text-red-600' %>"><%= stock.total_amount %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <p class="px-4 py-3 text-sm text-gray-400">No stock records.</p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Child products -->
+      <% if @product.product_type == "Pr" && @product.children.any? %>
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-sm font-semibold text-gray-700">Child Products</h2>
+          </div>
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <% @product.children.each do |child| %>
+                <tr>
+                  <td class="px-4 py-2 font-mono text-gray-500 text-xs"><%= child.sku %></td>
+                  <td class="px-4 py-2"><%= link_to child.name, product_path(child), class: "text-blue-600 hover:underline" %></td>
+                  <td class="px-4 py-2 text-right text-gray-700"><%= number_to_currency(child.price, unit: "฿") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

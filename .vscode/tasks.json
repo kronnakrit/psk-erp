@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Rebuild Tailwind CSS",
+			"type": "shell",
+			"command": "eval \"$(rbenv init -)\" && bin/rails tailwindcss:build",
+			"isBackground": false
+		}
+	]
+}

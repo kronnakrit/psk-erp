@@ -21,6 +21,18 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 25
+
+RSpec/MultipleExpectations:
+  Max: 3
+
+RSpec/ExampleLength:
+  Max: 10
+
 Metrics/MethodLength:
   Max: 20
 

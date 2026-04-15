@@ -1,0 +1,4 @@
+<%# Order images are displayed inline in the order show view. This index action is provided for authorization checks. %>
+<% @order_images.each do |order_image| %>
+  <%= render partial: "order_images/order_image", locals: { order_image: order_image } %>
+<% end %>

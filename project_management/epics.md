@@ -26,7 +26,12 @@
 | [EPIC-06](./EPIC-06/stories.md) | Order Module (Core) | Phase 6 | 🔴 Not Started | 6 |
 | [EPIC-07](./EPIC-07/stories.md) | Excel Export & Reporting Module | Phase 7 | 🔴 Not Started | 4 |
 | [EPIC-08](./EPIC-08/stories.md) | Bulk Product Import Module | Phase 8 | 🔴 Not Started | 3 |
-| [EPIC-09](./EPIC-09/stories.md) | Polish, API Docs & Deployment Prep | Phase 9 | 🔴 Not Started | 3 |
+| [EPIC-09](./EPIC-09/stories.md) | Polish, API Docs & Deployment Prep | Phase 9 | � Completed | 3 |
+| [EPIC-10](./EPIC-10/stories.md) | Tom Select Typeahead Dropdowns Across All Forms | Phase 10 | 🟢 Completed | 5 |
+| [EPIC-11](./EPIC-11/stories.md) | Order Form UX Redesign (Modern, iPad-first) | Phase 11 | 🔴 Not Started | 7 |
+| [EPIC-12](./EPIC-12/stories.md) | Delivery Order Print (บิลขนส่ง) | Phase 12 | 🔴 Not Started | 3 |
+| [EPIC-13](./EPIC-13/stories.md) | Product Stock Enhancements | Phase 13 | 🔴 Not Started | 4 |
+| [EPIC-14](./EPIC-14/stories.md) | Order Intelligence: Price Monitor, Audit Trail & Duplicate Detection | Phase 14 | 🔴 Not Started | 3 |
 
 ---
 
@@ -92,3 +97,15 @@
 **Goal:** rswag OpenAPI docs generated from RSpec specs; full test suite achieves ≥ 90% coverage; RuboCop passes; database indexes audited; production configuration complete; seeds cover all bootstrap data.
 
 **Acceptance criteria:** `/api-docs` renders Swagger UI; `bundle exec rspec` passes with ≥ 90% coverage; `bundle exec rubocop` exits cleanly; `rails db:seed` on a fresh DB produces a working system.
+
+---
+
+### EPIC-12 — Delivery Order Print (บิลขนส่ง)
+**Goal:** Users can click a "Print DO" link on any order row in the Orders list to open a standalone printable Delivery Order (บิลขนส่ง) HTML page in a new tab; the page shows a Code128 barcode of the order number, all order details (excluding `internal_note`), a 7-column Thai-labelled order-lines table, grand total summary, and manual signature space — formatted for A4 (≥ 16 lines/page) or A5 — with a Print button triggering the browser's native print dialog.
+
+---
+
+### EPIC-10 — Tom Select Typeahead Dropdowns Across All Forms
+**Goal:** Every `<select>` in the PSK ERP web UI is enhanced with Tom Select v2.4.3 typeahead via a shared Stimulus controller, enabling keyboard-driven search and selection for products (4 selects), orders (4 selects + 2 in order line rows), and customers (2 selects).
+
+**Acceptance criteria:** All 12 select fields across `products/_form`, `orders/_form`, `customers/_form`, and `orders/_order_line_fields` render Tom Select widgets; typeahead filtering works on all fields; dynamically appended order line rows auto-initialise Tom Select via Stimulus `connect()`; no double-init on Turbo cache restore.

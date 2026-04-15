@@ -1,0 +1,162 @@
+<% content_for :title, "Products" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Products</h1>
+    <% if policy(Product).create? %>
+      <%= link_to "New Product", new_product_path,
+                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+    <% end %>
+  </div>
+
+  <%= search_form_for @ransack, url: products_path do |f| %>
+    <div class="flex gap-3 mb-4">
+      <%= f.search_field :name_or_sku_or_barcode_cont,
+                         placeholder: "Search by name, SKU, or barcode…",
+                         class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300" %>
+      <%= link_to "Clear", products_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12"></th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+          <% if policy(Product.new).can_view_cost? %>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+          <% end %>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @products.each do |product| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-3 py-2">
+              <% thumb = product.featured_image.attached? ? product.featured_image : product.product_images.first&.image %>
+              <% if thumb&.attached? %>
+                <%= image_tag thumb, class: "w-10 h-10 object-cover rounded border border-gray-100", alt: product.name %>
+              <% else %>
+                <div class="w-10 h-10 rounded border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
+                </div>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 font-mono text-gray-600 text-xs"><%= product.sku %></td>
+            <td class="px-4 py-3 font-medium text-gray-900">
+              <%= link_to product.name, product_path(product), class: "hover:text-blue-600 hover:underline" %>
+              <% if product.product_type == "Pr" %>
+                <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">Parent</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-gray-600">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                           <%= product.product_type == "Sa" ? "bg-green-100 text-green-700" : "bg-purple-100 text-purple-700" %>">
+                <%= product.product_type == "Sa" ? "Standalone" : "Parent" %>
+              </span>
+            </td>
+            <td class="px-4 py-3 text-gray-700"><%= number_to_currency(product.price, unit: "฿") %></td>
+            <% if policy(Product.new).can_view_cost? %>
+              <td class="px-4 py-3 text-gray-700"><%= number_to_currency(product.cost, unit: "฿") %></td>
+            <% end %>
+            <td class="px-4 py-3 text-gray-600"><%= product.unit.presence || "—" %></td>
+            <td class="px-4 py-3">
+              <% if product.enable_stock? %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                             <%= product.total_stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' %>">
+                  <%= product.total_stock %>
+                </span>
+              <% else %>
+                <span class="text-gray-400 text-xs">—</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <% if product.enable_stock? && policy(ProductStock.new).index? %>
+                  <%= link_to "Stock", stocks_path(q: { product_id_eq: product.id }), class: "text-indigo-600 hover:underline text-xs" %>
+                <% end %>
+                <%= link_to "Images", product_product_images_path(product), class: "text-gray-500 hover:underline text-xs" %>
+                <% if policy(product).update? %>
+                  <%= link_to "Edit", edit_product_path(product), class: "text-blue-600 hover:underline text-xs" %>
+                <% end %>
+                <% if policy(product).destroy? %>
+                  <%= button_to "Delete", product_path(product), method: :delete,
+                                class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                data: { turbo_confirm: "Delete #{product.name}?" } %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+          <% if product.product_type == "Pr" %>
+            <% product.children.each do |child| %>
+              <tr class="bg-gray-50 hover:bg-gray-100 transition-colors">
+                <td class="px-3 py-2">
+                  <% child_thumb = child.featured_image.attached? ? child.featured_image : child.product_images.first&.image %>
+                  <% if child_thumb&.attached? %>
+                    <%= image_tag child_thumb, class: "w-10 h-10 object-cover rounded border border-gray-100", alt: child.name %>
+                  <% else %>
+                    <div class="w-10 h-10 rounded border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
+                    </div>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 pl-10 font-mono text-gray-500 text-xs"><%= child.sku %></td>
+                <td class="px-4 py-3 pl-10 text-gray-700 text-sm">↳ <%= link_to child.name, product_path(child), class: "hover:text-blue-600 hover:underline" %></td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">Child</span>
+                </td>
+                <td class="px-4 py-3 text-gray-700"><%= number_to_currency(child.price, unit: "฿") %></td>
+                <% if policy(Product.new).can_view_cost? %>
+                  <td class="px-4 py-3 text-gray-700"><%= number_to_currency(child.cost, unit: "฿") %></td>
+                <% end %>
+                <td class="px-4 py-3 text-gray-600"><%= child.unit.presence || "—" %></td>
+                <td class="px-4 py-3">
+                  <% if child.enable_stock? %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                                 <%= child.total_stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' %>">
+                      <%= child.total_stock %>
+                    </span>
+                  <% else %>
+                    <span class="text-gray-400 text-xs">—</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <% if child.enable_stock? && policy(ProductStock.new).index? %>
+                      <%= link_to "Stock", stocks_path(q: { product_id_eq: child.id }), class: "text-indigo-600 hover:underline text-xs" %>
+                    <% end %>
+                    <% if policy(child).update? %>
+                      <%= link_to "Edit", edit_product_path(child), class: "text-blue-600 hover:underline text-xs" %>
+                    <% end %>
+                    <% if policy(child).destroy? %>
+                      <%= button_to "Delete", child_product_path(child), method: :delete,
+                                    class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                    data: { turbo_confirm: "Delete #{child.name}?" } %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @products.empty? %>
+    <div class="mt-8 text-center py-12 text-gray-400">
+      <p class="text-sm">No products found.</p>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%== @pagy.series_nav %>
+  </div>
+</div>

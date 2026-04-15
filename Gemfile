@@ -41,7 +41,7 @@ gem "groupdate"
 gem "rswag-api"
 gem "rswag-ui"
 
-gem "tzinfo-data", platforms: %i[windows jruby]
+gem "tzinfo-data", platforms: %i[mswin mswin64 mingw x64_mingw jruby]
 gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
@@ -51,7 +51,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  gem "debug", platforms: %i[mri windows], require: "debug/prelude"
+  gem "debug", platforms: %i[mri mswin mswin64 mingw x64_mingw], require: "debug/prelude"
   gem "bundler-audit", require: false
   gem "brakeman", require: false
 

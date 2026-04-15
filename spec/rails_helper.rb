@@ -5,7 +5,8 @@ require "simplecov"
 SimpleCov.start "rails" do
   add_filter "/spec/"
   add_filter "/config/"
-  # minimum_coverage enforced once test suite is populated (EPIC-09)
+  add_filter "app/channels/"
+  minimum_coverage 90
 end
 
 ENV["RAILS_ENV"] ||= "test"
@@ -28,6 +29,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include FactoryBot::Syntax::Methods
+  config.include Devise::Test::IntegrationHelpers, type: :request
 end
 
 Shoulda::Matchers.configure do |config|

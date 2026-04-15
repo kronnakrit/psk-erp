@@ -1,0 +1,55 @@
+<% content_for :title, "Attributes — #{@product_class.name}" %>
+
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to product_classes_path, class: "text-gray-400 hover:text-gray-600" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-xl font-semibold text-gray-900">
+        Attributes — <span class="text-blue-600"><%= @product_class.name %></span>
+      </h1>
+    </div>
+    <% if policy(Attribute).create? %>
+      <%= link_to "New Attribute", new_product_class_attribute_path(@product_class),
+                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+    <% end %>
+  </div>
+
+  <div class="overflow-hidden border border-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @attributes.each do |attr| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 font-medium text-gray-900"><%= attr.name %></td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <% if policy(attr).update? %>
+                  <%= link_to "Edit", edit_product_class_attribute_path(@product_class, attr), class: "text-blue-600 hover:underline text-xs" %>
+                <% end %>
+                <% if policy(attr).destroy? %>
+                  <%= button_to "Delete", product_class_attribute_path(@product_class, attr), method: :delete,
+                                class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                data: { turbo_confirm: "Delete #{attr.name}?" } %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @attributes.empty? %>
+          <tr>
+            <td colspan="2" class="px-4 py-8 text-center text-gray-400">No attributes defined for this product class.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

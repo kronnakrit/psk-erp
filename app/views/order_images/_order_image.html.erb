@@ -1,0 +1,19 @@
+<%# Single order image — used in show.html.erb and Turbo Stream responses %>
+<div id="order_image_<%= order_image.id %>" class="relative group">
+  <% if order_image.image.attached? %>
+    <%= image_tag order_image.image,
+                  class: "w-24 h-24 object-cover rounded-md border border-gray-200" %>
+  <% else %>
+    <div class="w-24 h-24 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">
+      No image
+    </div>
+  <% end %>
+
+  <% if policy(order_image).destroy? %>
+    <%= button_to order_order_image_path(order_image.order_id, order_image), method: :delete,
+                  class: "absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-5 h-5 bg-red-600 text-white rounded-full text-xs leading-none",
+                  data: { turbo_confirm: "Remove this image?" } do %>
+      ✕
+    <% end %>
+  <% end %>
+</div>

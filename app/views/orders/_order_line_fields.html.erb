@@ -1,0 +1,86 @@
+<%# Nested order line fields — redesigned for EPIC-11 %>
+<tr id="<%= "order_line_fields_#{f.object.id || 'NEW_LINE_RECORD'}" %>"
+    class="border-b border-gray-100 last:border-0 align-top group">
+
+  <% if f.object.persisted? %>
+    <%= f.hidden_field :id %>
+  <% end %>
+  <%= f.hidden_field :_destroy, value: "0", data: { order_line_target: "destroyField" } %>
+
+  <%# Product search %>
+  <td class="px-2 py-2 min-w-[180px]">
+    <div class="relative" data-controller="order-line-search">
+      <input type="text"
+             placeholder="Search SKU or name…"
+             autocomplete="off"
+             value="<%= f.object.product.present? ? "#{f.object.product.sku} — #{f.object.product.name}" : "" %>"
+             class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+             data-order-line-search-target="input"
+             data-action="input->order-line-search#onInput">
+      <%= f.hidden_field :product_id,
+                         data: { "order-line-search-target": "productId" } %>
+      <div class="hidden bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto text-sm"
+           style="z-index: 9999"
+           data-order-line-search-target="dropdown"></div>
+    </div>
+  </td>
+
+  <%# Description %>
+  <td class="px-2 py-2 min-w-[220px]">
+    <%= f.text_field :description,
+                     placeholder: "Product description…",
+                     autocomplete: "off",
+                     class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500",
+                     data: { "order-line-search-target": "description" } %>
+  </td>
+
+  <%# Unit %>
+  <td class="px-2 py-2 w-20">
+    <%= f.select :unit, OrderLine::UNITS.map { |u| [u, u] }, {},
+                 class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500",
+                 data: { "order-line-search-target": "unit" } %>
+  </td>
+
+  <%# Qty %>
+  <td class="px-2 py-2 w-20">
+    <%= f.text_field :quantity, inputmode: "decimal", value: f.object.quantity || 1,
+                       class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs text-right focus:outline-none focus:ring-1 focus:ring-blue-500",
+                       data: { "qty-input": true, action: "input->order-form#onLineInputChange focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+  </td>
+
+  <%# Unit price + default price hint %>
+  <td class="px-2 py-2 w-32">
+    <%= f.text_field :unit_price, inputmode: "decimal",
+                       class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs text-right focus:outline-none focus:ring-1 focus:ring-blue-500",
+                       data: { "price-input": true,
+                               "order-line-search-target": "unitPrice",
+                               action: "input->order-form#onLineInputChange focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+    <p class="<%= f.object.product.present? ? '' : 'hidden' %> text-xs text-gray-400 mt-0.5 text-right"
+       data-order-line-search-target="defaultPriceDisplay"
+       data-default-price-display>
+      <% if f.object.product.present? %>Default: ฿<%= number_with_delimiter(f.object.product.price, delimiter: ",") %><% end %>
+    </p>
+  </td>
+
+  <%# Discount %>
+  <td class="px-2 py-2 w-28">
+    <%= f.text_field :discount_price, inputmode: "decimal", value: f.object.discount_price || 0,
+                       class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs text-right focus:outline-none focus:ring-1 focus:ring-blue-500",
+                       data: { "discount-input": true,
+                               action: "input->order-form#onLineInputChange keydown->order-form#onDiscountKeydown focus->order-form#onNumericFocus blur->order-form#onNumericBlur" } %>
+  </td>
+
+  <%# Line total %>
+  <td class="px-2 py-2 w-28 text-right text-xs text-gray-700 font-medium" data-line-total>
+    ฿<%= number_with_delimiter(f.object.total_price || 0, delimiter: ",") %>
+  </td>
+
+  <%# Remove %>
+  <td class="px-2 py-2 w-8 text-center">
+    <button type="button"
+            data-action="click->order-form#removeLine"
+            class="text-red-400 hover:text-red-600 transition-colors text-xs opacity-0 group-hover:opacity-100">
+      ✕
+    </button>
+  </td>
+</tr>
