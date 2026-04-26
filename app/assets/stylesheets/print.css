@@ -1,0 +1,37 @@
+/* Print layout styles for Invoice print view */
+@page {
+  size: A4 portrait;
+  margin: 1.5cm;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 4pt 6pt;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #f5f5f5;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}

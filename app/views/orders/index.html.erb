@@ -1,12 +1,12 @@
-<% content_for :title, "Orders" %>
+<% content_for :title, t("orders.title") %>
 
 <div class="p-6" data-controller="bulk-action">
   <%# Header %>
   <div class="flex items-center justify-between mb-6">
-    <h1 class="text-xl font-semibold text-gray-900">Orders</h1>
+    <h1 class="text-xl font-semibold text-gray-900"><%= t("orders.title") %></h1>
     <% if policy(Order).create? %>
-      <%= link_to "New Order", new_order_path,
-                  class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+      <%= link_to t("orders.new"), new_order_path,
+                  class: "btn-primary" %>
     <% end %>
   </div>
 
@@ -14,13 +14,13 @@
   <div class="flex gap-1 mb-4 border-b border-gray-200">
     <%= link_to "All", orders_path,
                 class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ params[:status].blank? && action_name == 'index' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
-    <%= link_to "Draft",     draft_orders_path,
+    <%= link_to t("orders.status.draft"),     draft_orders_path,
                 class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'draft'     ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
-    <%= link_to "Paid",      paid_orders_path,
+    <%= link_to t("orders.status.paid"),      paid_orders_path,
                 class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'paid'      ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
-    <%= link_to "Completed", completed_orders_path,
+    <%= link_to t("orders.status.completed"), completed_orders_path,
                 class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'completed' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
-    <%= link_to "Cancelled", cancelled_orders_path,
+    <%= link_to t("orders.status.cancelled"), cancelled_orders_path,
                 class: "px-4 py-2 text-sm font-medium border-b-2 -mb-px #{ action_name == 'cancelled' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }" %>
   </div>
 
@@ -28,7 +28,7 @@
   <%= search_form_for @ransack, url: orders_path do |f| %>
     <div class="flex gap-3 mb-4">
       <%= f.search_field :order_number_or_customer_first_name_or_customer_last_name_cont,
-                         placeholder: "Search order number, customer name…",
+                         placeholder: t("placeholders.orders.search"),
                          class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
       <%= f.submit "Search", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition-colors" %>
       <%= link_to "Clear", orders_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
@@ -40,8 +40,9 @@
     <div id="bulk_action_bar" class="hidden mb-4 flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
       <span class="text-sm text-gray-700"><span id="selected_count">0</span> selected</span>
       <select id="bulk_status_select" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm">
+        <% status_key_map = { "Dr" => "draft", "Pd" => "paid", "Cp" => "completed", "Cc" => "cancelled" } %>
         <% Order::STATUSES.each do |s| %>
-          <option value="<%= s %>"><%= s %></option>
+          <option value="<%= s %>"><%= t("orders.status.#{status_key_map[s]}", default: s) %></option>
         <% end %>
       </select>
       <%= button_to "Update Status", bulk_update_status_orders_path,
@@ -67,13 +68,13 @@
               <input type="checkbox" id="select_all_checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
             </th>
           <% end %>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logistic</th>
-          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Grand Total</th>
-          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.no") %></th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.date") %></th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.customer") %></th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.salesperson") %></th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.status") %></th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.grand_total") %></th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.actions") %></th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -96,25 +97,25 @@
             </td>
             <td class="px-4 py-3 text-gray-600"><%= order.running_date&.strftime("%d/%m/%Y") %></td>
             <td class="px-4 py-3 text-gray-600"><%= order.customer&.fullname %></td>
+            <td class="px-4 py-3 text-gray-600"><%= order.salesperson&.profile&.full_name || "—" %></td>
             <td class="px-4 py-3">
               <%= render "orders/status_badge", status: order.status %>
             </td>
-            <td class="px-4 py-3 text-gray-600"><%= logistic_status_label(order.logistic_status) %></td>
             <td class="px-4 py-3 text-right font-medium text-gray-900">
               ฿<%= number_with_precision(order.grand_total.to_f, precision: 2, delimiter: ",") %>
             </td>
             <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-2">
-                <%= link_to "View", order_path(order), class: "text-blue-600 hover:underline text-xs" %>
+                <%= link_to "View", order_path(order), class: "row-action-primary" %>
                 <% if policy(order).delivery_order? %>
-                  <%= link_to "Print", delivery_order_order_path(order), target: "_blank", class: "text-purple-600 hover:underline text-xs" %>
+                  <%= link_to "Print", delivery_order_order_path(order), target: "_blank", class: "row-action-muted" %>
                 <% end %>
                 <% if policy(order).edit? %>
-                  <%= link_to "Edit", edit_order_path(order), class: "text-gray-600 hover:underline text-xs" %>
+                  <%= link_to "Edit", edit_order_path(order), class: "row-action-primary" %>
                 <% end %>
                 <% if policy(order).destroy? %>
                   <%= button_to "Delete", order_path(order), method: :delete,
-                                class: "text-red-600 hover:underline text-xs bg-transparent border-none cursor-pointer p-0",
+                                class: "row-action-danger",
                                 data: { turbo_confirm: "Delete order #{order.order_number}? This cannot be undone." } %>
                 <% end %>
               </div>
@@ -124,7 +125,7 @@
         <% if @orders.empty? %>
           <tr>
             <td colspan="<%= policy(Order).bulk_update_status? ? 8 : 7 %>" class="px-4 py-8 text-center text-gray-400">
-              No orders found.
+              <%= t("orders.empty_state") %>
             </td>
           </tr>
         <% end %>

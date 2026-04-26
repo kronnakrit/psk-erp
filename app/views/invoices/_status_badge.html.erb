@@ -1,0 +1,13 @@
+<%# Status badge partial — usage: render "invoices/status_badge", status: invoice.status %>
+<%
+  classes = case status
+            when "Dr" then "bg-gray-100 text-gray-700"
+            when "Pd" then "bg-blue-100 text-blue-700"
+            when "Cc" then "bg-red-100 text-red-700"
+            else           "bg-yellow-100 text-yellow-700"
+            end
+  status_key_map = { "Dr" => "draft", "Pd" => "paid", "Se" => "sent", "Cc" => "cancelled" }
+  label = t("invoices.status.#{status_key_map[status]}", default: status)
+%>
+<span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full <%= classes %>"
+      data-testid="invoice-status-badge"><%= label %></span>

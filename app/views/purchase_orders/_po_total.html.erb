@@ -1,0 +1,13 @@
+<div id="po_total_panel" class="border-t border-gray-100 px-6 py-4 flex justify-end">
+  <div class="text-right space-y-1">
+    <div class="flex items-center gap-8 text-sm">
+      <span class="text-gray-500 font-medium">Grand Total</span>
+      <span class="text-lg font-bold text-gray-900">
+        ฿<%= number_with_precision(
+              purchase_order.purchase_order_lines.sum { |l| l.quantity * l.unit_cost },
+              precision: 2, delimiter: ","
+            ) %>
+      </span>
+    </div>
+  </div>
+</div>

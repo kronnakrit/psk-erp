@@ -20,26 +20,38 @@
     <% end %>
   </div>
 
-  <%# Right: user dropdown (shown only when Devise is available and user is authenticated) %>
+  <%# Right: locale toggle + user dropdown (shown only when Devise is available and user is authenticated) %>
   <% if respond_to?(:user_signed_in?) && user_signed_in? %>
-    <div class="relative" data-controller="dropdown">
-      <button data-action="click->dropdown#toggle"
-              class="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100">
-        <span class="font-medium"><%= current_user.profile&.first_name || current_user.email %></span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </button>
+    <div class="flex items-center gap-2">
+      <%# Locale toggle %>
+      <div class="flex items-center gap-1" data-testid="locale-toggle">
+        <%= button_to "TH", locale_path, method: :patch, params: { locale: "th" },
+                      class: "px-2 py-1 text-xs font-medium rounded #{ I18n.locale.to_s == 'th' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }",
+                      data: { testid: "locale-th-btn" } %>
+        <%= button_to "EN", locale_path, method: :patch, params: { locale: "en" },
+                      class: "px-2 py-1 text-xs font-medium rounded #{ I18n.locale.to_s == 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }",
+                      data: { testid: "locale-en-btn" } %>
+      </div>
+      <%# User dropdown %>
+      <div class="relative" data-controller="dropdown">
+        <button data-action="click->dropdown#toggle"
+                class="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+          <span class="font-medium"><%= current_user.profile&.first_name || current_user.email %></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
 
-      <div data-dropdown-target="menu"
-           class="hidden absolute right-0 mt-1 w-44 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-        <div class="px-4 py-2 text-xs text-gray-500 border-b">
-          <%= current_user.email %>
+        <div data-dropdown-target="menu"
+             class="hidden absolute right-0 mt-1 w-44 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+          <div class="px-4 py-2 text-xs text-gray-500 border-b">
+            <%= current_user.email %>
+          </div>
+          <%= link_to "My Profile", edit_user_registration_path,
+                      class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" %>
+          <%= button_to "Logout", destroy_user_session_path, method: :delete,
+                        class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-50" %>
         </div>
-        <%= link_to "My Profile", edit_user_registration_path,
-                    class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" %>
-        <%= button_to "Logout", destroy_user_session_path, method: :delete,
-                      class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>

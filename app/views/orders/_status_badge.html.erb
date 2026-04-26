@@ -7,12 +7,7 @@
             when "Cc" then "bg-red-100 text-red-700"
             else           "bg-yellow-100 text-yellow-700"
             end
-  label = case status
-          when "Dr" then "Draft"
-          when "Pd" then "Paid"
-          when "Cp" then "Completed"
-          when "Cc" then "Cancelled"
-          else status
-          end
+  status_key_map = { "Dr" => "draft", "Pd" => "paid", "Cp" => "completed", "Cc" => "cancelled" }
+  label = t("orders.status.#{status_key_map[status]}", default: status)
 %>
 <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full <%= classes %>"><%= label %></span>

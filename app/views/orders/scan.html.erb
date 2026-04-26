@@ -1,0 +1,72 @@
+<% content_for :title, "Scan Orders" %>
+
+<div class="p-6" data-controller="barcode-scan">
+  <%# Header %>
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to orders_path, class: "text-gray-400 hover:text-gray-600" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-xl font-semibold text-gray-900">Scan Orders</h1>
+    </div>
+  </div>
+
+  <%# Inline alert area %>
+  <div data-barcode-scan-target="alert" class="hidden mb-4 px-4 py-3 rounded-md text-sm font-medium"></div>
+
+  <%# Barcode input %>
+  <div class="mb-6 max-w-md">
+    <label class="block text-sm font-medium text-gray-700 mb-1">Scan or type order number</label>
+    <input type="text"
+           autofocus
+           autocomplete="off"
+           placeholder="e.g. 20260418001"
+           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+           data-barcode-scan-target="input"
+           data-action="keydown.enter->barcode-scan#handleEnter">
+  </div>
+
+  <%# Action buttons %>
+  <div class="flex gap-3 mb-6">
+    <%= button_tag "Mark All as Paid",
+                   type: "button",
+                   disabled: true,
+                   class: "px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors",
+                   data: { barcode_scan_target: "paidBtn", action: "click->barcode-scan#markAllPaid" } %>
+    <%= button_tag "Mark All as Complete",
+                   type: "button",
+                   disabled: true,
+                   class: "px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors",
+                   data: { barcode_scan_target: "completeBtn", action: "click->barcode-scan#markAllComplete" } %>
+  </div>
+
+  <%# Scanned orders table %>
+  <div class="overflow-x-auto rounded-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wide text-xs">Order #</th>
+          <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wide text-xs">Customer</th>
+          <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wide text-xs">Status</th>
+          <th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wide text-xs">Grand Total</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody data-barcode-scan-target="tableBody" class="divide-y divide-gray-100 bg-white">
+        <tr data-barcode-scan-target="emptyRow">
+          <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-400">
+            No orders scanned yet. Scan a barcode or type an order number above.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Hidden form for bulk update %>
+  <%= form_with url: bulk_update_status_orders_path, method: :post, data: { barcode_scan_target: "bulkForm" } do |f| %>
+    <div data-barcode-scan-target="hiddenInputs"></div>
+    <%= hidden_field_tag :status, "", data: { barcode_scan_target: "statusInput" } %>
+  <% end %>
+</div>

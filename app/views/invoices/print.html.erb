@@ -1,0 +1,92 @@
+<% content_for :title, "Invoice #{@invoice.invoice_number}" %>
+
+<div class="max-w-4xl mx-auto p-8 font-sans" data-testid="invoice-print">
+  <%# Print button (hidden on print) %>
+  <div class="flex justify-end mb-6 no-print">
+    <button onclick="window.print()"
+            class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+      Print
+    </button>
+  </div>
+
+  <%# Company Header %>
+  <div class="flex justify-between items-start mb-8" data-testid="company-header">
+    <div>
+      <% if @company_setting.logo.attached? %>
+        <%= image_tag @company_setting.logo, class: "h-16 mb-2 object-contain" %>
+      <% end %>
+      <h2 class="text-lg font-bold text-gray-900" data-testid="company-name"><%= @company_setting.company_name %></h2>
+      <p class="text-sm text-gray-600 whitespace-pre-line"><%= @company_setting.company_address %></p>
+      <% if @company_setting.company_telephone.present? %>
+        <p class="text-sm text-gray-600">Tel: <%= @company_setting.company_telephone %></p>
+      <% end %>
+      <% if @company_setting.company_tax_id.present? %>
+        <p class="text-sm text-gray-600">Tax ID: <%= @company_setting.company_tax_id %></p>
+      <% end %>
+    </div>
+    <div class="text-right">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-wide">INVOICE</h1>
+      <p class="text-lg font-semibold text-gray-700 mt-1" data-testid="invoice-number"><%= @invoice.invoice_number %></p>
+      <p class="text-sm text-gray-600">Date: <%= @invoice.invoice_date&.strftime("%d/%m/%Y") %></p>
+      <div class="mt-2">
+        <%= render "invoices/status_badge", status: @invoice.status %>
+      </div>
+    </div>
+  </div>
+
+  <%# Customer Info %>
+  <div class="mb-8 p-4 bg-gray-50 rounded-lg" data-testid="customer-section">
+    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Bill To</h3>
+    <p class="text-base font-semibold text-gray-900" data-testid="customer-name"><%= @invoice.customer&.fullname %></p>
+    <% if @invoice.customer&.address.present? %>
+      <p class="text-sm text-gray-600 whitespace-pre-line"><%= @invoice.customer.address %></p>
+    <% end %>
+    <% if @invoice.customer&.telephone.present? %>
+      <p class="text-sm text-gray-600">Tel: <%= @invoice.customer.telephone %></p>
+    <% end %>
+  </div>
+
+  <%# Orders Summary Table %>
+  <table class="w-full border-collapse text-sm mb-8" data-testid="line-items-table">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-gray-300 px-3 py-2 text-center font-semibold w-10">No.</th>
+        <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Order #</th>
+        <th class="border border-gray-300 px-3 py-2 text-left font-semibold">Date</th>
+        <th class="border border-gray-300 px-3 py-2 text-right font-semibold">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @invoice.orders.each_with_index do |order, index| %>
+        <tr>
+          <td class="border border-gray-300 px-3 py-2 text-center text-gray-500"><%= index + 1 %></td>
+          <td class="border border-gray-300 px-3 py-2 font-mono"><%= order.order_number %></td>
+          <td class="border border-gray-300 px-3 py-2"><%= order.running_date&.strftime("%d/%m/%Y") %></td>
+          <td class="border border-gray-300 px-3 py-2 text-right">
+            <%= number_to_currency(order.grand_total, unit: "฿", separator: ".", delimiter: ",", format: "%u%n") %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%# Grand Total %>
+  <div class="flex justify-end mb-6">
+    <table class="text-sm" data-testid="grand-total">
+      <tr>
+        <td class="px-6 py-2 font-bold text-gray-900 text-right text-lg border-t-2 border-gray-900">Grand Total</td>
+        <td class="px-6 py-2 font-bold text-gray-900 text-right text-lg border-t-2 border-gray-900">
+          <%= number_to_currency(@invoice.total_amount, unit: "฿", separator: ".", delimiter: ",", format: "%u%n") %>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <%# Remark %>
+  <% if @invoice.remark.present? %>
+    <div class="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Remark</h3>
+      <p class="text-sm text-gray-800"><%= @invoice.remark %></p>
+    </div>
+  <% end %>
+</div>

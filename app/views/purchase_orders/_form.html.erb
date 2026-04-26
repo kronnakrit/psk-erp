@@ -1,0 +1,118 @@
+<% content_for :title, @purchase_order.new_record? ? "New Purchase Order" : "Edit Purchase Order" %>
+
+<div class="p-6">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to purchase_orders_path, class: "text-gray-400 hover:text-gray-600" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="text-xl font-semibold text-gray-900">
+      <%= @purchase_order.new_record? ? "New Purchase Order" : "Edit — #{@purchase_order.po_number}" %>
+    </h1>
+  </div>
+
+  <%= form_with model: @purchase_order,
+                class: "space-y-0",
+                data: { controller: "purchase-order-form" } do |f| %>
+
+    <%# Validation errors %>
+    <% if @purchase_order.errors.any? %>
+      <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <p class="text-sm font-medium text-red-800 mb-1"><%= t("purchase_orders.form.errors") %></p>
+        <ul class="list-disc list-inside text-sm text-red-700 space-y-0.5">
+          <% @purchase_order.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# ══ SECTION 1: HEADER ══ %>
+    <section class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-700"><%= t("purchase_orders.form.po_information") %></h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :supplier_id, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :supplier_id, @suppliers, :id, :name,
+                                  { include_blank: "— Select supplier —" },
+                                  class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :po_date, class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :po_date,
+                           class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :remark, class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :remark, rows: 2,
+                        class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      </div>
+    </section>
+
+    <%# ══ SECTION 2: PURCHASE ORDER LINES ══ %>
+    <section class="mt-4 bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-700"><%= t("purchase_orders.form.order_lines") %></h2>
+        <button type="button"
+                data-action="click->purchase-order-form#addLine"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-md hover:bg-blue-100 transition-colors">
+          <%= t("purchase_orders.form.add_line") %>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase min-w-[200px]"><%= t("orders.table.product") %></th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase w-28"><%= t("purchase_orders.table.unit") %></th>
+              <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-24"><%= t("purchase_orders.table.quantity") %></th>
+              <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-32"><%= t("purchase_orders.table.unit_cost") %></th>
+              <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase w-28"><%= t("orders.table.total") %></th>
+              <th class="w-8"></th>
+            </tr>
+          </thead>
+          <tbody data-purchase-order-form-target="linesContainer">
+            <%= f.fields_for :purchase_order_lines do |lf| %>
+              <%= render "purchase_orders/purchase_order_line_fields", f: lf %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%# Hidden template for JS new-line insertion %>
+      <template data-purchase-order-form-target="lineTemplate">
+        <%= f.fields_for :purchase_order_lines, PurchaseOrderLine.new, child_index: "NEW_RECORD" do |lf| %>
+          <%= render "purchase_orders/purchase_order_line_fields", f: lf %>
+        <% end %>
+      </template>
+    </section>
+
+    <%# ══ SECTION 3: SUMMARY + ACTIONS ══ %>
+    <section class="mt-6 flex flex-col items-end gap-4">
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm w-full max-w-sm">
+        <div class="px-6 py-4 border-b border-gray-100">
+          <h2 class="text-base font-semibold text-gray-800">Order Summary</h2>
+        </div>
+        <div class="px-6 py-5 space-y-3">
+          <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
+            <span class="text-base font-semibold text-gray-900">Grand Total</span>
+            <span class="text-xl font-bold text-blue-600" data-purchase-order-form-target="grandTotal">฿0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= link_to "Cancel", purchase_orders_path,
+                    class: "px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors" %>
+        <%= f.submit @purchase_order.new_record? ? t("purchase_orders.form.submit_create") : t("purchase_orders.form.submit_update"),
+                    class: "px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors cursor-pointer" %>
+      </div>
+    </section>
+  <% end %>
+</div>

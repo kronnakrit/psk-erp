@@ -13,6 +13,7 @@ class Order < ApplicationRecord
   belongs_to :customer
   belongs_to :logistic_company, optional: true
   belongs_to :created_by, class_name: "User", optional: true
+  belongs_to :salesperson, class_name: "User", optional: true
   belongs_to :updated_by, class_name: "User", optional: true
   has_many :order_lines,  dependent: :destroy
   has_many :order_images, dependent: :destroy
@@ -21,7 +22,6 @@ class Order < ApplicationRecord
                                               reject_if: ->(attrs) { attrs[:product_id].blank? }
 
   validates :status,          inclusion: { in: STATUSES }
-  validates :logistic_status, inclusion: { in: LOGISTIC_STATUSES }, allow_blank: true
   validates :order_number,    presence: true, uniqueness: true
   validates :running_date,    presence: true
   validate  :status_immutable_when_cancelled
@@ -50,7 +50,7 @@ class Order < ApplicationRecord
   end
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[order_number status logistic_status running_date customer_id
+    %w[order_number status running_date customer_id
        logistic_company_id created_by_id updated_by_id
        has_vat is_discount_percentage is_withholding_tax
        total_price grand_total created_at updated_at]

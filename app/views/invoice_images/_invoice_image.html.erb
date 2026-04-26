@@ -1,0 +1,19 @@
+<%# Single invoice image — used in show.html.erb and Turbo Stream responses %>
+<div id="invoice_image_<%= invoice_image.id %>" class="relative group" data-testid="invoice-image-<%= invoice_image.id %>">
+  <% if invoice_image.image.attached? %>
+    <%= image_tag invoice_image.image,
+                  class: "w-24 h-24 object-cover rounded-md border border-gray-200" %>
+  <% else %>
+    <div class="w-24 h-24 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">
+      No image
+    </div>
+  <% end %>
+
+  <% if policy(invoice_image).destroy? %>
+    <%= button_to invoice_invoice_image_path(invoice_image.invoice_id, invoice_image), method: :delete,
+                  class: "absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-5 h-5 bg-red-600 text-white rounded-full text-xs leading-none",
+                  data: { turbo_confirm: "Remove this image?" } do %>
+      ✕
+    <% end %>
+  <% end %>
+</div>

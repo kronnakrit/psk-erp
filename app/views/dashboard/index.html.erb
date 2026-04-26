@@ -34,15 +34,15 @@
     <h2 class="text-sm font-semibold text-gray-700 mb-4">Quick Links</h2>
     <div class="flex flex-wrap gap-3">
       <% if permission?("view_users") %>
-        <%= link_to "Manage Users", users_path,
-                    class: "inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-md hover:bg-blue-100 transition-colors" %>
+        <%= link_to t("dashboard.manage_users"), users_path,
+                    class: "btn-secondary" %>
       <% end %>
       <% if permission?("view_roles") %>
-        <%= link_to "Manage Roles", roles_path,
-                    class: "inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 text-sm font-medium rounded-md hover:bg-purple-100 transition-colors" %>
+        <%= link_to t("dashboard.manage_roles"), roles_path,
+                    class: "btn-secondary" %>
       <% end %>
-      <%= link_to "My Profile", profile_path,
-                  class: "inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors" %>
+      <%= link_to t("dashboard.my_profile"), profile_path,
+                  class: "btn-secondary" %>
     </div>
   </div>
 
@@ -114,7 +114,7 @@
         </button>
         <button type="button"
                 onclick="downloadReport('<%= sales_report_api_v1_orders_path %>', 'sales_report')"
-                class="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors">
+                class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
           Sales Report
         </button>
       <% end %>

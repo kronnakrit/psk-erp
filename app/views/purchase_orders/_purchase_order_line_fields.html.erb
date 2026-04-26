@@ -1,0 +1,100 @@
+<%# Nested purchase order line fields — used in create/edit form %>
+<tr id="<%= "po_line_fields_#{f.object.id || 'NEW_RECORD'}" %>"
+    class="border-b border-gray-100 last:border-0 align-top group"
+    data-controller="order-line-search">
+
+  <% if f.object.persisted? %>
+    <%= f.hidden_field :id %>
+  <% end %>
+  <%= f.hidden_field :_destroy, value: "0", data: { "purchase-order-form-target": "destroyField" } %>
+
+  <%# Product search %>
+  <td class="px-2 py-2 min-w-[200px]">
+    <div class="relative">
+      <input type="text"
+             placeholder="<%= t('placeholders.purchase_orders.line_product') %>"
+             autocomplete="off"
+             value="<%= f.object.product.present? ? "#{f.object.product.sku} — #{f.object.product.name}" : "" %>"
+             class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+             data-order-line-search-target="input"
+             data-action="input->order-line-search#onInput">
+      <%= f.hidden_field :product_id,
+                         data: { "order-line-search-target": "productId" } %>
+      <div class="hidden bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto text-sm"
+           style="z-index: 9999"
+           data-order-line-search-target="dropdown"></div>
+    </div>
+  </td>
+
+  <%# Unit — dynamic dropdown from product's unit group %>
+  <td class="px-2 py-2 w-28">
+    <% if f.object.product.present? %>
+      <% unit_defs = f.object.product.effective_unit_group&.unit_definitions&.sort_by { |ud| -ud.ratio } || [] %>
+      <% selected_ud_id = f.object.unit_definition_id %>
+      <% selected_ud_id = unit_defs.first&.id if selected_ud_id.blank? %>
+      <select name="<%= "#{f.object_name}[unit_definition_id]" %>"
+              class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+              data-order-line-search-target="unitDefinition">
+        <% unit_defs.each do |ud| %>
+          <option value="<%= ud.id %>" <%= selected_ud_id == ud.id ? "selected" : "" %>><%= ud.name %></option>
+        <% end %>
+        <% if unit_defs.empty? %>
+          <option value="">— no units —</option>
+        <% end %>
+      </select>
+    <% else %>
+      <select name="<%= "#{f.object_name}[unit_definition_id]" %>"
+              class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+              data-order-line-search-target="unitDefinition">
+        <option value="">— select product —</option>
+      </select>
+    <% end %>
+  </td>
+
+  <%# Quantity %>
+  <td class="px-2 py-2 w-24">
+    <%= f.number_field :quantity,
+                       min: 0.01, step: 0.01,
+                       value: (f.object.quantity.presence || 1),
+                       class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs text-right focus:outline-none focus:ring-1 focus:ring-blue-500",
+                       data: {
+                         "purchase-order-form-target": "qty",
+                         action: "input->purchase-order-form#onLineInputChange"
+                       } %>
+  </td>
+
+  <%# Unit Cost — auto-fills via last_purchase_cost API %>
+  <td class="px-2 py-2 w-32">
+    <%= f.number_field :unit_cost,
+                       min: 0, step: 0.01,
+                       value: (f.object.unit_cost.presence || 0),
+                       class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs text-right focus:outline-none focus:ring-1 focus:ring-blue-500",
+                       data: {
+                         "purchase-order-form-target": "unitCost",
+                         action: "input->purchase-order-form#onLineInputChange"
+                       } %>
+  </td>
+
+  <%# Line total (computed by JS) %>
+  <td class="px-2 py-2 w-28 text-right text-xs text-gray-700"
+      data-purchase-order-form-target="lineTotal">
+    <%
+      qty  = f.object.quantity.to_f
+      cost = f.object.unit_cost.to_f
+    %>
+    ฿<%= number_with_precision(qty * cost, precision: 2, delimiter: ",") %>
+  </td>
+
+  <%# Remove button %>
+  <td class="px-2 py-2 w-8 text-center">
+    <button type="button"
+            class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+            data-action="click->purchase-order-form#removeLine"
+            title="Remove line">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </td>
+
+</tr>

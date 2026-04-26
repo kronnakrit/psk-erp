@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Locale switcher
+  patch "/locale", to: "locales#update", as: :locale
+
   # Sidekiq Web UI — protected by admin authentication
   require "sidekiq/web"
   # rubocop:disable Style/SafeNavigationChainLength
@@ -46,6 +49,11 @@ Rails.application.routes.draw do
   resources :product_attributes
   resources :products do
     resources :product_images, only: %i[index create destroy]
+
+    member do
+      get  :lots
+      post :duplicate
+    end
   end
   resources :child_products, only: %i[update destroy]
   resources :uploads, only: %i[index create]
@@ -83,6 +91,35 @@ Rails.application.routes.draw do
       post :filter
       post :bulk_update_status
       post :combine_bills
+    end
+  end
+
+  resources :invoices do
+    resources :invoice_images, only: %i[index create destroy]
+    resources :invoice_orders, only: %i[create destroy]
+
+    member do
+      post :cancel
+      post :mark_paid
+      post :reopen
+      get  :audit_trail
+      get  :print
+      get  :add_orders
+    end
+
+    collection do
+      get  :draft
+      get  :paid
+      get  :cancelled
+      post :bulk_update_status
+    end
+  end
+
+  resources :purchase_orders do
+    resources :purchase_order_lines, only: %i[create update destroy]
+
+    member do
+      post :confirm
     end
   end
 

@@ -1,0 +1,93 @@
+<% content_for :title, @purchase_order.po_number %>
+
+<div class="p-6">
+  <%# Header row %>
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "← Back", purchase_orders_path, class: "back-link" %>
+    <h1 class="page-heading"><%= @purchase_order.po_number %></h1>
+
+    <div class="ml-auto flex items-center gap-2">
+      <% if @purchase_order.draft? %>
+        <% if policy(@purchase_order).update? %>
+          <%= link_to "Edit", edit_purchase_order_path(@purchase_order),
+                      class: "btn-outline" %>
+          <%= button_to "Confirm PO", confirm_purchase_order_path(@purchase_order), method: :post,
+                        class: "btn-primary",
+                        data: { turbo_confirm: "Confirm this PO? Stock lots will be created." } %>
+        <% end %>
+        <% if policy(@purchase_order).destroy? %>
+          <%= button_to "Delete", purchase_order_path(@purchase_order), method: :delete,
+                        class: "btn-danger",
+                        data: { turbo_confirm: "Delete #{@purchase_order.po_number}?" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# PO Details card %>
+  <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+    <dl class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div>
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"><%= t("purchase_orders.show.supplier") %></dt>
+        <dd class="text-sm text-gray-900 font-medium"><%= @purchase_order.supplier.name %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"><%= t("purchase_orders.show.po_date") %></dt>
+        <dd class="text-sm text-gray-900"><%= @purchase_order.po_date.strftime("%d %B %Y") %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"><%= t("purchase_orders.show.status") %></dt>
+        <dd>
+          <% case @purchase_order.status %>
+          <% when "Dr" %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"><%= t("purchase_orders.status.draft") %></span>
+          <% when "Cf" %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><%= t("purchase_orders.status.confirmed") %></span>
+          <% when "Cc" %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700"><%= t("purchase_orders.status.cancelled") %></span>
+          <% end %>
+        </dd>
+      </div>
+      <% if @purchase_order.remark.present? %>
+        <div class="sm:col-span-3">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"><%= t("purchase_orders.show.remark") %></dt>
+          <dd class="text-sm text-gray-900"><%= @purchase_order.remark %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <%# Lines section %>
+  <div class="bg-white border border-gray-200 rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-base font-medium text-gray-900"><%= t("purchase_orders.show.order_lines") %></h2>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.product") %></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("products.table.sku") %></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("purchase_orders.table.unit") %></th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("purchase_orders.table.quantity") %></th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("purchase_orders.table.unit_cost") %></th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t("orders.table.total") %></th>
+          </tr>
+        </thead>
+        <tbody id="purchase_order_lines" class="bg-white divide-y divide-gray-200">
+          <% @purchase_order.purchase_order_lines.includes(:product, :unit_definition).each do |line| %>
+            <%= render "purchase_order_line", line: line, purchase_order: @purchase_order %>
+          <% end %>
+          <% if @purchase_order.purchase_order_lines.empty? %>
+            <tr id="empty_lines_row">
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400">No lines added yet.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= render "po_total", purchase_order: @purchase_order %>
+  </div>
+</div>

@@ -19,9 +19,15 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from ActiveRecord::InvalidForeignKey, with: :record_referenced_by_other
 
+  before_action :set_locale
   before_action :set_current_user
 
   private
+
+  def set_locale
+    locale = current_user&.profile&.preferred_locale || :th
+    I18n.locale = locale
+  end
 
   def set_current_user
     Current.user = current_user
@@ -35,7 +41,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.json { render json: { error: "Forbidden" }, status: :forbidden }
       format.html do
-        redirect_back_or_to root_path, alert: "You are not authorized."
+        redirect_back_or_to root_path, alert: t("flash.not_authorized")
       end
     end
   end
@@ -44,7 +50,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.json { render json: { error: "Cannot delete: record is referenced by other data." }, status: :conflict }
       format.html do
-        redirect_back_or_to root_path, alert: "Cannot delete: record is still referenced by other data."
+        redirect_back_or_to root_path, alert: t("flash.record_referenced")
       end
     end
   end

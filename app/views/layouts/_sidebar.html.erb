@@ -10,7 +10,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        <span class="lg:block">Dashboard</span>
+        <span class="lg:block"><%= t("nav.dashboard") %></span>
       <% end %>
     </li>
 
@@ -23,7 +23,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
-        <span>Orders</span>
+        <span><%= t("nav.orders") %></span>
       <% end %>
     </li>
     <% end %>
@@ -38,7 +38,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
           </svg>
-          Catalog
+          <%= t("nav.catalog") %>
         </span>
         <svg data-sidebar-group-target="chevron"
              class="w-4 h-4 transition-transform duration-200"
@@ -51,37 +51,37 @@
           class="hidden pl-8 mt-1 space-y-1">
         <% if user_signed_in? && permission?("view_products") %>
         <li>
-          <%= link_to "Products", products_path,
+          <%= link_to t("nav.products"), products_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(products_path)}" %>
         </li>
         <% end %>
         <% if user_signed_in? && permission?("view_product_classes") %>
         <li>
-          <%= link_to "Product Classes", product_classes_path,
+          <%= link_to t("nav.product_classes"), product_classes_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(product_classes_path)}" %>
         </li>
         <% end %>
         <% if user_signed_in? && permission?("view_product_categories") %>
         <li>
-          <%= link_to "Product Categories", product_categories_path,
+          <%= link_to t("nav.product_categories"), product_categories_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(product_categories_path)}" %>
         </li>
         <% end %>
         <% if user_signed_in? && permission?("view_vendors") %>
         <li>
-          <%= link_to "Suppliers", vendors_path,
+          <%= link_to t("nav.suppliers"), vendors_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(vendors_path)}" %>
         </li>
         <% end %>
         <% if user_signed_in? && permission?("view_brands") %>
         <li>
-          <%= link_to "Brands", brands_path,
+          <%= link_to t("nav.brands"), brands_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(brands_path)}" %>
         </li>
         <% end %>
         <% if user_signed_in? && permission?("view_uploads") %>
         <li>
-          <%= link_to "Bulk Import", uploads_path,
+          <%= link_to t("nav.bulk_import"), uploads_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(uploads_path)}" %>
         </li>
         <% end %>
@@ -99,7 +99,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          User Group
+          <%= t("nav.user_group") %>
         </span>
         <svg data-sidebar-group-target="chevron"
              class="w-4 h-4 transition-transform duration-200"
@@ -112,19 +112,19 @@
           class="hidden pl-8 mt-1 space-y-1">
         <% if permission?("view_users") %>
         <li>
-          <%= link_to "Users", users_path,
+          <%= link_to t("nav.users"), users_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(users_path)}" %>
         </li>
         <% end %>
         <% if permission?("view_roles") %>
         <li>
-          <%= link_to "Roles", roles_path,
+          <%= link_to t("nav.roles"), roles_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(roles_path)}" %>
         </li>
         <% end %>
         <% if permission?("view_roles") || permission?("change_roles") || permission?("add_roles") %>
         <li>
-          <%= link_to "Permissions", permissions_path,
+          <%= link_to t("nav.permissions"), permissions_path,
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(permissions_path)}" %>
         </li>
         <% end %>
@@ -141,7 +141,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
-        <span>Customers</span>
+        <span><%= t("nav.customers") %></span>
       <% end %>
     </li>
     <% end %>
@@ -157,7 +157,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M14 4v4h4M12 11v6M9 14l3-3 3 3"/>
         </svg>
-        <span>Logistic Company</span>
+        <span><%= t("nav.logistic_companies") %></span>
       <% end %>
     </li>
     <% end %>
@@ -171,7 +171,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
         </svg>
-        <span>Branches</span>
+        <span><%= t("nav.branches") %></span>
       <% end %>
     </li>
     <% end %>
@@ -185,7 +185,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
         </svg>
-        <span>Stock</span>
+        <span><%= t("nav.stocks") %></span>
       <% end %>
     </li>
     <% end %>
@@ -198,7 +198,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span>Countries</span>
+        <span><%= t("nav.countries") %></span>
       <% end %>
     </li>
 

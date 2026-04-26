@@ -2,7 +2,7 @@
 
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_product, only: %i[show edit update destroy]
+  before_action :set_product, only: %i[show edit update destroy lots duplicate]
 
   def index
     @ransack = policy_scope(Product)
@@ -68,6 +68,22 @@ class ProductsController < ApplicationController
     authorize @product
     @product.destroy
     redirect_to products_path, notice: "Product deleted successfully."
+  end
+
+  def lots
+    authorize @product, :show?
+    @lots = @product.product_lots.order(received_date: :asc)
+  end
+
+  def duplicate
+    authorize @product, :create?
+    new_product = @product.dup
+    new_product.name = "#{@product.name} (Copy)"
+    new_product.sku  = "#{@product.sku}-COPY"
+    new_product.save!
+    redirect_to product_path(new_product), notice: "Product duplicated."
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to product_path(@product), alert: e.message
   end
 
   private

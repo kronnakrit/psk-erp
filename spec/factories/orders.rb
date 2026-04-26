@@ -5,7 +5,7 @@ FactoryBot.define do
 
     running_date         { Time.zone.today }
     status               { "Dr" }
-    logistic_status      { "WTS" }
+    # logistic_status removed in migration 20260418161726
     has_vat              { false }
     is_included_vat      { false }
     is_withholding_tax   { false }

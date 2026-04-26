@@ -1,0 +1,64 @@
+<%# Product Lots listing page %>
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="mb-4 flex items-center gap-2">
+    <%= link_to product_path(@product), class: "text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <%= @product.name %>
+    <% end %>
+  </div>
+
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Lots — <%= @product.name %></h1>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot Number</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source PO</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received Date</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Original Qty</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Qty</th>
+          <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Cost</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% if @lots.empty? %>
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">
+              No lots have been created for this product yet.
+            </td>
+          </tr>
+        <% else %>
+          <% @lots.each do |lot| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-sm font-mono text-gray-800"><%= lot.lot_number %></td>
+              <td class="px-4 py-3 text-sm">
+                <% if lot.purchase_order %>
+                  <%= link_to lot.purchase_order.po_number,
+                               purchase_order_path(lot.purchase_order),
+                               class: "text-blue-600 hover:underline" %>
+                <% else %>
+                  <span class="text-gray-400">—</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-700"><%= lot.received_date.strftime("%d %b %Y") %></td>
+              <td class="px-4 py-3 text-sm text-right text-gray-700"><%= number_with_precision(lot.original_quantity, precision: 2) %></td>
+              <td class="px-4 py-3 text-sm text-right text-gray-700"><%= number_with_precision(lot.remaining_quantity, precision: 2) %></td>
+              <td class="px-4 py-3 text-sm text-right text-gray-700"><%= number_to_currency(lot.unit_cost, unit: "฿", precision: 2) %></td>
+              <td class="px-4 py-3 text-sm">
+                <% if lot.status == ProductLot::STATUS_ACTIVE %>
+                  <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                <% else %>
+                  <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Depleted</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

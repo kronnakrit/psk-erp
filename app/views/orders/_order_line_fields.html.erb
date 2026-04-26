@@ -11,7 +11,7 @@
   <td class="px-2 py-2 min-w-[180px]">
     <div class="relative" data-controller="order-line-search">
       <input type="text"
-             placeholder="Search SKU or name…"
+             placeholder="<%= t('placeholders.orders.line_product') %>"
              autocomplete="off"
              value="<%= f.object.product.present? ? "#{f.object.product.sku} — #{f.object.product.name}" : "" %>"
              class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -28,7 +28,7 @@
   <%# Description %>
   <td class="px-2 py-2 min-w-[220px]">
     <%= f.text_field :description,
-                     placeholder: "Product description…",
+                     placeholder: t("placeholders.orders.line_description"),
                      autocomplete: "off",
                      class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500",
                      data: { "order-line-search-target": "description" } %>

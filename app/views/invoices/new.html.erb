@@ -1,0 +1,143 @@
+<% content_for :title, "Create Invoice" %>
+
+<div class="p-4 md:p-6" data-controller="invoice-preview bulk-action" data-testid="invoice-new">
+  <%# Header %>
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to invoices_path, class: "text-gray-400 hover:text-gray-600" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-xl font-semibold text-gray-900">Create Invoice</h1>
+    </div>
+  </div>
+
+  <%# Filter form %>
+  <%= form_tag new_invoice_path, method: :get, class: "mb-4" do %>
+    <div class="flex flex-wrap gap-3 items-end">
+      <div class="flex-1 min-w-48">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Customer</label>
+        <select name="customer_id" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                data-controller="tom-select" data-testid="customer-filter">
+          <option value="">All customers</option>
+          <% @customers.each do |c| %>
+            <option value="<%= c.id %>" <%= "selected" if params[:customer_id].to_s == c.id.to_s %>><%= c.fullname %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">From Date</label>
+        <%= date_field_tag :from_date, params[:from_date],
+                           class: "px-3 py-2 border border-gray-300 rounded-md text-sm",
+                           data: { testid: "from-date-filter" } %>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">To Date</label>
+        <%= date_field_tag :to_date, params[:to_date],
+                           class: "px-3 py-2 border border-gray-300 rounded-md text-sm",
+                           data: { testid: "to-date-filter" } %>
+      </div>
+      <%= submit_tag "Filter", class: "px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300" %>
+      <%= link_to "Clear", new_invoice_path, class: "px-4 py-2 text-sm text-gray-500 hover:underline" %>
+    </div>
+  <% end %>
+
+  <%# Flash errors %>
+  <% if flash[:alert] %>
+    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700" data-testid="flash-error">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <%# Eligible orders table %>
+  <%= form_tag invoices_path, method: :post, id: "create_invoice_form" do %>
+    <div class="overflow-hidden border border-gray-200 rounded-lg mb-4" data-testid="eligible-orders-table">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="w-8 px-4 py-3">
+              <input type="checkbox" id="select_all_checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Grand Total</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @eligible_orders.each do |order| %>
+            <%
+              preselected = @preselected_ids.include?(order.id)
+            %>
+            <tr class="hover:bg-gray-50"
+                data-customer-id="<%= order.customer_id %>"
+                data-customer-name="<%= order.customer&.fullname %>"
+                data-grand-total="<%= order.grand_total %>">
+              <td class="px-4 py-3">
+                <input type="checkbox" name="order_ids[]" value="<%= order.id %>"
+                       class="order_checkbox h-4 w-4 text-blue-600 border-gray-300 rounded"
+                       <%= "checked" if preselected %>
+                       data-preselected="<%= preselected %>"
+                       data-testid="order-checkbox-<%= order.id %>">
+              </td>
+              <td class="px-4 py-3 font-mono font-medium text-gray-900"><%= order.order_number %></td>
+              <td class="px-4 py-3 text-gray-600"><%= order.running_date&.strftime("%d %b %Y") %></td>
+              <td class="px-4 py-3 text-gray-800"><%= order.customer&.fullname %></td>
+              <td class="px-4 py-3"><%= render "orders/status_badge", status: order.status %></td>
+              <td class="px-4 py-3 text-right font-medium text-gray-900">
+                <%= number_to_currency(order.grand_total, unit: "฿", separator: ".", delimiter: ",", format: "%u%n") %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @eligible_orders.empty? %>
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm" data-testid="empty-state">
+                No orders available for invoicing
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% unless @eligible_orders.empty? %>
+      <div class="flex justify-end">
+        <button type="button"
+                class="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                data-action="click->invoice-preview#open"
+                data-invoice-preview-target="openBtn"
+                data-testid="create-invoice-btn">
+          Create Invoice
+        </button>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%# Preview Modal — must be inside the controller element so Stimulus targets resolve %>
+  <div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+       data-invoice-preview-target="modal"
+       data-testid="invoice-preview-modal">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-4">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Invoice Preview</h2>
+      <div data-invoice-preview-target="summary" class="mb-6">
+        <%# Populated by Stimulus %>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button type="button"
+                class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200"
+                data-action="click->invoice-preview#close"
+                data-testid="preview-back-btn">
+          Back
+        </button>
+        <button type="button"
+                class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+                data-action="click->invoice-preview#confirm"
+                data-testid="preview-confirm-btn">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

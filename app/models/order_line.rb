@@ -10,6 +10,9 @@ class OrderLine < ApplicationRecord
     "Ct" => "กล่อง"
   }.freeze
 
+  # Virtual attribute so forms can still use :unit while the column is gone
+  attribute :unit, :string
+
   belongs_to :order
   belongs_to :product
 

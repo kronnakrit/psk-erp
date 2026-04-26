@@ -32,6 +32,7 @@
 | [EPIC-12](./EPIC-12/stories.md) | Delivery Order Print (บิลขนส่ง) | Phase 12 | 🔴 Not Started | 3 |
 | [EPIC-13](./EPIC-13/stories.md) | Product Stock Enhancements | Phase 13 | 🔴 Not Started | 4 |
 | [EPIC-14](./EPIC-14/stories.md) | Order Intelligence: Price Monitor, Audit Trail & Duplicate Detection | Phase 14 | 🔴 Not Started | 3 |
+| [EPIC-22](./EPIC-22/stories.md) | Production-Ready UI Consistency & Full i18n (EN/TH) | Phase 22 | 🟡 In Progress | 12 |
 
 ---
 

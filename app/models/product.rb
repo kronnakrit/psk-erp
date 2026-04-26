@@ -15,6 +15,7 @@ class Product < ApplicationRecord
   has_many :product_images,     dependent: :destroy
   has_many :product_stocks,     dependent: :destroy
   has_many :order_lines,        dependent: :restrict_with_error
+  has_many :product_lots,       dependent: :destroy
   has_and_belongs_to_many :product_categories, # rubocop:disable Rails/HasAndBelongsToMany
                           join_table: :product_category_products
 

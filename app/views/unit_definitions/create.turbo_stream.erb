@@ -1,0 +1,4 @@
+<%= turbo_stream.append "unit_definitions_list", partial: "unit_definitions/unit_definition", locals: { unit_definition: @unit_definition } %>
+<%= turbo_stream.remove "empty_unit_definitions" %>
+<%= turbo_stream.replace "unit_definition_form", partial: "unit_definitions/form", locals: { unit_group: @unit_group, unit_definition: UnitDefinition.new } %>
+<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

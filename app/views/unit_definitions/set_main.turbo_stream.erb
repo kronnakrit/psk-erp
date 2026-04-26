@@ -1,0 +1,6 @@
+<%= turbo_stream.update "unit_definitions_list" do %>
+  <% UnitDefinition.where(unit_group_id: @unit_group.id).order(:ratio).each do |ud| %>
+    <%= render ud %>
+  <% end %>
+<% end %>
+<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>
