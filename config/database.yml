@@ -29,15 +29,15 @@ test:
   <<: *default
   database: psk_erp_test
 
-production:
-  <<: *default
-  database: <%= ENV.fetch("PG_DATABASE", nil) %>
-  username: <%= ENV.fetch("PG_USERNAME", nil) %>
-  password: <%= ENV.fetch("PG_PASSWORD", nil) %>
-  host: <%= ENV.fetch("PG_HOST", nil) %>
-  port: <%= ENV.fetch("PG_PORT", nil) %>
-  sslmode: require
-  connect_timeout: 10
+# production:
+#   <<: *default
+#   database: <%= ENV.fetch("PG_DATABASE", nil) %>
+#   username: <%= ENV.fetch("PG_USERNAME", nil) %>
+#   password: <%= ENV.fetch("PG_PASSWORD", nil) %>
+#   host: <%= ENV.fetch("PG_HOST", nil) %>
+#   port: <%= ENV.fetch("PG_PORT", nil) %>
+#   sslmode: require
+#   connect_timeout: 10
 
 
 # As with config/credentials.yml, you never want to store sensitive information,
@@ -66,23 +66,25 @@ production:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-# production:
-#   primary: &primary_production
-#     <<: *default
-#     database: <%= ENV.fetch("PG_DATABASE", nil) %>
-#     username: <%= ENV.fetch("PG_USERNAME", nil) %>
-#     password: <%= ENV.fetch("PG_PASSWORD", nil) %>
-#     host: <%= ENV.fetch("PG_HOST", nil) %>
-#     port: <%= ENV.fetch("PG_PORT", nil) %>
-  # cache:
-  #   <<: *primary_production
-  #   database: psk_erp_production_cache
-  #   migrations_paths: db/cache_migrate
-  # queue:
-  #   <<: *primary_production
-  #   database: psk_erp_production_queue
-  #   migrations_paths: db/queue_migrate
-  # cable:
-  #   <<: *primary_production
-  #   database: psk_erp_production_cable
-  #   migrations_paths: db/cable_migrate
+production:
+  primary: &primary_production
+    <<: *default
+    database: <%= ENV.fetch("PG_DATABASE", nil) %>
+    username: <%= ENV.fetch("PG_USERNAME", nil) %>
+    password: <%= ENV.fetch("PG_PASSWORD", nil) %>
+    host: <%= ENV.fetch("PG_HOST", nil) %>
+    port: <%= ENV.fetch("PG_PORT", nil) %>
+    sslmode: require
+    connect_timeout: 10
+  cache:
+    <<: *primary_production
+    database: psk_erp_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: psk_erp_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: psk_erp_production_cable
+    migrations_paths: db/cable_migrate
