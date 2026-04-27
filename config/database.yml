@@ -36,6 +36,8 @@ production:
   password: <%= ENV.fetch("PG_PASSWORD", nil) %>
   host: <%= ENV.fetch("PG_HOST", nil) %>
   port: <%= ENV.fetch("PG_PORT", nil) %>
+  sslmode: require
+  connect_timeout: 10
 
 
 # As with config/credentials.yml, you never want to store sensitive information,

@@ -23,6 +23,7 @@ servers:
 proxy:
   host: app.pskbaby.com 
   ssl: true # Kamal 2 handles automatic SSL via Let's Encrypt
+  deploy_timeout: 120
 
 # Where you keep your container images.
 registry:
