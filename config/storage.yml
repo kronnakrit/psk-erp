@@ -6,14 +6,17 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
-# or supply via environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET
+# DigitalOcean Spaces (S3-compatible)
+# Set DO_SPACES_KEY, DO_SPACES_SECRET via .kamal/secrets
+# Set DO_SPACES_REGION and DO_SPACES_BUCKET via config/deploy.yml env.clear
 amazon:
   service: S3
-  access_key_id: <%= ENV.fetch("AWS_ACCESS_KEY_ID", Rails.application.credentials.dig(:aws, :access_key_id)) %>
-  secret_access_key: <%= ENV.fetch("AWS_SECRET_ACCESS_KEY", Rails.application.credentials.dig(:aws, :secret_access_key)) %>
-  region: <%= ENV.fetch("AWS_REGION", "ap-southeast-1") %>
-  bucket: <%= ENV.fetch("AWS_BUCKET", "psk-erp-#{Rails.env}") %>
+  access_key_id: <%= ENV.fetch("DO_SPACES_KEY", nil) %>
+  secret_access_key: <%= ENV.fetch("DO_SPACES_SECRET", nil) %>
+  region: <%= ENV.fetch("DO_SPACES_REGION", "sgp1") %>
+  bucket: <%= ENV.fetch("DO_SPACES_BUCKET", nil) %>
+  endpoint: https://<%= ENV.fetch("DO_SPACES_REGION", "sgp1") %>.digitaloceanspaces.com
+  force_path_style: false
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

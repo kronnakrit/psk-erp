@@ -7,7 +7,7 @@ image: psk_erp
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 68.183.180.134
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -20,26 +20,36 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  host: app.pskbaby.com 
+  ssl: true # Kamal 2 handles automatic SSL via Let's Encrypt
 
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  server: registry.digitalocean.com
 
   # Needed for authenticated registries.
-  # username: your-user
+  username: r.kunaviriyasiri@gmail.com  
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - DO_SPACES_KEY
+    - DO_SPACES_SECRET
+    - DO_SPACES_BUCKET
+    - DO_SPACES_ENDPOINT
+    - PG_USERNAME
+    - PG_PASSWORD
+    - PG_HOST
+    - PG_DATABASE
+    - PG_PORT
+    - JWT_SECRET_KEY
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.

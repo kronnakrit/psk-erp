@@ -9,7 +9,6 @@ gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "tailwindcss-rails"
-gem "jbuilder"
 
 # Auth
 gem "devise"
@@ -29,12 +28,7 @@ gem "caxlsx"
 gem "caxlsx_rails"
 gem "roo"
 
-# Background jobs
-gem "sidekiq"
-gem "redis"
-
 # Charts
-gem "chartkick"
 gem "groupdate"
 
 # API docs
@@ -45,6 +39,7 @@ gem "tzinfo-data", platforms: %i[mswin mswin64 mingw x64_mingw jruby]
 gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
+gem "aws-sdk-s3", require: false
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
