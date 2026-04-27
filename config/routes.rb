@@ -11,13 +11,7 @@ Rails.application.routes.draw do
   # Locale switcher
   patch "/locale", to: "locales#update", as: :locale
 
-  # Sidekiq Web UI — protected by admin authentication
-  require "sidekiq/web"
-  # rubocop:disable Style/SafeNavigationChainLength
-  authenticate :user, ->(u) { u.profile&.role&.permissions&.include?("admin") } do
-  # rubocop:enable Style/SafeNavigationChainLength
-    mount Sidekiq::Web => "/sidekiq"
-  end
+
 
   # Web UI routes
   resources :users, except: :show do
