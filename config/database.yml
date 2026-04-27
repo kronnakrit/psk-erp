@@ -31,9 +31,12 @@ test:
 
 production:
   <<: *default
-  database: psk_erp_production
-  username: <%= ENV.fetch("DB_USERNAME", nil) %>
-  password: <%= ENV.fetch("DB_PASSWORD", nil) %>
+  database: <%= ENV.fetch("PG_DATABASE", nil) %>
+  username: <%= ENV.fetch("PG_USERNAME", nil) %>
+  password: <%= ENV.fetch("PG_PASSWORD", nil) %>
+  host: <%= ENV.fetch("PG_HOST", nil) %>
+  port: <%= ENV.fetch("PG_PORT", nil) %>
+
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
