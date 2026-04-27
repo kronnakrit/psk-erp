@@ -27,7 +27,7 @@ proxy:
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: registry.digitalocean.com
+  server: registry.digitalocean.com/psk-erp-registry
 
   # Needed for authenticated registries.
   username: r.kunaviriyasiri@gmail.com  
