@@ -1,6 +1,9 @@
 # Name of your application. Used to uniquely configure containers.
 service: psk_erp
 
+# How long to wait for the new container to become healthy before rolling back.
+deploy_timeout: 90
+
 # Name of the container image (use your-user/app-name on external registries).
 image: psk_erp
 
