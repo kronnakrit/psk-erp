@@ -94,7 +94,7 @@ class OrderLinesController < ApplicationController
 
   def order_line_params
     params.expect(order_line: %i[
-                    product_id unit quantity unit_price discount_price
+                    product_id unit_definition_id quantity unit_price discount_price
                     description remark idx
                   ])
   end

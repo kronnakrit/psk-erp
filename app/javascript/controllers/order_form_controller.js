@@ -59,7 +59,7 @@ export default class extends Controller {
   // ─── Product autofill ─────────────────────────────────────────────────────
 
   async _onProductSelected(event) {
-    const { product_id, unit, default_price, description } = event.detail
+    const { product_id, unit_definitions, default_price, description } = event.detail
     const row = event.target.closest("tr")
     if (!row) return
 
@@ -72,13 +72,17 @@ export default class extends Controller {
 
     // Set unit price: try to fetch last selling price for this customer first
     const customerId = this.hasCustomerIdTarget ? this.customerIdTarget.value : null
+    const unitDefSelect = row.querySelector("[data-order-line-search-target='unitDefinition']")
+    const selectedUnitDefId = unitDefSelect?.value
     let price = default_price
     const hintLabel = `Default: ฿${formatCurrency(default_price)}`
 
     if (customerId && product_id) {
       try {
         const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
-        const res = await fetch(`/api/v1/catalogs/products/${product_id}/last_price/${customerId}`, {
+        let url = `/api/v1/catalogs/products/${product_id}/last_price/${customerId}`
+        if (selectedUnitDefId) url += `?unit_definition_id=${selectedUnitDefId}`
+        const res = await fetch(url, {
           headers: { "Accept": "application/json", "X-CSRF-Token": csrfToken },
           credentials: "same-origin"
         })
@@ -118,6 +122,30 @@ export default class extends Controller {
     )
     if (searchCtrl) searchCtrl.updateUnitPrice(price)
 
+    this.computeLineTotal(row)
+    this.computeOrderSummary()
+  }
+
+  // ─── Unit Definition change (ratio-based price recalculation) ────────────
+
+  onUnitDefinitionChange(event) {
+    const sel = event.target
+    const row = sel.closest("tr")
+    if (!row) return
+
+    const newRatio    = parseFloat(sel.selectedOptions[0]?.dataset.ratio || 1)
+    const currentRatio = parseFloat(sel.dataset.currentRatio || 1)
+    if (currentRatio === 0) return
+
+    const unitPriceInput = row.querySelector("[data-price-input]")
+    if (unitPriceInput && currentRatio !== newRatio) {
+      const currentPrice = parseCurrency(unitPriceInput.value || 0)
+      const newPrice     = currentPrice * (newRatio / currentRatio)
+      unitPriceInput.value = newPrice
+      unitPriceInput.dispatchEvent(new Event("input", { bubbles: true }))
+    }
+
+    sel.dataset.currentRatio = newRatio
     this.computeLineTotal(row)
     this.computeOrderSummary()
   }

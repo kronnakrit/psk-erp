@@ -65,7 +65,7 @@ class OrderExcelService
       sheet.add_row [
         index + 1,
         line.product&.name,
-        line.unit,
+        line.unit_definition&.name,
         line.quantity,
         line.unit_price,
         line.total_price

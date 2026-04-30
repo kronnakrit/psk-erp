@@ -6,7 +6,8 @@ module Api
       class ProductsController < Api::V1::BaseController
         def index
           @ransack = Product.where(product_type: %w[Sa Pr])
-                            .includes(:vendor, :brand, :product_class, :product_categories)
+                            .includes(:vendor, :brand, :product_class, :product_categories,
+                                      { unit_group: :unit_definitions })
                             .ransack(params[:q])
           @ransack.sorts = "name asc" if @ransack.sorts.empty?
           products = @ransack.result
@@ -33,7 +34,8 @@ module Api
 
         def advance_search
           @ransack = Product.where(product_type: %w[Sa Pr])
-                            .includes(:vendor, :brand, :product_class, :product_categories)
+                            .includes(:vendor, :brand, :product_class, :product_categories,
+                                      { unit_group: :unit_definitions })
                             .ransack(params[:q])
           render json: { results: @ransack.result.map { |p| serialize_product(p) } }
         end
@@ -47,7 +49,7 @@ module Api
         end
 
         def filters
-          scope = Product.all
+          scope = Product.includes({ unit_group: :unit_definitions })
           scope = scope.where(enable_stock: true) if params[:has_stock].to_s == "true"
           render json: { results: scope.map { |p| serialize_product(p) } }
         end
@@ -55,6 +57,10 @@ module Api
         private
 
         def serialize_product(product)
+          group = product.effective_unit_group
+          unit_defs = group ? group.unit_definitions.order(ratio: :desc).map { |ud|
+            { id: ud.id, name: ud.name, ratio: ud.ratio }
+          } : []
           {
             id: product.id,
             sku: product.sku,
@@ -62,13 +68,15 @@ module Api
             name: product.name,
             description: product.description.presence || "",
             product_type: product.product_type,
-            unit: product.unit,
+            unit_group_id: product.unit_group_id,
+            unit_group_name: product.unit_group&.name,
             price: product.price,
             enable_stock: product.enable_stock,
             vendor_id: product.vendor_id,
             brand_id: product.brand_id,
             product_class_id: product.product_class_id,
-            parent_id: product.parent_id
+            parent_id: product.parent_id,
+            unit_definitions: unit_defs
           }
         end
       end

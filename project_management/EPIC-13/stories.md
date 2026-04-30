@@ -65,7 +65,7 @@ As a Stock Manager, I want every manual stock adjustment to show who made it, so
 
 ### STORY-13-02 — Stock List: Search by Product & Branch + Last Updated Column
 
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Description:** The stock list page (`/stocks`) gains a search/filter bar that lets users filter by product name (or SKU) and by branch. A new "Last Updated" column shows when each stock record was last modified.
 
 **User Perspective:**
@@ -101,7 +101,7 @@ As a Stock Manager, I want to search for a product's stock record by name or bra
 
 ### STORY-13-03 — Reset Stock to Zero with Mandatory Reason and Confirmation
 
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Description:** An authorised user can reset a product's stock amount to zero from the stock detail page. The user must enter a mandatory reason. The browser shows a confirmation dialog before submission. The reset is an atomic operation recorded as a new `RS` transaction type in the ledger.
 
 **User Perspective:**
@@ -138,7 +138,7 @@ As a Stock Manager, I want to reset a product's stock to zero with a required re
 
 ### STORY-13-04 — Stock Page Shortcut in Product List Row
 
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Description:** Each product row in the Products list (`/products`) that has stock tracking enabled shows a direct "Stock" link in the ACTIONS column. The link navigates to the stock list pre-filtered for that product.
 
 **User Perspective:**

@@ -1,7 +1,7 @@
 # EPIC-16 — FIFO & Purchase Orders
 
 **Phase:** 16
-**Status:** � In Progress, raise Purchase Orders with auto-costed lines, confirm POs to create FIFO product lots, select a specific lot when adding a sales order line, view per-lot stock and cost, and be prevented from selling more than a lot's remaining quantity in a single order line.
+**Status:** 🟢 Completed
 
 ---
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_25_163609) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_023628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -366,7 +366,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_163609) do
     t.string "product_type", limit: 2, null: false
     t.text "remark"
     t.string "sku", null: false
-    t.string "unit"
     t.bigint "unit_group_id"
     t.datetime "updated_at", null: false
     t.bigint "vendor_id"

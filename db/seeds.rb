@@ -4,4 +4,5 @@
 
 load "#{__dir__}/seeds/countries.rb"
 load "#{__dir__}/seeds/branches.rb"
+load "#{__dir__}/seeds/unit_groups.rb"
 load "#{__dir__}/seeds/admin_user.rb"

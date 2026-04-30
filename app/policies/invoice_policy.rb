@@ -3,9 +3,17 @@
 class InvoicePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
-      scope.all
+      permission?("view_invoices") ? scope.all : scope.none
     end
   end
+
+  def index?   = permission?("view_invoices")
+  def show?    = permission?("view_invoices")
+  def new?     = permission?("add_invoices")
+  def create?  = permission?("add_invoices")
+  def edit?    = permission?("change_invoices")
+  def update?  = permission?("change_invoices")
+  def destroy? = permission?("delete_invoices")
 
   def cancel?
     permission?("change_invoices") && record.status == "Dr"

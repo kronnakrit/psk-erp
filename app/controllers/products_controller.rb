@@ -2,13 +2,14 @@
 
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_product, only: %i[show edit update destroy lots duplicate]
+  before_action :set_product, only: %i[show edit update destroy unit_definitions lots duplicate]
 
   def index
+    @default_unit_group = UnitGroup.includes(:unit_definitions).find_by(is_default: true)
     @ransack = policy_scope(Product)
-               .includes(:vendor, :brand, :product_class, :product_stocks,
+               .includes(:vendor, :brand, :product_class, :product_stocks, { unit_group: :unit_definitions },
                          :featured_image_attachment, { product_images: { image_attachment: :blob } },
-                         { children: [:product_stocks, :featured_image_attachment,
+                         { children: [:product_stocks, :featured_image_attachment, { unit_group: :unit_definitions },
                                       { product_images: { image_attachment: :blob } }] })
                .ransack(params[:q])
     @ransack.sorts = "name asc" if @ransack.sorts.empty?
@@ -20,12 +21,18 @@ class ProductsController < ApplicationController
     authorize @product
   end
 
+  def lots
+    authorize @product, :show?
+    @lots = @product.product_lots.includes(:purchase_order).order(received_date: :asc)
+  end
+
   def new
     @product = Product.new
     @vendors = Vendor.order(:name)
     @brands = Brand.order(:name)
     @product_classes = ProductClass.order(:name)
     @product_categories = ProductCategory.order(:name)
+    @unit_groups = UnitGroup.order(:name)
     authorize @product
   end
 
@@ -34,6 +41,7 @@ class ProductsController < ApplicationController
     @brands = Brand.order(:name)
     @product_classes = ProductClass.order(:name)
     @product_categories = ProductCategory.order(:name)
+    @unit_groups = UnitGroup.order(:name)
     authorize @product
   end
 
@@ -41,12 +49,17 @@ class ProductsController < ApplicationController
     @product = Product.new(product_params)
     authorize @product
     if @product.save
-      redirect_to products_path, notice: "Product created successfully."
+      if params[:commit] == "Create and New"
+        redirect_to new_product_path, notice: "Product created successfully."
+      else
+        redirect_to products_path, notice: "Product created successfully."
+      end
     else
       @vendors = Vendor.order(:name)
       @brands = Brand.order(:name)
       @product_classes = ProductClass.order(:name)
       @product_categories = ProductCategory.order(:name)
+      @unit_groups = UnitGroup.order(:name)
       render :new, status: :unprocessable_content
     end
   end
@@ -60,6 +73,7 @@ class ProductsController < ApplicationController
       @brands = Brand.order(:name)
       @product_classes = ProductClass.order(:name)
       @product_categories = ProductCategory.order(:name)
+      @unit_groups = UnitGroup.order(:name)
       render :edit, status: :unprocessable_content
     end
   end
@@ -70,38 +84,45 @@ class ProductsController < ApplicationController
     redirect_to products_path, notice: "Product deleted successfully."
   end
 
-  def lots
-    authorize @product, :show?
-    @lots = @product.product_lots.order(received_date: :asc)
+  def duplicate
+    authorize @product, :duplicate?
+    new_product = Products::DuplicateService.new(@product).call
+    if new_product.save
+      redirect_to edit_product_path(new_product), notice: "Product duplicated as \"#{new_product.name}\"."
+    else
+      redirect_to product_path(@product), alert: "Could not duplicate product: #{new_product.errors.full_messages.to_sentence}."
+    end
   end
 
-  def duplicate
-    authorize @product, :create?
-    new_product = @product.dup
-    new_product.name = "#{@product.name} (Copy)"
-    new_product.sku  = "#{@product.sku}-COPY"
-    new_product.save!
-    redirect_to product_path(new_product), notice: "Product duplicated."
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_to product_path(@product), alert: e.message
+  def unit_definitions
+    authorize @product, :show?
+    group = @product.effective_unit_group
+    defs = if group
+             group.unit_definitions.order(ratio: :desc).map do |ud|
+               { id: ud.id, name: ud.name, ratio: ud.ratio, is_base: ud.ratio == 1 }
+             end
+           else
+             []
+           end
+    render json: defs
   end
 
   private
 
   def set_product
     @product = Product.includes(:vendor, :brand, :product_class, :product_categories,
-                                :product_stocks, :product_images,
+                                :product_stocks, :product_images, { unit_group: :unit_definitions },
                                 { product_attributes: :product_attr },
-                                { children: :product_stocks }).find(params[:id])
+                                { children: [:product_stocks, { unit_group: :unit_definitions }] }).find(params[:id])
   end
 
   def product_params
     params.expect(
       product: [:name, :description, :description_th, :sku, :barcode, :product_type,
-                :unit, :price, :cost, :remark, :vendor_id, :brand_id, :product_class_id,
+                :unit_group_id, :price, :remark, :vendor_id, :brand_id, :product_class_id,
                 :parent_id, :enable_stock,
                 { product_category_ids: [] },
-                product_attributes_attributes: [[:id, :attribute_id, :value, :_destroy]]]
+                product_attributes_attributes: [%i[id attribute_id value _destroy]]]
     )
   end
 end

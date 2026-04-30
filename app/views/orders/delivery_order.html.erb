@@ -233,7 +233,7 @@
           <tr>
             <td class="center"><%= idx %></td>
             <td class="num"><%= number_with_precision(line.quantity, precision: 0, delimiter: ",") %></td>
-            <td class="center"><%= OrderLine::UNIT_DISPLAY_LABELS[line.unit] || line.unit %></td>
+            <td class="center"><%= line.unit_definition&.name || "—" %></td>
             <td><%= line.product&.name %></td>
             <td class="num"><%= number_with_precision(line.unit_price.to_f, precision: 2, delimiter: ",") %></td>
             <td class="num"><%= number_with_precision(line.total_price.to_f, precision: 2, delimiter: ",") %></td>

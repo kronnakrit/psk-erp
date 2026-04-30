@@ -34,11 +34,18 @@
                      data: { "order-line-search-target": "description" } %>
   </td>
 
-  <%# Unit %>
-  <td class="px-2 py-2 w-20">
-    <%= f.select :unit, OrderLine::UNITS.map { |u| [u, u] }, {},
+  <%# Unit (UnitDefinition) %>
+  <td class="px-2 py-2 w-24">
+    <% unit_defs = f.object.product&.effective_unit_group&.unit_definitions&.order(ratio: :desc) || [] %>
+    <%= f.select :unit_definition_id,
+                 unit_defs.map { |ud| [ud.name, ud.id, { "data-ratio" => ud.ratio }] },
+                 { include_blank: unit_defs.empty? ? "—" : false },
                  class: "w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500",
-                 data: { "order-line-search-target": "unit" } %>
+                 data: {
+                   "order-line-search-target": "unitDefinition",
+                   "current-ratio": f.object.unit_definition&.ratio || 1,
+                   action: "change->order-form#onUnitDefinitionChange"
+                 } %>
   </td>
 
   <%# Qty %>

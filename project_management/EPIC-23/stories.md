@@ -1,7 +1,7 @@
 # EPIC-23 — Username-Based Authentication
 
 **Phase:** 23
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Goal:** Users authenticate via their unique username instead of email address on both the web login form and the JWT API endpoint, and the admin seed file no longer contains a hardcoded fallback password.
 
 ---
@@ -23,7 +23,7 @@
 
 ### STORY-23-01 — Devise Core: Authenticate by Username
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Description:** Configure Devise to use `username` as the authentication key and add a case-insensitive `find_for_database_authentication` override on the `User` model so both the web login and the JWT API login resolve users by username.
 
 **User Perspective:**
@@ -48,17 +48,17 @@ As a user, I want to log in with my username and password, so that I do not need
 
 | #          | Task                                                                                                                                     | Status |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| T-23-01-01 | Update `config/initializers/devise.rb`: uncomment and set `config.authentication_keys = [:username]`                                     | `[ ]`  |
-| T-23-01-02 | Update `config/initializers/devise.rb`: change `config.case_insensitive_keys` from `[:email]` to `[:username]`                          | `[ ]`  |
-| T-23-01-03 | Update `config/initializers/devise.rb`: change `config.strip_whitespace_keys` from `[:email]` to `[:username]`                          | `[ ]`  |
-| T-23-01-04 | Add `User.find_for_database_authentication(conditions)` class method in `app/models/user.rb` that queries `WHERE lower(username) = lower(?)` and falls back to Devise default | `[ ]`  |
-| T-23-01-05 | Write RSpec model spec `spec/models/user_authentication_spec.rb`: case-insensitive match returns user, not-found returns `nil`, inactive user is found but fails `active_for_authentication?` | `[ ]`  |
+| T-23-01-01 | Update `config/initializers/devise.rb`: uncomment and set `config.authentication_keys = [:username]`                                     | `[x]`  |
+| T-23-01-02 | Update `config/initializers/devise.rb`: change `config.case_insensitive_keys` from `[:email]` to `[:username]`                          | `[x]`  |
+| T-23-01-03 | Update `config/initializers/devise.rb`: change `config.strip_whitespace_keys` from `[:email]` to `[:username]`                          | `[x]`  |
+| T-23-01-04 | Add `User.find_for_database_authentication(conditions)` class method in `app/models/user.rb` that queries `WHERE lower(username) = lower(?)` and falls back to Devise default | `[x]`  |
+| T-23-01-05 | Write RSpec model spec `spec/models/user_authentication_spec.rb`: case-insensitive match returns user, not-found returns `nil`, inactive user is found but fails `active_for_authentication?` | `[x]`  |
 
 ---
 
 ### STORY-23-02 — Login View: Replace Email Field with Username Field
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Description:** Update the Devise sessions login view (`app/views/devise/sessions/new.html.erb`) to replace the email input with a username text input so the form submits the correct `user[username]` parameter.
 
 **User Perspective:**
@@ -82,16 +82,16 @@ As a user, I want to see a "Username" input on the login page, so that I know to
 
 | #          | Task                                                                                                                                 | Status |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| T-23-02-01 | Update `app/views/devise/sessions/new.html.erb`: replace `f.email_field :email` with `f.text_field :username`                        | `[ ]`  |
-| T-23-02-02 | Update label text from `"Email"` to `"Username"` and placeholder from `"you@example.com"` to `"your_username"` in the same view     | `[ ]`  |
-| T-23-02-03 | Update `autocomplete` attribute from `"email"` to `"username"` on the username field in `app/views/devise/sessions/new.html.erb`     | `[ ]`  |
-| T-23-02-04 | Write RSpec request spec `spec/requests/sessions_spec.rb`: `GET /login` renders username field; `POST /login` with correct credentials redirects `302`; wrong password re-renders `200`; inactive user re-renders `200` | `[ ]`  |
+| T-23-02-01 | Update `app/views/devise/sessions/new.html.erb`: replace `f.email_field :email` with `f.text_field :username`                        | `[x]`  |
+| T-23-02-02 | Update label text from `"Email"` to `"Username"` and placeholder from `"you@example.com"` to `"your_username"` in the same view     | `[x]`  |
+| T-23-02-03 | Update `autocomplete` attribute from `"email"` to `"username"` on the username field in `app/views/devise/sessions/new.html.erb`     | `[x]`  |
+| T-23-02-04 | Write RSpec request spec `spec/requests/sessions_spec.rb`: `GET /login` renders username field; `POST /login` with correct credentials redirects `302`; wrong password re-renders `200`; inactive user re-renders `200` | `[x]`  |
 
 ---
 
 ### STORY-23-03 — Harden Admin Seed File: Remove Hardcoded Fallback Password
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Description:** The admin seed file currently has `ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Admin@12345!")` — a hardcoded fallback password that would silently be used in production if the environment variable is not set. This story removes the fallback so deployment fails loudly if the variable is missing, and registers the secret in Kamal's deploy config.
 
 **User Perspective:**
@@ -113,16 +113,16 @@ As a system administrator, I want the admin seed to fail with a clear error if `
 
 | #          | Task                                                                                                                                                         | Status |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| T-23-03-01 | Update `db/seeds/admin_user.rb`: replace `ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Admin@12345!")` with a production-safe fetch that raises in production and falls back to a dev default otherwise | `[ ]`  |
-| T-23-03-02 | Add `ADMIN_DEFAULT_PASSWORD` to `env.secret` in `config/deploy.yml`                                                                                          | `[ ]`  |
-| T-23-03-03 | Add `ADMIN_DEFAULT_PASSWORD=...` placeholder comment to `.kamal/secrets` documentation block (not the real value)                                            | `[ ]`  |
-| T-23-03-04 | Verify `git grep "Admin@12345"` returns no results in tracked files                                                                                          | `[ ]`  |
+| T-23-03-01 | Update `db/seeds/admin_user.rb`: replace `ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Admin@12345!")` with a production-safe fetch that raises in production and falls back to a dev default otherwise | `[x]`  |
+| T-23-03-02 | Add `ADMIN_DEFAULT_PASSWORD` to `env.secret` in `config/deploy.yml`                                                                                          | `[x]`  |
+| T-23-03-03 | Add `ADMIN_DEFAULT_PASSWORD=...` placeholder comment to `.kamal/secrets` documentation block (not the real value)                                            | `[x]`  |
+| T-23-03-04 | Verify `git grep "Admin@12345"` returns no results in tracked files                                                                                          | `[x]`  |
 
 ---
 
 ### STORY-23-04 — API JWT Login: Verify Username Parameter
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Description:** The JWT API login endpoint (`POST /api/v1/auth/sign_in`) inherits from `Devise::SessionsController`. After the model-level `find_for_database_authentication` override in STORY-23-01, this endpoint automatically supports `user[username]` params — but existing rswag integration specs and request specs that post `user[email]` must be updated to match the new authentication key.
 
 **User Perspective:**
@@ -145,6 +145,6 @@ As a mobile/API client developer, I want to authenticate via `POST /api/v1/auth/
 
 | #          | Task                                                                                                                                       | Status |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| T-23-04-01 | Write RSpec request spec `spec/requests/api/v1/auth/sessions_spec.rb`: `POST /api/v1/auth/sign_in` with valid username+password returns `200` with JWT; invalid username returns `401`; inactive user returns `401`; email param returns `401` | `[ ]`  |
-| T-23-04-02 | Update `spec/integration/users_profiles_spec.rb` (rswag): change any `user[email]` sign-in request body param to `user[username]`         | `[ ]`  |
-| T-23-04-03 | Regenerate Swagger docs via `bundle exec rails rswag:specs:swaggerize` and verify `POST /api/v1/auth/sign_in` request schema shows `username` not `email` | `[ ]`  |
+| T-23-04-01 | Write RSpec request spec `spec/requests/api/v1/auth/sessions_spec.rb`: `POST /api/v1/auth/sign_in` with valid username+password returns `200` with JWT; invalid username returns `401`; inactive user returns `401`; email param returns `401` | `[x]`  |
+| T-23-04-02 | Update `spec/integration/users_profiles_spec.rb` (rswag): change any `user[email]` sign-in request body param to `user[username]`         | `[x]`  |
+| T-23-04-03 | Regenerate Swagger docs via `bundle exec rails rswag:specs:swaggerize` and verify `POST /api/v1/auth/sign_in` request schema shows `username` not `email` | `[x]`  |

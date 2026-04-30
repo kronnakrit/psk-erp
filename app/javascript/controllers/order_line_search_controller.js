@@ -3,7 +3,7 @@ import { formatCurrency } from "utils/currency"
 
 // Per-row product typeahead: searches by SKU or name, dispatches product:selected on pick
 export default class extends Controller {
-  static targets = ["input", "productId", "dropdown", "unit", "unitPrice", "defaultPriceDisplay", "qty", "description"]
+  static targets = ["input", "productId", "dropdown", "unitDefinition", "unitPrice", "defaultPriceDisplay", "qty", "description"]
 
   _debounceTimer = null
 
@@ -75,21 +75,37 @@ export default class extends Controller {
     this.productIdTarget.value  = product.id
     this.hideDropdown()
 
-    if (this.hasUnitTarget && product.unit) {
-      this.unitTarget.value = product.unit
+    // Populate unit definitions dropdown
+    if (this.hasUnitDefinitionTarget) {
+      const sel = this.unitDefinitionTarget
+      sel.innerHTML = ""
+      const defs = product.unit_definitions || []
+      defs.forEach(ud => {
+        const opt = document.createElement("option")
+        opt.value = ud.id
+        opt.textContent = ud.name
+        opt.dataset.ratio = ud.ratio
+        sel.appendChild(opt)
+      })
+      // Default to the first option (largest ratio since sorted desc)
+      if (defs.length > 0) {
+        sel.value = defs[0].id
+        sel.dataset.currentRatio = defs[0].ratio
+      }
     }
+
     if (this.hasQtyTarget && !this.qtyTarget.value) {
       this.qtyTarget.value = "1"
     }
 
     this.dispatch("selected", {
       detail: {
-        product_id:    product.id,
-        unit:          product.unit || "",
-        default_price: product.price,
-        description:   product.description || "",
-        sku:           product.sku,
-        name:          product.name
+        product_id:      product.id,
+        unit_definitions: product.unit_definitions || [],
+        default_price:   product.price,
+        description:     product.description || "",
+        sku:             product.sku,
+        name:            product.name
       },
       bubbles: true
     })

@@ -3,7 +3,10 @@
 class ProductStock < ApplicationRecord
   belongs_to :branch
   belongs_to :product
+  belongs_to :stock_person, class_name: "User", optional: true
   has_many :product_stock_transactions, dependent: :destroy
+  has_many :product_stock_locations, dependent: :destroy
+  has_many :stock_locations, through: :product_stock_locations
 
   validates :branch_id, uniqueness: { scope: :product_id }
   validates :amount,         numericality: { greater_than_or_equal_to: 0 }

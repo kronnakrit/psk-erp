@@ -1,7 +1,7 @@
 # EPIC-18 — Unit-Aware Order Line Price Autofill & Cost Field Removal
 
 **Phase:** 18
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Goal:** The `Cost` field is removed from the product form and API; when a unit is changed on an order line the unit price recalculates in real time by ratio arithmetic (e.g. 1 dozen = 12 baht ÷ ratio 12 → 1 pc = 1 baht); the initial price fetch on product selection passes `unit_definition_id` to the `last_price` endpoint for customer-specific accuracy.
 
 ---

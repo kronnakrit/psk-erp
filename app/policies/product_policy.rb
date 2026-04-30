@@ -10,4 +10,8 @@ class ProductPolicy < ApplicationPolicy
   def can_view_cost?
     permission?("can_view_cost")
   end
+
+  def duplicate?
+    permission?("add_products")
+  end
 end

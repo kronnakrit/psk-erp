@@ -1,8 +1,8 @@
 <% content_for :title, @user.new_record? ? "New User" : "Edit User" %>
 
-<div class="p-6 max-w-2xl">
+<div class="px-6 py-8 max-w-3xl">
   <div class="flex items-center justify-between mb-6">
-    <h1 class="text-xl font-semibold text-gray-900">
+    <h1 class="text-2xl font-bold text-gray-900">
       <%= @user.new_record? ? "New User" : "Edit User — #{@user.username}" %>
     </h1>
     <%= link_to "← Back to Users", users_path, class: "text-sm text-blue-600 hover:underline" %>
@@ -21,8 +21,8 @@
       </div>
     <% end %>
 
-    <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
-      <h2 class="text-sm font-semibold text-gray-700"><%= t("users.form.account_details") %></h2>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+      <h2 class="text-base font-semibold text-gray-900"><%= t("users.form.account_details") %></h2>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
@@ -56,8 +56,8 @@
 
     <%# Profile details %>
     <%= f.fields_for :profile do |pf| %>
-      <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
-        <h2 class="text-sm font-semibold text-gray-700"><%= t("users.form.profile") %></h2>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+        <h2 class="text-base font-semibold text-gray-900"><%= t("users.form.profile") %></h2>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
@@ -96,8 +96,8 @@
 
     <%# Force password reset (edit only) %>
     <% unless @user.new_record? %>
-      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-5">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3"><%= t("users.form.force_password_reset") %></h2>
+      <div class="bg-yellow-50 rounded-lg shadow-sm border border-yellow-200 p-6">
+        <h2 class="text-base font-semibold text-gray-900 mb-4"><%= t("users.form.force_password_reset") %></h2>
         <%= form_with url: user_force_password_path(@user), method: :patch, class: "grid grid-cols-2 gap-4" do |fp| %>
           <div>
             <%= label_tag :password1, "New Password", class: "block text-xs font-medium text-gray-700 mb-1" %>
@@ -107,14 +107,14 @@
             <%= label_tag :password2, "Confirm Password", class: "block text-xs font-medium text-gray-700 mb-1" %>
             <%= password_field_tag :password2, nil, class: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
           </div>
-          <div class="col-span-2">
-            <%= submit_tag "Set Password", class: "px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 cursor-pointer" %>
+          <div class="col-span-2 pt-2">
+            <%= submit_tag "Set Password", class: "inline-flex items-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 transition-colors cursor-pointer" %>
           </div>
         <% end %>
       </div>
     <% end %>
 
-    <div class="flex gap-3">
+    <div class="flex gap-3 pt-2">
       <%= f.submit @user.new_record? ? t("users.form.submit_create") : t("users.form.submit_update"),
                   class: "px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 cursor-pointer" %>
       <%= link_to "Cancel", users_path, class: "px-5 py-2 border border-gray-300 text-sm text-gray-700 rounded-md hover:bg-gray-50" %>

@@ -1,24 +1,15 @@
 # frozen_string_literal: true
 
 class OrderLine < ApplicationRecord
-  UNITS = %w[Dz Pc Pa Se Ct].freeze
-  UNIT_DISPLAY_LABELS = {
-    "Dz" => "โหล",
-    "Pc" => "ชิ้น",
-    "Pa" => "คู่",
-    "Se" => "ชุด",
-    "Ct" => "กล่อง"
-  }.freeze
-
-  # Virtual attribute so forms can still use :unit while the column is gone
-  attribute :unit, :string
-
   belongs_to :order
   belongs_to :product
+  belongs_to :unit_definition
+  belongs_to :product_lot, optional: true
+  has_many :order_line_lot_allocations, dependent: :destroy
 
-  validates :quantity,   presence: true, numericality: { greater_than: 0 }
-  validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :unit,       inclusion: { in: UNITS }
+  validates :quantity,          presence: true, numericality: { greater_than: 0 }
+  validates :unit_price,        presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :unit_definition_id, presence: true
 
   before_validation :calculate_total_price
 
@@ -34,7 +25,7 @@ class OrderLine < ApplicationRecord
   after_commit :enqueue_parent_order_duplicate_check, on: %i[create destroy]
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[order_id product_id unit quantity unit_price discount_price total_price idx created_at]
+    %w[order_id product_id unit_definition_id quantity unit_price discount_price total_price idx created_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
@@ -108,7 +99,7 @@ class OrderLine < ApplicationRecord
   end
 
   def record_line_updates
-    %w[quantity unit_price unit discount_price].each do |field|
+    %w[quantity unit_price unit_definition_id discount_price].each do |field|
       next unless public_send(:"saved_change_to_#{field}?")
 
       prev_val, new_val = public_send(:"saved_change_to_#{field}")

@@ -149,6 +149,7 @@ th:
     form:
       product_information: "ข้อมูลสินค้า"
       pricing: "ราคา"
+      unit_group: "กลุ่มหน่วย"
       details: "รายละเอียด"
       custom_attributes: "คุณสมบัติเพิ่มเติม"
       errors: "กรุณาแก้ไขข้อผิดพลาดต่อไปนี้:"
@@ -164,6 +165,7 @@ th:
       type: "ประเภท"
       price: "ราคา"
       unit: "หน่วย"
+      unit_group: "กลุ่มหน่วย"
       stock: "สต็อก"
     empty_state: "ไม่พบสินค้า"
   customers:
@@ -249,6 +251,15 @@ th:
     monthly_revenue: "รายได้รายเดือน (ออเดอร์ที่สำเร็จ)"
     price_anomaly: "ตรวจจับราคาผิดปกติ"
   activerecord:
+    errors:
+      messages:
+        taken: "has already been taken"
+        blank: "can't be blank"
+        inclusion: "is not included in the list"
+        greater_than: "must be greater than %{count}"
+        greater_than_or_equal_to: "must be greater than or equal to %{count}"
+        not_a_number: "is not a number"
+        required: "must exist"
     attributes:
       order:
         customer_id: "ลูกค้า"
@@ -309,6 +320,11 @@ th:
         supplier_id: "ซัพพลายเออร์"
         po_date: "วันที่สั่งซื้อ"
         remark: "หมายเหตุ"
+      order_line:
+        unit_definition: "หน่วย"
+        unit_definition_id: "หน่วย"
+        quantity: "จำนวน"
+        unit_price: "ราคาต่อหน่วย"
   placeholders:
     orders:
       search: "ค้นหาเลขที่ออเดอร์, ชื่อลูกค้า…"

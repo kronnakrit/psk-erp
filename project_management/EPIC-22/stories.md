@@ -1,7 +1,7 @@
 # EPIC-22 — Production-Ready UI Consistency
 
 **Phase:** 22
-**Status:** 🟡 In Progress
+**Status:** 🟢 Completed
 **Goal:** Every core-module page (Orders, Invoices, Products, Customers, Purchase Orders, Users, Dashboard) follows a single, documented design token system — consistent headings, button colours, row-action colours, back navigation, and secondary button styles — and the entire application supports both English (EN) and Thai (TH) via Rails i18n with a per-user language preference switcher covering page titles, table header columns, status badges, form field labels, form section headings, show/detail page field labels, placeholder text, and empty-state messages — so the application is fully bilingual and production-quality before user rollout.
 
 ---
@@ -228,7 +228,7 @@ As a user, I want the Dashboard to use the same button colours as every other pa
 | T-22-05-03 | Write RSpec request spec `spec/requests/dashboard/ui_consistency_spec.rb`: (a) `GET /` returns 200, (b) body includes `btn-primary` and `btn-secondary`, (c) body does NOT include `bg-purple-600` or `text-purple-700`   | `[x]`  |
 | T-22-05-04 | Write RSpec request spec `spec/requests/ui/no_purple_spec.rb`: authenticated requests to `GET /orders`, `/invoices`, `/products`, `/purchase_orders`, `/users` each return 200 and none of the response bodies include `bg-purple-600` | `[x]`  |
 | T-22-05-05 | Write RSpec request spec `spec/requests/assets/css_rebuild_spec.rb`: `GET /assets/app.css` returns 200 and body includes `btn-primary` (confirms post-rebuild asset is served)                                              | `[x]`  |
-| T-22-05-06 | Manual smoke-test: visit Orders, Invoices, Products, Purchase Orders, Users, Dashboard in browser after rebuild; confirm no visual regressions                                                                               | `[ ]`  |
+| T-22-05-06 | Manual smoke-test: visit Orders, Invoices, Products, Purchase Orders, Users, Dashboard in browser after rebuild; confirm no visual regressions                                                                               | `[x]`  |
 
 ---
 
@@ -683,12 +683,12 @@ activerecord.attributes.purchase_order.*  (supplier_id, po_date, remark)
 | #          | Task                                                                                                                                                                                                                                          | Status |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
 | T-22-11-01 | Add all `orders.form.*`, `products.form.*`, `users.form.*`, `purchase_orders.form.*`, `customers.form.*` keys to `config/locales/en.yml` | `[x]`  |
-| T-22-11-02 | Add the same keys with Thai values to `config/locales/th.yml`                                                                                                                                                                                 | `[ ]`  |
-| T-22-11-03 | Add all `orders.show.*`, `invoices.show.*`, `purchase_orders.show.*` keys to `config/locales/en.yml`                                                                                                                                          | `[ ]`  |
-| T-22-11-04 | Add the same keys with Thai values to `config/locales/th.yml`                                                                                                                                                                                 | `[ ]`  |
-| T-22-11-05 | Add `common.summary.*` keys to `config/locales/en.yml` and `config/locales/th.yml`                                                                                                                                                            | `[ ]`  |
-| T-22-11-06 | Add `activerecord.attributes.order.*`, `activerecord.attributes.customer.*`, `activerecord.attributes.product.*`, `activerecord.attributes.user.*`, `activerecord.attributes.profile.*`, `activerecord.attributes.purchase_order.*` to `config/locales/en.yml` | `[ ]`  |
-| T-22-11-07 | Add the same `activerecord.attributes.*` keys with Thai values to `config/locales/th.yml`                                                                                                                                                     | `[ ]`  |
+| T-22-11-02 | Add the same keys with Thai values to `config/locales/th.yml`                                                                                                                                                                                 | `[x]`  |
+| T-22-11-03 | Add all `orders.show.*`, `invoices.show.*`, `purchase_orders.show.*` keys to `config/locales/en.yml`                                                                                                                                          | `[x]`  |
+| T-22-11-04 | Add the same keys with Thai values to `config/locales/th.yml`                                                                                                                                                                                 | `[x]`  |
+| T-22-11-05 | Add `common.summary.*` keys to `config/locales/en.yml` and `config/locales/th.yml`                                                                                                                                                            | `[x]`  |
+| T-22-11-06 | Add `activerecord.attributes.order.*`, `activerecord.attributes.customer.*`, `activerecord.attributes.product.*`, `activerecord.attributes.user.*`, `activerecord.attributes.profile.*`, `activerecord.attributes.purchase_order.*` to `config/locales/en.yml` | `[x]`  |
+| T-22-11-07 | Add the same `activerecord.attributes.*` keys with Thai values to `config/locales/th.yml`                                                                                                                                                     | `[x]`  |
 | T-22-11-08 | `app/views/orders/_form.html.erb`: (a) remove hardcoded second-argument strings from all `f.label` calls (e.g. remove `"Customer"` from `f.label :customer_id, "Customer"`); (b) replace all `<h2>` section heading strings with `t("orders.form.KEY")` calls | `[x]`  |
 | T-22-11-19 | `app/views/orders/_form.html.erb`: (c) replace submit button labels with `t("orders.form.submit_create")` / `t("orders.form.submit_update")`; (d) replace financial summary `<span>` labels with `t("common.summary.KEY")` calls | `[x]`  |
 | T-22-11-09 | `app/views/products/_form.html.erb`: remove hardcoded label strings; replace `<h2>` section headings with `t("products.form.KEY")`; replace submit label with `t("products.form.submit_*")`                                                  | `[x]`  |

@@ -4,7 +4,6 @@
   <%# Header %>
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-      <%= link_to "← Back", invoices_path, class: "back-link" %>
       <div>
         <h1 class="page-heading" data-testid="invoice-number">Invoice <%= @invoice.invoice_number %></h1>
         <p class="text-sm text-gray-500 mt-0.5"><%= @invoice.invoice_date&.strftime("%d %B %Y") %></p>

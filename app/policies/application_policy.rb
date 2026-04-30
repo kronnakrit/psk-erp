@@ -49,6 +49,13 @@ class ApplicationPolicy
     private
 
     attr_reader :user, :scope
+
+    def permission?(codename)
+      return false if user.nil?
+
+      permissions = user.profile&.role&.permissions
+      permissions&.include?(codename) || false
+    end
   end
 
   private

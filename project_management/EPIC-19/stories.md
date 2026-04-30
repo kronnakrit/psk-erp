@@ -1,7 +1,7 @@
 # EPIC-19 — Order & Product UX Enhancements, Stock Locations, and Logistic Company Improvements
 
 **Phase:** 19
-**Status:** � In Progress
+**Status:** 🟢 Completed
 **Goal:** Eleven targeted improvements across the Order, Product, Stock, and Logistic Company modules: adding salesperson tracking to orders, removing the redundant logistic status field, introducing a view-all-orders permission, a barcode-scanner bulk-action page, product duplication, a "Create and New" shortcut on the product form, logistic company name uniqueness and active-status control, a new Stock Location CRUD with multi-select in stock detail, stock person assignment, and filtering completed/cancelled orders from the All tab.
 
 ---
@@ -254,7 +254,7 @@ As a catalogue manager, I want to duplicate an existing product, so that I can q
 | T-19-05-05 | Add "Duplicate" button to `app/views/products/show.html.erb` header row (data-method POST, with confirmation dialog)                                              | `[x]`  |
 | T-19-05-06 | Write RSpec service spec: `Products::DuplicateService` creates product with correct copied fields and new SKU/barcode (AC-02, AC-03)                               | `[x]`  |
 | T-19-05-07 | Write RSpec request spec: `POST /products/:id/duplicate` redirects to edit page (AC-02)                                                                           | `[x]`  |
-| T-19-05-08 | Write RSpec request spec: unauthorized user receives `403` (AC-05)                                                                                                | `[ ]`  |
+| T-19-05-08 | Write RSpec request spec: unauthorized user receives `403` (AC-05)                                                                                                | `[x]`  |
 
 ---
 
@@ -440,7 +440,7 @@ As a warehouse manager, I want to designate a responsible person per stock recor
 
 ### STORY-19-11 — Filter Completed & Cancelled Orders from the "All" Tab
 
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Description:** The default Orders list (`GET /orders`, the "All" tab) is renamed to **"Active"** and is changed to exclude orders with status `Cp` (Completed) and `Cc` (Cancelled). Orders with these statuses remain accessible via the dedicated "Completed" and "Cancelled" tabs.
 
 **User Perspective:**

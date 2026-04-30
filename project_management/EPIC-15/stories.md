@@ -1,7 +1,7 @@
 # EPIC-15 — Unit Converter for Stock
 
 **Phase:** 15
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Goal:** Staff can define global unit groups (e.g. pcs → dozen) and optionally override the unit group per product; all stock values are stored and transacted in the smallest unit, and the UI displays stock in the largest applicable unit computed live, eliminating the need for multiple stock transaction records per unit type.
 
 ---
@@ -283,7 +283,7 @@ As a Staff member, I want to enter deposit and withdraw quantities in human-frie
 
 ### STORY-15-06 — Migrate OrderLine.unit Enum to UnitDefinition FK
 
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Description:** Replace the hardcoded `OrderLine.unit` Rails enum (`Dz`/`Pc`/`Pa`/`Se`/`Ct`) with a FK reference to `UnitDefinition`. The system default `UnitGroup` is seeded with only **two canonical definitions**: `pcs (×1)` and `dozen (×12)`. For the three legacy enum codes without a seeded equivalent (`Pa`, `Se`, `Ct`), migration-placeholder UnitDefinitions are created in the default group with `ratio = 1` so existing `OrderLine` rows can resolve their FK without data loss; admins can rename or adjust ratios afterwards. `pack`, `set`, and `carton` are not seeded by default — users create them manually in a UnitGroup of their choice with their preferred ratios.
 
 **User Perspective:**
@@ -343,5 +343,5 @@ As a Staff member, I want order lines to use the same unit system as products an
 | STORY-15-03 | Per-Product Unit Group Override                    | 8     | 🟢 Completed   |
 | STORY-15-04 | Stock Display: Biggest-Unit-First Conversion       | 10    | 🟢 Completed   |
 | STORY-15-05 | Unit-Aware Deposit & Withdraw Forms                | 12    | 🟢 Completed   |
-| STORY-15-06 | Migrate OrderLine.unit Enum to UnitDefinition FK   | 19    | � Completed   |
+| STORY-15-06 | Migrate OrderLine.unit Enum to UnitDefinition FK   | 19    | 🟢 Completed   |
 | **Total**   |                                                    | **84**|                |

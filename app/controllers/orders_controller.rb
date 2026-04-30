@@ -132,6 +132,7 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
 
   def create
     @order = Order.new(order_params)
+    @order.salesperson_id = current_user.id
     authorize @order
     if @order.save
       redirect_to order_path(@order), notice: "Order #{@order.order_number} created."
@@ -215,6 +216,28 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
     head :forbidden
   end
 
+  # GET /orders/scan
+  def scan
+    authorize Order, :index?
+  end
+
+  # GET /orders/find_by_number?q=<order_number>
+  def find_by_number
+    authorize Order, :index?
+    order = policy_scope(Order).find_by(order_number: params[:q])
+    if order
+      render json: {
+        id: order.id,
+        order_number: order.order_number,
+        customer_name: order.customer&.fullname,
+        status: order.status,
+        grand_total: order.grand_total
+      }
+    else
+      render json: { error: "not found" }, status: :not_found
+    end
+  end
+
   # POST /orders/combine_bills
   def combine_bills
     authorize Order, :combine_bills?
@@ -231,7 +254,11 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
 
   def filtered_scope
     scope = policy_scope(Order)
-    scope = scope.where(status: params[:status]) if params[:status].present?
+    if params[:status].present?
+      scope = scope.where(status: params[:status])
+    else
+      scope = scope.where(status: %w[Dr Pd])
+    end
     scope
   end
 
@@ -268,9 +295,9 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
                     :customer_id, :logistic_company_id, :telephone, :address,
                     :has_vat, :is_included_vat, :discount_price, :is_discount_percentage,
                     :discount_percentage, :remark, :internal_note, :status, :running_date,
-                    :is_withholding_tax, :withholding_tax, :logistic_status,
+                    :is_withholding_tax, :withholding_tax,
                     { order_lines_attributes: [%i[
-                      id product_id unit quantity unit_price
+                      id product_id unit_definition_id quantity unit_price
                       discount_price description remark idx _destroy
                     ]] }
                   ])

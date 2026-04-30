@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   belongs_to :vendor,        optional: true
   belongs_to :brand,         optional: true
   belongs_to :product_class, optional: true
+  belongs_to :unit_group,    optional: true
   belongs_to :parent, class_name: "Product", optional: true, inverse_of: :children
   has_many :children, class_name: "Product", foreign_key: :parent_id, dependent: :destroy, inverse_of: :parent
   has_many :product_attributes, dependent: :destroy
@@ -30,8 +31,8 @@ class Product < ApplicationRecord
   validate :unique_name_for_non_child
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[name sku barcode product_type unit price cost remark description description_th
-       vendor_id brand_id product_class_id enable_stock deleted_at created_at updated_at]
+    %w[name sku barcode product_type price cost remark description description_th
+       vendor_id brand_id product_class_id unit_group_id enable_stock deleted_at created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
@@ -70,6 +71,11 @@ class Product < ApplicationRecord
   # Total available stock across all branches (amount - holding_amount)
   def total_stock
     product_stocks.sum { |s| s.amount - s.holding_amount }
+  end
+
+  # Returns the product's own unit_group, or the system default UnitGroup if none is set.
+  def effective_unit_group
+    unit_group || UnitGroup.find_by(is_default: true)
   end
 
   private

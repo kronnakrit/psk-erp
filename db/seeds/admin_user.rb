@@ -9,7 +9,11 @@ admin_user = User.find_or_initialize_by(email: "admin@psk.com")
 admin_user.assign_attributes(
   username:  "admin",
   is_active: true,
-  password:  ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Admin@12345!")
+  password:  if Rails.env.production?
+               ENV.fetch("ADMIN_DEFAULT_PASSWORD") # raises KeyError if unset in production
+             else
+               ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Dev@seed0!")
+             end
 )
 admin_user.save!
 

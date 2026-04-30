@@ -32,7 +32,7 @@ RSpec.describe "StockLocations", type: :request do
     it "updates location associations" do
       patch stock_path(stock), params: { product_stock: { stock_location_ids: [location_a.id, location_b.id] } }
       expect(response).to redirect_to(stock_path(stock))
-      expect(stock.reload.stock_location_ids).to match_array([location_a.id, location_b.id])
+      expect(stock.reload.stock_location_ids).to contain_exactly(location_a.id, location_b.id)
     end
 
     it "clears associations when empty array provided (AC-07)" do
@@ -64,7 +64,7 @@ RSpec.describe "StockLocations", type: :request do
 
   describe "GET /stocks renders STOCK PERSON column (AC-04)" do
     let(:stock_person) { create(:user).tap { |u| u.profile.update!(role: role) } }
-    let!(:stock) { create(:product_stock, stock_person: stock_person) }
+    let!(:stock) { create(:product_stock, stock_person: stock_person) } # rubocop:disable RSpec/LetSetup
 
     it "includes stock person name in response" do
       get stocks_path

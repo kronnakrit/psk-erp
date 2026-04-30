@@ -1,7 +1,7 @@
 # EPIC-12 — Delivery Order Print (บิลขนส่ง)
 
 **Phase:** 12
-**Status:** � Completed
+**Status:** 🟢 Completed
 **Goal:** Users can click a "Print" link on any row of the Orders list to open a standalone, printable Delivery Order (บิลขนส่ง) HTML page in a new browser tab; the page displays the order header, a Code128 barcode of the order number, a 7-column order-lines table, grand total summary, and a manual signature space — formatted for either A4 (≥ 16 order lines per page) or A5 — and provides a Print button that triggers the browser's native print dialog.
 
 ---

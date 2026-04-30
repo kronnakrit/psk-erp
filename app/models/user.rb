@@ -29,6 +29,11 @@ class User < ApplicationRecord
     %w[profile]
   end
 
+  def self.find_for_database_authentication(conditions)
+    username_val = conditions[:username].to_s.strip
+    find_by("lower(username) = lower(?)", username_val)
+  end
+
   private
 
   def create_default_profile

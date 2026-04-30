@@ -9,9 +9,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Locale switcher
-  patch "/locale", to: "locales#update", as: :locale
-
-
+  resource :locale, only: :update
 
   # Web UI routes
   resources :users, except: :show do
@@ -28,8 +26,20 @@ Rails.application.routes.draw do
   resources :roles
   resources :permissions, only: :index
   resources :countries
-  resources :logistic_companies
+  resources :logistic_companies do
+    member do
+      patch :activate
+      patch :deactivate
+    end
+  end
   resources :customers
+  resources :suppliers
+  resources :purchase_orders do
+    member do
+      post :confirm
+    end
+    resources :purchase_order_lines, only: %i[create update destroy]
+  end
   resources :vendors do
     collection do
       post :initialize_names
@@ -43,22 +53,59 @@ Rails.application.routes.draw do
   resources :product_attributes
   resources :products do
     resources :product_images, only: %i[index create destroy]
-
     member do
+      get  :unit_definitions
       get  :lots
       post :duplicate
     end
   end
   resources :child_products, only: %i[update destroy]
-  resources :uploads, only: %i[index create]
+  resources :uploads, only: %i[index create] do
+    collection do
+      get :template
+    end
+  end
   resources :branches
-  resources :stocks, only: %i[index show] do
+  resources :stock_locations
+  resources :stocks, only: %i[index show update] do
     member do
       post :deposit
       post :withdraw
       post :recalculate_checkpoint
       post :reset_stock
       get  :transactions
+    end
+  end
+
+  resources :unit_groups do
+    member do
+      patch :set_default
+    end
+    resources :unit_definitions, only: %i[create destroy] do
+      member do
+        patch :set_main
+      end
+    end
+  end
+
+  resources :invoices do
+    resources :invoice_orders, only: %i[create destroy]
+    resources :invoice_images, only: %i[create destroy]
+
+    member do
+      post :cancel
+      post :mark_paid
+      post :reopen
+      get  :audit_trail
+      get  :print
+      get  :add_orders
+    end
+
+    collection do
+      get  :draft
+      get  :paid
+      get  :cancelled
+      post :bulk_update_status
     end
   end
 
@@ -82,38 +129,11 @@ Rails.application.routes.draw do
       get  :dashboard
       get  :advance_search
       get  :download
+      get  :scan
+      get  :find_by_number
       post :filter
       post :bulk_update_status
       post :combine_bills
-    end
-  end
-
-  resources :invoices do
-    resources :invoice_images, only: %i[index create destroy]
-    resources :invoice_orders, only: %i[create destroy]
-
-    member do
-      post :cancel
-      post :mark_paid
-      post :reopen
-      get  :audit_trail
-      get  :print
-      get  :add_orders
-    end
-
-    collection do
-      get  :draft
-      get  :paid
-      get  :cancelled
-      post :bulk_update_status
-    end
-  end
-
-  resources :purchase_orders do
-    resources :purchase_order_lines, only: %i[create update destroy]
-
-    member do
-      post :confirm
     end
   end
 
@@ -161,6 +181,9 @@ Rails.application.routes.draw do
             get :child
             get :advance_search
             get "last_price/:customer_id", to: "products#last_price", as: :last_price
+            get :last_purchase_cost
+            get :lots
+            get :fifo_cost
           end
           collection do
             post :filters

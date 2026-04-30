@@ -2,12 +2,12 @@
 
 class StocksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_stock, only: %i[show deposit withdraw recalculate_checkpoint transactions reset_stock]
+  before_action :set_stock, only: %i[show update deposit withdraw recalculate_checkpoint transactions reset_stock]
 
   def index
     @branches = Branch.order(:name)
     @ransack = policy_scope(ProductStock)
-               .includes(:branch, product: :vendor)
+               .includes(:branch, :stock_person, product: :vendor)
                .ransack(params[:q])
     @ransack.sorts = "id asc" if @ransack.sorts.empty?
     @pagy, @stocks = pagy(@ransack.result)
@@ -16,7 +16,18 @@ class StocksController < ApplicationController
 
   def show
     authorize @stock
-    @transactions = @stock.product_stock_transactions.includes(:adjuster).order(created_at: :desc)
+    @lots = @stock.product.product_lots.includes(:purchase_order).order(received_date: :asc)
+    @all_stock_locations = StockLocation.order(:name)
+    @all_users = User.joins(:profile).includes(:profile).where(is_active: true).order("profiles.first_name")
+  end
+
+  def update
+    authorize @stock
+    if @stock.update(stock_update_params)
+      redirect_to stock_path(@stock), notice: t("flash.updated", resource: "Stock")
+    else
+      redirect_to stock_path(@stock), alert: @stock.errors.full_messages.to_sentence
+    end
   end
 
   def deposit
@@ -76,5 +87,9 @@ class StocksController < ApplicationController
 
   def set_stock
     @stock = ProductStock.find(params[:id])
+  end
+
+  def stock_update_params
+    params.expect(product_stock: [:stock_person_id, { stock_location_ids: [] }])
   end
 end

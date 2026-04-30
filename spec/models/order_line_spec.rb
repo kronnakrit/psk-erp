@@ -8,9 +8,10 @@ RSpec.describe OrderLine, type: :model do
   describe "validations" do
     it { is_expected.to belong_to(:order) }
     it { is_expected.to belong_to(:product) }
+    it { is_expected.to belong_to(:unit_definition) }
     it { is_expected.to validate_numericality_of(:quantity).is_greater_than(0) }
     it { is_expected.to validate_numericality_of(:unit_price).is_greater_than_or_equal_to(0) }
-    it { is_expected.to validate_inclusion_of(:unit).in_array(OrderLine::UNITS) }
+    it { is_expected.to validate_presence_of(:unit_definition_id) }
   end
 
   describe "total_price calculation" do
