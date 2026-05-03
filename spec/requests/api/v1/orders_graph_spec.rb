@@ -7,7 +7,7 @@ RSpec.describe "API v1 Orders report_order", type: :request do
 
   def jwt_headers_for(user)
     post "/api/v1/auth/sign_in",
-         params: { user: { email: user.email, password: "Password1!" } },
+         params: { user: { username: user.username, password: "Password1!" } },
          as: :json
     { "Authorization" => response.headers["Authorization"] }
   end

@@ -67,4 +67,25 @@ RSpec.describe "Brands", type: :request do
       expect(response).to redirect_to(brands_path)
     end
   end
+
+  describe "GET /brands/:id" do
+    it "returns 200" do
+      get brand_path(brand)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /brands/:id/edit" do
+    it "returns 200" do
+      get edit_brand_path(brand)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /brands/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch brand_path(brand), params: { brand: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end

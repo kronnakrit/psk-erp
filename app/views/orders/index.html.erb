@@ -52,8 +52,14 @@
       <% if policy(Order).combine_bills? %>
         <%= button_to "Combine Bills", combine_bills_orders_path,
                       method: :post,
-                      form: { id: "combine_bills_form" },
+                      form: { id: "combine_bills_form", data: { turbo: false } },
                       class: "px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors" %>
+      <% end %>
+      <% if policy(Order).export_excel? %>
+        <%= button_to "Export Excel", export_excel_orders_path,
+                      method: :post,
+                      form: { id: "export_excel_form", data: { turbo: false } },
+                      class: "px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors" %>
       <% end %>
     </div>
   <% end %>

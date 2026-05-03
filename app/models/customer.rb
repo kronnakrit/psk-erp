@@ -4,6 +4,8 @@ class Customer < ApplicationRecord
   belongs_to :country, optional: true, primary_key: :iso_3166_1_a2
   belongs_to :logistic_company, optional: true
 
+  before_save { self.country_id = nil if country_id.blank? }
+
   validates :first_name, presence: true
 
   def fullname

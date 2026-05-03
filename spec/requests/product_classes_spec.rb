@@ -46,6 +46,34 @@ RSpec.describe "ProductClasses", type: :request do
     end
   end
 
+  describe "GET /product_classes/:id" do
+    it "returns 200" do
+      get product_class_path(product_class)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /product_classes/new" do
+    it "returns 200" do
+      get new_product_class_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /product_classes/:id/edit" do
+    it "returns 200" do
+      get edit_product_class_path(product_class)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /product_classes/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch product_class_path(product_class), params: { product_class: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
   describe "DELETE /product_classes/:id" do
     it "deletes the product class" do
       expect do
@@ -92,6 +120,20 @@ RSpec.describe "ProductCategories", type: :request do
       expect do
         delete product_category_path(product_category)
       end.to change(ProductCategory, :count).by(-1)
+    end
+  end
+
+  describe "GET /product_categories/:id" do
+    it "returns 200" do
+      get product_category_path(product_category)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /product_categories/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch product_category_path(product_category), params: { product_category: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 

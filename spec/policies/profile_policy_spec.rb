@@ -21,4 +21,13 @@ RSpec.describe ProfilePolicy, type: :policy do
     it { is_expected.not_to be_show }
     it { is_expected.not_to be_update }
   end
+
+  describe "Scope" do
+    it "returns only the current user's profile" do
+      other_user = create(:user)
+      scope = described_class::Scope.new(user, Profile.all).resolve
+      expect(scope).to include(user.profile)
+      expect(scope).not_to include(other_user.profile)
+    end
+  end
 end

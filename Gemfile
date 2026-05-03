@@ -17,6 +17,9 @@ gem "devise-jwt"
 # Authorization
 gem "pundit"
 
+# Rate limiting
+gem "rack-attack"
+
 # Pagination
 gem "pagy"
 
@@ -52,6 +55,8 @@ group :development, :test do
 
   # Testing
   gem "rspec-rails"
+  gem "capybara"
+  gem "cuprite"
   gem "factory_bot_rails"
   gem "shoulda-matchers"
   gem "faker"

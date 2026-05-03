@@ -158,4 +158,14 @@ RSpec.describe StockDepositWithdrawService do
       expect(result.error).to be_present
     end
   end
+
+  describe "#call — RecordInvalid rescue" do
+    it "returns failure when deposit! raises RecordInvalid" do
+      invalid_stock = ProductStock.new
+      allow(stock).to receive(:deposit!).and_raise(ActiveRecord::RecordInvalid.new(invalid_stock))
+      result = call(quantity: 1, unit_definition_id: pcs.id, action: :deposit)
+      expect(result).not_to be_success
+      expect(result.error).to be_present
+    end
+  end
 end

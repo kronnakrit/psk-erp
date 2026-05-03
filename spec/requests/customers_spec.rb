@@ -63,6 +63,27 @@ RSpec.describe "Customers", type: :request do
     end
   end
 
+  describe "GET /customers/:id" do
+    it "returns 200" do
+      get customer_path(customer)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /customers/:id/edit" do
+    it "returns 200" do
+      get edit_customer_path(customer)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /customers/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch customer_path(customer), params: { customer: { first_name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
   describe "DELETE /customers/:id (soft delete)" do
     it "soft-deletes (sets deleted_at) and redirects" do
       delete customer_path(customer)

@@ -18,7 +18,7 @@ module OrdersHelper
   end
 
   def audit_description(audit)
-    case audit.event_type
+    result = case audit.event_type
     when "status_change", "field_update"
       "changed <strong>#{h(audit.field_name)}</strong> from " \
         "<code>#{h(audit.previous_value)}</code> \u2192 <code>#{h(audit.new_value)}</code>"
@@ -35,7 +35,8 @@ module OrdersHelper
     else
       "#{h(audit.event_type)}: #{h(audit.field_name)}"
     end
+    result.html_safe
   rescue JSON::ParserError
-    "#{h(audit.event_type)}: #{h(audit.field_name)}"
+    "#{h(audit.event_type)}: #{h(audit.field_name)}".html_safe
   end
 end

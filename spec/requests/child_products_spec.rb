@@ -17,6 +17,11 @@ RSpec.describe "Child Products (web)", type: :request do
       expect(response).to redirect_to(products_path)
       expect(child.reload.name).to eq("Updated Child")
     end
+
+    it "returns 422 json on validation failure" do
+      patch child_product_path(child), params: { product: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe "DELETE /child_products/:id" do

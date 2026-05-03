@@ -15,6 +15,17 @@ module Api
       rescue_from ActiveRecord::RecordInvalid do |e|
         render json: { errors: e.record.errors }, status: :unprocessable_content
       end
+
+      private
+
+      def pagy_metadata(pagy)
+        {
+          page: pagy.page,
+          per_page: pagy.limit,
+          total: pagy.count,
+          pages: pagy.pages
+        }
+      end
     end
   end
 end

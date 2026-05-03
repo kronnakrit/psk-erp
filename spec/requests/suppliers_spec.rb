@@ -88,6 +88,23 @@ RSpec.describe "Suppliers", type: :request do
     end
   end
 
+  describe "GET /suppliers/:id" do
+    it "returns 200" do
+      get supplier_path(supplier)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "DELETE /suppliers/:id with dependent records" do
+    let!(:po) { create(:purchase_order, supplier: supplier) }
+
+    it "redirects with alert when supplier has purchase orders" do
+      delete supplier_path(supplier)
+      expect(response).to redirect_to(suppliers_path)
+      expect(flash[:alert]).to be_present
+    end
+  end
+
   describe "authorisation" do
     let(:no_perm_user) { create(:user) }
 

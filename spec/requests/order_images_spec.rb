@@ -18,11 +18,9 @@ RSpec.describe "Order Images (web)", type: :request do
   end
 
   describe "POST /orders/:order_id/order_images" do
-    let(:image_file) do
-      Rack::Test::UploadedFile.new(
-        Rails.root.join("spec/fixtures/sample.png"),
-        "image/png"
-      )
+    it "redirects with alert when no image provided" do
+      post order_order_images_path(order), params: { order_image: { image: nil } }
+      expect(response).to redirect_to(order_path(order))
     end
 
     it "creates an order image and redirects (html fallback)" do
@@ -37,6 +35,20 @@ RSpec.describe "Order Images (web)", type: :request do
       tmpfile.close
       tmpfile.unlink
       expect(response).to redirect_to(order_path(order))
+    end
+
+    it "creates an order image via turbo_stream" do
+      tmpfile = Tempfile.new(["test_image_ts", ".png"])
+      tmpfile.write("\x89PNG\r\n\u001A\n#{'x' * 100}")
+      tmpfile.rewind
+      file = Rack::Test::UploadedFile.new(tmpfile.path, "image/png")
+
+      post order_order_images_path(order),
+           params: { order_image: { image: file } },
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      tmpfile.close
+      tmpfile.unlink
+      expect(response).to have_http_status(:ok)
     end
   end
 

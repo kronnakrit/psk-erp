@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "Quality Assurance": {
+      "source": "daffy0208/ai-dev-standards",
+      "sourceType": "github",
+      "skillPath": "skills/quality-assurance/SKILL.md",
+      "computedHash": "49334472b7c2ab54e4457db4b5b849563c1515e5af6c71bb7481559483edb262"
+    },
     "rails-expert": {
       "source": "jeffallan/claude-skills",
       "sourceType": "github",

@@ -1,4 +1,5 @@
 <%# Single order line row — used in show.html.erb and Turbo Stream responses %>
+<% show_cost ||= false %>
 <tr id="order_line_<%= order_line.id %>" class="hover:bg-gray-50">
   <td class="px-4 py-3 text-gray-800">
     <%= order_line.product&.name || "—" %>
@@ -9,6 +10,9 @@
   <td class="px-4 py-3 text-right text-gray-700"><%= number_to_currency(order_line.unit_price, unit: "฿", precision: 2) %></td>
   <td class="px-4 py-3 text-right text-gray-700"><%= number_to_currency(order_line.discount_price, unit: "฿", precision: 2) %></td>
   <td class="px-4 py-3 text-right font-medium text-gray-900"><%= number_to_currency(order_line.total_price, unit: "฿", precision: 2) %></td>
+  <% if show_cost %>
+    <td class="px-4 py-3 text-right text-gray-700"><%= number_with_precision(order_line.cogs, precision: 2) if order_line.cogs.present? %></td>
+  <% end %>
   <% if policy(order_line).destroy? %>
     <td class="px-4 py-3 text-right">
       <%= button_to "Remove", order_order_line_path(order, order_line), method: :delete,

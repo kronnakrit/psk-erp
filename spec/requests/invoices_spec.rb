@@ -245,4 +245,67 @@ RSpec.describe "Invoices", type: :request do
       expect(response).to redirect_to(root_path)
     end
   end
+
+  describe "PATCH /invoices/:id update failure" do
+    it "renders edit on invalid data" do
+      allow_any_instance_of(Invoice).to receive(:update).and_return(false) # rubocop:disable RSpec/AnyInstance
+      patch invoice_path(invoice), params: { invoice: { remark: "x" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  describe "POST /invoices/:id/cancel status guards" do
+    context "when invoice is already Cancelled" do
+      before do
+        invoice.update_columns(status: "Cc") # rubocop:disable Rails/SkipsModelValidations
+        allow_any_instance_of(InvoicePolicy).to receive(:cancel?).and_return(true) # rubocop:disable RSpec/AnyInstance
+      end
+
+      it "redirects with already-cancelled message" do
+        post cancel_invoice_path(invoice)
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
+  describe "POST /invoices/:id/mark_paid status guard" do
+    context "when invoice is already Paid" do
+      before do
+        invoice.update_columns(status: "Pd") # rubocop:disable Rails/SkipsModelValidations
+        allow_any_instance_of(InvoicePolicy).to receive(:mark_paid?).and_return(true) # rubocop:disable RSpec/AnyInstance
+      end
+
+      it "redirects to invoice with alert" do
+        post mark_paid_invoice_path(invoice)
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
+  describe "POST /invoices/:id/reopen status guard" do
+    context "when invoice is Draft (not Paid)" do
+      before do
+        allow_any_instance_of(InvoicePolicy).to receive(:reopen?).and_return(true) # rubocop:disable RSpec/AnyInstance
+      end
+
+      it "redirects to invoice with alert" do
+        post reopen_invoice_path(invoice)
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
+  describe "POST /invoices/bulk_update_status invalid status" do
+    it "rejects invalid status with 422" do
+      post bulk_update_status_invoices_path, params: { ids: [invoice.id], status: "INVALID" }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe "GET /invoices/:id with non-existent id" do
+    it "returns 404" do
+      get invoice_path(id: 99_999_999)
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end

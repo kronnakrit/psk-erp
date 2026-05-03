@@ -11,6 +11,7 @@ RSpec.describe CompanySettingPolicy, type: :policy do
     let(:role) { create(:role, permissions: %w[change_company_settings]) }
     let(:user) { create(:user).tap { |u| u.profile.update!(role: role) } }
 
+    it { is_expected.to be_show }
     it { is_expected.to be_edit }
     it { is_expected.to be_update }
   end
@@ -19,7 +20,17 @@ RSpec.describe CompanySettingPolicy, type: :policy do
     let(:role) { create(:role, permissions: []) }
     let(:user) { create(:user).tap { |u| u.profile.update!(role: role) } }
 
+    it { is_expected.to be_show }
     it { is_expected.not_to be_edit }
     it { is_expected.not_to be_update }
+  end
+
+  describe "Scope" do
+    let(:user) { create(:user) }
+
+    it "resolves to all company settings" do
+      scope = CompanySettingPolicy::Scope.new(user, CompanySetting)
+      expect(scope.resolve).to eq(CompanySetting.all)
+    end
   end
 end

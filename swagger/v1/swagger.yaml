@@ -26,14 +26,14 @@ paths:
                 user:
                   type: object
                   properties:
-                    email:
+                    username:
                       type: string
-                      example: admin@psk.com
+                      example: admin
                     password:
                       type: string
-                      example: Admin@12345!
+                      example: "********"
                   required:
-                  - email
+                  - username
                   - password
               required:
               - user

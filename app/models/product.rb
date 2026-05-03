@@ -57,15 +57,15 @@ class Product < ApplicationRecord
   end
 
   # Returns the most recent unit_price for a product/customer pair, or nil if no prior order exists.
-  def self.last_selling_price_for(product_id:, customer_id:)
+  # When unit_definition_id is provided, filters to only order lines with that unit.
+  def self.last_selling_price_for(product_id:, customer_id:, unit_definition_id: nil)
     return nil unless defined?(OrderLine)
 
-    OrderLine
+    scope = OrderLine
       .joins(:order)
       .where(product_id: product_id, orders: { customer_id: customer_id })
-      .order("orders.running_date DESC")
-      .first
-      &.unit_price
+    scope = scope.where(unit_definition_id: unit_definition_id) if unit_definition_id.present?
+    scope.order("orders.running_date DESC").first&.unit_price
   end
 
   # Total available stock across all branches (amount - holding_amount)

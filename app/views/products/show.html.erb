@@ -1,32 +1,26 @@
 <% content_for :title, @product.name %>
 
 <div class="px-6 py-6 max-w-7xl mx-auto">
+
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-      <%= link_to products_path, class: "text-gray-400 hover:text-gray-600" do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-      <% end %>
       <div>
-        <h1 class="text-2xl font-bold text-gray-900"><%= @product.name %></h1>
+        <h1 class="page-heading"><%= @product.name %></h1>
         <p class="text-xs text-gray-500 font-mono mt-1"><%= @product.sku %></p>
       </div>
     </div>
     <div class="flex items-center gap-2">
       <% if @product.enable_stock? %>
-        <%= link_to "View Lots", lots_product_path(@product),
-                    class: "px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors" %>
+        <%= link_to "View Lots", lots_product_path(@product), class: "btn-secondary" %>
       <% end %>
       <% if policy(@product).duplicate? %>
         <%= button_to "Duplicate", duplicate_product_path(@product), method: :post,
                       form: { data: { turbo_confirm: "Duplicate this product?" } },
-                      class: "px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors",
+                      class: "btn-secondary",
                       data: { testid: "duplicate-product-btn" } %>
       <% end %>
       <% if policy(@product).update? %>
-        <%= link_to "Edit", edit_product_path(@product),
-                    class: "px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors" %>
+        <%= link_to "Edit", edit_product_path(@product), class: "btn-primary" %>
       <% end %>
     </div>
   </div>
@@ -36,7 +30,7 @@
     <div class="lg:col-span-1 space-y-4">
       <div class="border border-gray-200 rounded-lg overflow-hidden">
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-          <h2 class="text-sm font-semibold text-gray-700">Images</h2>
+          <h2 class="section-heading">Images</h2>
         </div>
         <div class="p-3 space-y-3">
           <% if @product.featured_image.attached? %>
@@ -76,7 +70,7 @@
       <!-- Core Info + Attributes -->
       <div class="border border-gray-200 rounded-lg overflow-hidden">
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-          <h2 class="text-sm font-semibold text-gray-700">Product Info</h2>
+          <h2 class="section-heading">Product Info</h2>
         </div>
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-3 grid grid-cols-3 gap-4">
@@ -116,11 +110,6 @@
           <div class="px-4 py-3 grid grid-cols-3 gap-4">
             <dt class="text-xs font-medium text-gray-500 uppercase">Brand</dt>
             <dd class="col-span-2 text-sm text-gray-700"><%= @product.brand&.name.presence || "—" %></dd>
-          </div>
-
-          <div class="px-4 py-3 grid grid-cols-3 gap-4">
-            <dt class="text-xs font-medium text-gray-500 uppercase">Supplier</dt>
-            <dd class="col-span-2 text-sm text-gray-700"><%= @product.vendor&.name.presence || "—" %></dd>
           </div>
 
           <div class="px-4 py-3 grid grid-cols-3 gap-4">
@@ -166,7 +155,7 @@
       <% if @product.enable_stock? %>
         <div class="border border-gray-200 rounded-lg overflow-hidden">
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h2 class="text-sm font-semibold text-gray-700">Stock</h2>
+            <h2 class="section-heading">Stock</h2>
           </div>
           <% stocks = @product.product_stocks %>
           <% if stocks.any? %>
@@ -200,7 +189,7 @@
       <% if @product.product_type == "Pr" && @product.children.any? %>
         <div class="border border-gray-200 rounded-lg overflow-hidden">
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h2 class="text-sm font-semibold text-gray-700">Child Products</h2>
+            <h2 class="section-heading">Child Products</h2>
           </div>
           <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50">

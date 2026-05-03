@@ -14,7 +14,7 @@ module InvoicesHelper
   end
 
   def invoice_audit_description(audit)
-    case audit.event_type
+    result = case audit.event_type
     when "status_change"
       "changed <strong>status</strong> from " \
       "<code>#{h(status_label(audit.previous_value))}</code> → " \
@@ -29,6 +29,7 @@ module InvoicesHelper
     else
       "#{h(audit.event_type)}: #{h(audit.field_name)}"
     end
+    result.html_safe
   end
 
   private

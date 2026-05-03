@@ -15,10 +15,34 @@ RSpec.describe "Countries", type: :request do
     end
   end
 
-  describe "GET /api/v1/countries (public API)" do
-    it "returns 200 without authentication" do
+  describe "GET /api/v1/countries (API)" do
+    let(:user) { create(:user) }
+    let(:admin_role) { create(:role, permissions: %w[view_countries]) }
+
+    before { user.profile.update!(role: admin_role) }
+
+    it "returns 200 when authenticated" do
+      sign_in user
       get api_v1_countries_path, as: :json
       expect(response).to have_http_status(:ok)
+    end
+
+    it "returns 401 without authentication" do
+      get api_v1_countries_path, as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "returns show for valid country" do
+      sign_in user
+      get api_v1_country_path(thailand), as: :json
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["printable_name"]).to eq(thailand.printable_name)
+    end
+
+    it "returns 404 for missing country" do
+      sign_in user
+      get api_v1_country_path(id: 99999), as: :json
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -79,6 +103,39 @@ RSpec.describe "Countries", type: :request do
     it "redirects create to login" do
       post countries_path, params: { country: { iso_3166_1_a2: "JP", printable_name: "Japan" } }
       expect(response).to redirect_to("/login")
+    end
+  end
+
+  describe "authenticated access" do
+    let(:admin_role) do
+      create(:role, permissions: %w[view_countries add_countries change_countries delete_countries])
+    end
+    let(:user) { create(:user) }
+
+    before do
+      user.profile.update!(role: admin_role)
+      sign_in user
+    end
+
+    describe "GET /countries/:id" do
+      it "returns 200" do
+        get country_path(thailand)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "GET /countries/:id/edit" do
+      it "returns 200" do
+        get edit_country_path(thailand)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "PATCH /countries/:id with invalid data" do
+      it "renders edit with unprocessable_content" do
+        patch country_path(thailand), params: { country: { printable_name: "" } }
+        expect(response).to have_http_status(:unprocessable_content)
+      end
     end
   end
 end

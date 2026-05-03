@@ -72,4 +72,50 @@ RSpec.describe "StockLocations", type: :request do
       expect(response.body).to include(stock_person.profile.full_name)
     end
   end
+
+  describe "GET /stock_locations" do
+    it "renders index" do
+      get stock_locations_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /stock_locations/new" do
+    it "renders new form" do
+      get new_stock_location_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /stock_locations/:id/edit" do
+    let(:loc) { create(:stock_location) }
+
+    it "renders edit form" do
+      get edit_stock_location_path(loc)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /stock_locations/:id" do
+    let(:loc) { create(:stock_location) }
+
+    it "updates and redirects on valid params" do
+      patch stock_location_path(loc), params: { stock_location: { name: "Updated", description: "desc" } }
+      expect(response).to redirect_to(stock_locations_path)
+    end
+
+    it "renders edit on blank name" do
+      patch stock_location_path(loc), params: { stock_location: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  describe "DELETE /stock_locations/:id" do
+    let!(:loc) { create(:stock_location) }
+
+    it "destroys and redirects" do
+      expect { delete stock_location_path(loc) }.to change(StockLocation, :count).by(-1)
+      expect(response).to redirect_to(stock_locations_path)
+    end
+  end
 end

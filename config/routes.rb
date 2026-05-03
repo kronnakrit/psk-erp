@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
+  # API docs — only accessible in development/test to prevent schema disclosure in production
+  if Rails.env.local?
+    mount Rswag::Ui::Engine => '/api-docs'
+    mount Rswag::Api::Engine => '/api-docs'
+  end
   # Web authentication (Devise HTML views)
   devise_for :users, path: "", path_names: { sign_in: "login", sign_out: "logout" },
                      controllers: { sessions: "devise/sessions" }
@@ -26,6 +29,7 @@ Rails.application.routes.draw do
   resources :roles
   resources :permissions, only: :index
   resources :countries
+  resource :company_setting, only: %i[edit update]
   resources :logistic_companies do
     member do
       patch :activate
@@ -39,11 +43,6 @@ Rails.application.routes.draw do
       post :confirm
     end
     resources :purchase_order_lines, only: %i[create update destroy]
-  end
-  resources :vendors do
-    collection do
-      post :initialize_names
-    end
   end
   resources :brands
   resources :product_classes do
@@ -134,6 +133,7 @@ Rails.application.routes.draw do
       post :filter
       post :bulk_update_status
       post :combine_bills
+      post :export_excel
     end
   end
 

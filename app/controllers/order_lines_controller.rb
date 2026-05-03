@@ -26,7 +26,7 @@ class OrderLinesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("flash_messages",
-                                                    partial: "shared/flash",
+                                                    partial: "layouts/flash",
                                                     locals: { error: @order_line.errors.full_messages.to_sentence })
         end
         format.html { redirect_to order_path(@order), alert: @order_line.errors.full_messages.to_sentence }
@@ -55,7 +55,7 @@ class OrderLinesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("flash_messages",
-                                                    partial: "shared/flash",
+                                                    partial: "layouts/flash",
                                                     locals: { error: @order_line.errors.full_messages.to_sentence })
         end
         format.html do

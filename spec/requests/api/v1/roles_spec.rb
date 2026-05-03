@@ -7,7 +7,7 @@ RSpec.describe "API Roles", type: :request do
   end
   let(:headers) do
     post "/api/v1/auth/sign_in",
-         params: { user: { email: admin_user.email, password: "Password1!" } },
+         params: { user: { username: admin_user.username, password: "Password1!" } },
          as: :json
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -54,6 +54,34 @@ RSpec.describe "API Roles", type: :request do
       role = create(:role)
       delete "/api/v1/roles/#{role.id}", headers: headers, as: :json
       expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe "GET /api/v1/roles/:id" do
+    it "returns role details" do
+      role = create(:role, name: "SpecificRole")
+      get "/api/v1/roles/#{role.id}", headers: headers, as: :json
+      expect(response).to have_http_status(:ok)
+      expect(json["name"]).to eq("SpecificRole")
+    end
+  end
+
+  describe "POST /api/v1/roles with invalid params" do
+    it "returns 422" do
+      post "/api/v1/roles",
+           params: { role: { name: "" } },
+           headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  describe "PATCH /api/v1/roles/:id with invalid params" do
+    it "returns 422" do
+      role = create(:role)
+      patch "/api/v1/roles/#{role.id}",
+            params: { role: { name: "" } },
+            headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 end

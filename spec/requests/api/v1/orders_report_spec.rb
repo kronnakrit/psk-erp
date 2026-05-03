@@ -7,7 +7,7 @@ RSpec.describe "API v1 Orders Report endpoints", type: :request do
 
   def jwt_headers_for(user)
     post "/api/v1/auth/sign_in",
-         params: { user: { email: user.email, password: "Password1!" } },
+         params: { user: { username: user.username, password: "Password1!" } },
          as: :json
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -72,6 +72,36 @@ RSpec.describe "API v1 Orders Report endpoints", type: :request do
              headers: headers, as: :json
         expect(response).to have_http_status(:forbidden)
       end
+    end
+  end
+
+  context "invalid date format" do
+    let(:role) { create(:role, permissions: %w[view_orders see_sale_graph]) }
+    let(:user) { create(:user) }
+    let(:headers) do
+      user.profile.update!(role: role)
+      jwt_headers_for(user)
+    end
+
+    it "returns 422 for customer_report with invalid date" do
+      post customer_report_api_v1_orders_path,
+           params: { start_date: "not-a-date", end_date: "2026-01-31" },
+           headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns 422 for sales_report with invalid date" do
+      post sales_report_api_v1_orders_path,
+           params: { start_date: "not-a-date", end_date: "2026-01-31" },
+           headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns 422 for report_order with invalid date" do
+      post report_order_api_v1_orders_path,
+           params: { start_date: "not-a-date", end_date: "2026-01-31" },
+           headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 end

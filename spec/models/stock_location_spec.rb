@@ -14,4 +14,16 @@ RSpec.describe StockLocation, type: :model do
       expect(sl.errors[:name]).to include("has already been taken")
     end
   end
+
+  describe ".ransackable_attributes" do
+    it "returns expected attributes" do
+      expect(StockLocation.ransackable_attributes).to include("name", "description")
+    end
+  end
+
+  describe ".ransackable_associations" do
+    it "returns expected associations" do
+      expect(StockLocation.ransackable_associations).to be_an(Array)
+    end
+  end
 end

@@ -7,7 +7,7 @@ RSpec.describe "API Users", type: :request do
   end
   let(:headers) do
     post "/api/v1/auth/sign_in",
-         params: { user: { email: admin_user.email, password: "Password1!" } },
+         params: { user: { username: admin_user.username, password: "Password1!" } },
          as: :json
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -75,6 +75,15 @@ RSpec.describe "API Users", type: :request do
       patch "/api/v1/users/#{target_user.id}/deactivate", headers: headers, as: :json
       expect(response).to have_http_status(:ok)
       expect(json["user"]["is_active"]).to be false
+    end
+  end
+
+  describe "PATCH /api/v1/users/:id/activate when update! raises RecordInvalid" do
+    it "renders 422 via base_controller rescue" do
+      invalid_user = User.new
+      allow_any_instance_of(User).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(invalid_user))
+      patch "/api/v1/users/#{target_user.id}/activate", headers: headers, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 end

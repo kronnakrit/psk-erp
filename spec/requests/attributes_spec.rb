@@ -50,6 +50,35 @@ RSpec.describe "Attributes", type: :request do
     end
   end
 
+  describe "GET /product_classes/:product_class_id/attributes/:id" do
+    it "returns 200" do
+      get product_class_attribute_path(product_class, attribute)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /product_classes/:product_class_id/attributes/new" do
+    it "returns 200" do
+      get new_product_class_attribute_path(product_class)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /product_classes/:product_class_id/attributes/:id/edit" do
+    it "returns 200" do
+      get edit_product_class_attribute_path(product_class, attribute)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /product_classes/:product_class_id/attributes/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch product_class_attribute_path(product_class, attribute),
+            params: { attribute: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
   describe "DELETE /product_classes/:product_class_id/attributes/:id" do
     it "deletes the attribute" do
       expect do

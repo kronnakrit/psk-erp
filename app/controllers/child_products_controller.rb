@@ -28,7 +28,7 @@ class ChildProductsController < ApplicationController
   def child_product_params
     params.expect(
       product: [:name, :description, :description_th, :sku, :barcode,
-                :unit, :price, :cost, :remark, :vendor_id, :brand_id, :enable_stock,
+                :unit, :price, :cost, :remark, :brand_id, :enable_stock,
                 { product_category_ids: [] }]
     )
   end

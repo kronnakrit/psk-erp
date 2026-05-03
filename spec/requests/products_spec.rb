@@ -50,6 +50,11 @@ RSpec.describe "Products", type: :request do
       expect(response).to redirect_to(products_path)
     end
 
+    it "creates and redirects to new when commit is 'Create and New'" do
+      post products_path, params: { product: valid_attrs.merge(name: "Another Product"), commit: "Create and New" }
+      expect(response).to redirect_to(new_product_path)
+    end
+
     it "auto-generates sku" do
       post products_path, params: { product: valid_attrs }
       created = Product.find_by!(name: "New Product")
@@ -88,6 +93,25 @@ RSpec.describe "Products", type: :request do
         delete product_path(product)
       end.to change(Product, :count).by(-1)
       expect(response).to redirect_to(products_path)
+    end
+  end
+
+  describe "GET /products/:id/unit_definitions" do
+    it "returns json with unit definitions" do
+      get unit_definitions_product_path(product), as: :json
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to be_an(Array)
+    end
+  end
+
+  describe "POST /products/:id/duplicate failure" do
+    it "redirects with alert when duplicate fails" do
+      allow_any_instance_of(Products::DuplicateService).to receive(:call).and_return( # rubocop:disable RSpec/AnyInstance
+        Product.new.tap { |p| p.errors.add(:base, "duplicate failed") }
+      )
+      post duplicate_product_path(product)
+      expect(response).to redirect_to(product_path(product))
+      expect(flash[:alert]).to be_present
     end
   end
 

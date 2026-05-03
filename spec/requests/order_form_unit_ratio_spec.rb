@@ -56,14 +56,14 @@ RSpec.describe "Order form unit ratio HTML (STORY-18-04)", type: :request do
       expect(response.body).to include("data-ratio=\"12\"")
     end
 
-    it "wires up onUnitChange and data-current-ratio on the unit select" do
+    it "wires up onUnitDefinitionChange and data-current-ratio on the unit select" do
       ctx = build_unit_context
       order = create(:order, customer: ctx[:customer])
       create(:order_line, order: order, product: ctx[:product],
                           unit_price: 80.0, unit_definition: ctx[:box_def])
       get edit_order_path(order)
       expect(response.body).to include("data-current-ratio=")
-      expect(response.body).to include("order-form#onUnitChange")
+      expect(response.body).to include("order-form#onUnitDefinitionChange")
     end
 
     it "sets data-current-ratio to Box ratio (12) for the saved order line" do
@@ -80,7 +80,7 @@ RSpec.describe "Order form unit ratio HTML (STORY-18-04)", type: :request do
   describe "GET /orders/new (AC-01 — new order)" do
     it "renders the unit definition select with change action" do
       get new_order_path
-      expect(response.body).to include("order-form#onUnitChange")
+      expect(response.body).to include("order-form#onUnitDefinitionChange")
     end
   end
 

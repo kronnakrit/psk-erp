@@ -84,4 +84,25 @@ RSpec.describe "LogisticCompanies", type: :request do
       expect(json["logistic_companies"]).to be_empty
     end
   end
+
+  describe "GET /logistic_companies/:id" do
+    it "returns 200" do
+      get logistic_company_path(logistic_company)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /logistic_companies/:id/edit" do
+    it "returns 200" do
+      get edit_logistic_company_path(logistic_company)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /logistic_companies/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch logistic_company_path(logistic_company), params: { logistic_company: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end

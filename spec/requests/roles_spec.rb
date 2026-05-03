@@ -54,6 +54,24 @@ RSpec.describe "Roles (web)", type: :request do
     end
   end
 
+  describe "GET /roles/:id" do
+    let(:role) { create(:role, name: "ViewerRole") }
+
+    it "returns 200" do
+      get role_path(role)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /roles/:id with invalid data" do
+    let(:role) { create(:role, name: "BadUpdate") }
+
+    it "renders edit with unprocessable_content" do
+      patch role_path(role), params: { role: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
   describe "DELETE /roles/:id" do
     let(:role) { create(:role, name: "ToDelete") }
 
@@ -61,6 +79,12 @@ RSpec.describe "Roles (web)", type: :request do
       delete role_path(role)
       expect(response).to redirect_to(roles_path)
       expect(Role.find_by(name: "ToDelete")).to be_nil
+    end
+
+    it "redirects back when role has profiles (InvalidForeignKey)" do
+      allow_any_instance_of(Role).to receive(:destroy!).and_raise(ActiveRecord::InvalidForeignKey) # rubocop:disable RSpec/AnyInstance
+      delete role_path(role)
+      expect(response).to redirect_to(root_path)
     end
   end
 end

@@ -47,7 +47,7 @@ class SuppliersController < ApplicationController
     authorize @supplier
     @supplier.destroy!
     redirect_to suppliers_path, notice: "Supplier deleted."
-  rescue ActiveRecord::DeleteRestrictionError => e
+  rescue ActiveRecord::DeleteRestrictionError, ActiveRecord::RecordNotDestroyed => e
     redirect_to suppliers_path, alert: e.message
   end
 

@@ -95,12 +95,6 @@
                       class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(product_categories_path)}" %>
         </li>
         <% end %>
-        <% if user_signed_in? && permission?("view_vendors") %>
-        <li>
-          <%= link_to t("nav.vendors"), vendors_path,
-                      class: "block px-3 py-2 rounded-md text-sm transition-colors #{active_nav_classes(vendors_path)}" %>
-        </li>
-        <% end %>
         <% if user_signed_in? && permission?("view_suppliers") %>
         <li>
           <%= link_to t("nav.suppliers"), suppliers_path,

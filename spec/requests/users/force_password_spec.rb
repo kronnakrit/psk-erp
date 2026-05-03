@@ -21,5 +21,13 @@ RSpec.describe "Users Force Password (web)", type: :request do
             params: { password1: "NewPass@1", password2: "Different@1" }
       expect(response).to redirect_to(edit_user_path(target_user))
     end
+
+    it "redirects with alert when password update fails validation" do
+      # Force a validation error by providing a weak password
+      patch user_force_password_path(target_user),
+            params: { password1: "abc", password2: "abc" }
+      expect(response).to redirect_to(edit_user_path(target_user))
+      expect(flash[:alert]).to be_present
+    end
   end
 end

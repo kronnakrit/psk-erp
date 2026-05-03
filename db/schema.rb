@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_023628) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_02_102632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -393,7 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_023628) do
     t.bigint "user_id", null: false
     t.index ["role_id"], name: "index_profiles_on_role_id"
     t.index ["user_id"], name: "index_profiles_on_user_id", unique: true
-    t.check_constraint "preferred_locale::text = ANY (ARRAY['th'::character varying, 'en'::character varying]::text[])", name: "chk_profiles_preferred_locale"
+    t.check_constraint "preferred_locale::text = ANY (ARRAY['th'::character varying::text, 'en'::character varying::text])", name: "chk_profiles_preferred_locale"
   end
 
   create_table "purchase_order_lines", force: :cascade do |t|
@@ -488,16 +488,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_023628) do
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.integer "failed_attempts", default: 0, null: false
     t.boolean "is_active", default: true, null: false
     t.string "jti", default: "", null: false
+    t.datetime "locked_at"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.string "unlock_token"
     t.datetime "updated_at", null: false
     t.string "username", default: "", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 

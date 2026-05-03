@@ -19,9 +19,25 @@ RSpec.describe PermissionPolicy, type: :policy do
     it { is_expected.to be_index }
   end
 
+  context "when user has add_roles permission" do
+    let(:role) { create(:role, permissions: %w[add_roles]) }
+    let(:user) { create(:user).tap { |u| u.profile.update!(role: role) } }
+
+    it { is_expected.to be_index }
+  end
+
   context "when user has no role-related permissions" do
     let(:user) { create(:user) }
 
     it { is_expected.not_to be_index }
+  end
+
+  describe "Scope" do
+    let(:user) { create(:user) }
+
+    it "resolves and returns the scope" do
+      scope = PermissionPolicy::Scope.new(user, :permission)
+      expect(scope.resolve).to eq(:permission)
+    end
   end
 end

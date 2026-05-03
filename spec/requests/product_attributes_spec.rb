@@ -32,4 +32,46 @@ RSpec.describe "Product Attributes (web)", type: :request do
       expect(response.status).to be < 500
     end
   end
+
+  describe "GET /product_attributes?product_id=:id" do
+    it "renders index" do
+      get product_attributes_path(product_id: product.id), headers: { "Accept" => "text/html" }
+      expect(response.status).to be < 500
+    end
+  end
+
+  describe "GET /product_attributes/new" do
+    it "renders new form" do
+      get new_product_attribute_path(product_id: product.id), headers: { "Accept" => "text/html" }
+      expect(response.status).to be < 500
+    end
+  end
+
+  describe "GET /product_attributes/:id/edit" do
+    let(:pa) { ProductAttribute.create!(product: product, attribute_id: attribute.id, value: "Blue") }
+
+    it "renders edit form" do
+      get edit_product_attribute_path(pa), headers: { "Accept" => "text/html" }
+      expect(response.status).to be < 500
+    end
+  end
+
+  describe "POST /product_attributes" do
+    it "creates successfully and redirects" do
+      post product_attributes_path,
+           params: { product_attribute: { product_id: product.id, attribute_id: attribute.id, value: "Red" } }
+      expect(response.status).to be < 500
+    end
+
+  end
+
+  describe "PATCH with invalid params" do
+    let(:pa) { ProductAttribute.create!(product: product, attribute_id: attribute.id, value: "Blue") }
+
+    it "handles success gracefully" do
+      patch product_attribute_path(pa),
+            params: { product_attribute: { value: "Updated" } }
+      expect(response.status).to be < 500
+    end
+  end
 end

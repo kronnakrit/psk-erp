@@ -59,5 +59,25 @@ RSpec.describe "POST /api/v1/auth/sign_in", type: :request do
       expect(response).to have_http_status(:unauthorized)
     end
   end
+
+  context "sign out (DELETE /api/v1/auth/sign_out)" do
+    it "returns 200 when Authorization header is present" do
+      # First sign in to get a token
+      post "/api/v1/auth/sign_in",
+           params: { user: { username: user.username, password: "Password1!" } },
+           as: :json
+      token = response.headers["Authorization"]
+
+      delete "/api/v1/auth/sign_out",
+             headers: { "Authorization" => token },
+             as: :json
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "returns 401 when Authorization header is absent" do
+      delete "/api/v1/auth/sign_out", as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
 end
 

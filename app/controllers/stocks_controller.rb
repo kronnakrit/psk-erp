@@ -7,7 +7,7 @@ class StocksController < ApplicationController
   def index
     @branches = Branch.order(:name)
     @ransack = policy_scope(ProductStock)
-               .includes(:branch, :stock_person, product: :vendor)
+               .includes(:branch, :stock_person, :product)
                .ransack(params[:q])
     @ransack.sorts = "id asc" if @ransack.sorts.empty?
     @pagy, @stocks = pagy(@ransack.result)

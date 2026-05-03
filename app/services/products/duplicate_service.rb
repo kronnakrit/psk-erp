@@ -3,7 +3,7 @@
 module Products
   class DuplicateService
     COPIED_ATTRS = %w[
-      product_type price cost unit enable_stock description description_th remark
+      product_type price cost enable_stock description description_th remark
       vendor_id brand_id product_class_id unit_group_id
     ].freeze
 

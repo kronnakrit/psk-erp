@@ -49,4 +49,16 @@ RSpec.describe PurchaseOrderLine, type: :model do
       expect(line.line_total).to eq(100.00)
     end
   end
+
+  describe ".ransackable_attributes" do
+    it "includes expected attributes" do
+      expect(PurchaseOrderLine.ransackable_attributes).to include("purchase_order_id", "product_id")
+    end
+  end
+
+  describe ".ransackable_associations" do
+    it "includes expected associations" do
+      expect(PurchaseOrderLine.ransackable_associations).to include("purchase_order", "product")
+    end
+  end
 end

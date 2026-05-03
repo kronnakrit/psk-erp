@@ -70,9 +70,23 @@ export default class extends Controller {
       descriptionInput.addEventListener("input", () => { descriptionInput.dataset.userEdited = "true" }, { once: true })
     }
 
+    // Populate unit definitions dropdown from event detail
+    const unitDefSelect = row.querySelector("[data-order-line-search-target='unitDefinition']")
+    if (unitDefSelect && unit_definitions && unit_definitions.length > 0) {
+      unitDefSelect.innerHTML = ""
+      unit_definitions.forEach(ud => {
+        const opt = document.createElement("option")
+        opt.value = ud.id
+        opt.textContent = ud.name
+        opt.dataset.ratio = ud.ratio
+        unitDefSelect.appendChild(opt)
+      })
+      unitDefSelect.value = unit_definitions[0].id
+      unitDefSelect.dataset.currentRatio = unit_definitions[0].ratio
+    }
+
     // Set unit price: try to fetch last selling price for this customer first
     const customerId = this.hasCustomerIdTarget ? this.customerIdTarget.value : null
-    const unitDefSelect = row.querySelector("[data-order-line-search-target='unitDefinition']")
     const selectedUnitDefId = unitDefSelect?.value
     let price = default_price
     const hintLabel = `Default: ฿${formatCurrency(default_price)}`

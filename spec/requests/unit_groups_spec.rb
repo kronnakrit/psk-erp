@@ -44,6 +44,20 @@ RSpec.describe "UnitGroups", type: :request do
       end
     end
 
+    describe "GET /unit_groups/new" do
+      it "returns 200" do
+        get new_unit_group_path
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "GET /unit_groups/:id/edit" do
+      it "returns 200" do
+        get edit_unit_group_path(sys_default)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
     describe "POST /unit_groups (AC-02)" do
       it "creates a new unit group and redirects" do
         expect do
@@ -53,6 +67,24 @@ RSpec.describe "UnitGroups", type: :request do
         new_group = UnitGroup.last
         expect(response).to redirect_to(unit_group_path(new_group))
         expect(flash[:notice]).to eq("Unit group created.")
+      end
+
+      it "renders new on blank name" do
+        post unit_groups_path, params: { unit_group: { name: "" } }
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    describe "PATCH /unit_groups/:id" do
+      it "updates and redirects" do
+        patch unit_group_path(sys_default), params: { unit_group: { name: "Updated Group" } }
+        expect(response).to redirect_to(unit_group_path(sys_default))
+        expect(sys_default.reload.name).to eq("Updated Group")
+      end
+
+      it "renders edit on blank name" do
+        patch unit_group_path(sys_default), params: { unit_group: { name: "" } }
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

@@ -9,7 +9,7 @@ class OrderDuplicateService
   ].freeze
 
   ORDER_LINE_ATTRS = %w[
-    product_id unit quantity unit_price discount_price description remark idx
+    product_id unit_definition_id quantity unit_price discount_price description remark idx
   ].freeze
 
   def initialize(source_order, current_user:)

@@ -29,6 +29,12 @@ export default class extends Controller {
     if (combineBillsForm) {
       combineBillsForm.addEventListener("submit", (e) => this.prepareCombineBillsForm(e, combineBillsForm))
     }
+
+    // Intercept export-excel form to inject ids[]
+    const exportExcelForm = document.getElementById("export_excel_form")
+    if (exportExcelForm) {
+      exportExcelForm.addEventListener("submit", (e) => this.prepareExportExcelForm(e, exportExcelForm))
+    }
   }
 
   // Show/hide the bar and update counter
@@ -65,6 +71,15 @@ export default class extends Controller {
 
   // Inject ids[] hidden inputs before the combine bills form submits
   prepareCombineBillsForm (_event, form) {
+    this.removeInjected(form)
+
+    this.selectedIds().forEach(id => {
+      form.appendChild(this.hiddenInput("ids[]", id))
+    })
+  }
+
+  // Inject ids[] hidden inputs before the export excel form submits
+  prepareExportExcelForm (_event, form) {
     this.removeInjected(form)
 
     this.selectedIds().forEach(id => {

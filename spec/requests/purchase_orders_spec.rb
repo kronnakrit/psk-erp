@@ -82,6 +82,12 @@ RSpec.describe "PurchaseOrders", type: :request do
       expect(po.reload.remark).to eq("Updated remark")
     end
 
+    it "renders edit on invalid data" do
+      patch purchase_order_path(po),
+            params: { purchase_order: { po_date: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
     it "blocks update on confirmed PO" do
       po.update_columns(status: "Cf") # rubocop:disable Rails/SkipsModelValidations
       patch purchase_order_path(po),
@@ -141,6 +147,16 @@ RSpec.describe "PurchaseOrders", type: :request do
     it "returns alert when PO has no lines" do
       post confirm_purchase_order_path(po)
       expect(flash[:alert]).to include("no lines")
+    end
+
+    it "redirects with alert on RecordInvalid" do
+      create(:purchase_order_line, purchase_order: po, product: product, unit_definition: unit_def)
+      allow_any_instance_of(ConfirmPurchaseOrderService).to receive(:call!).and_raise( # rubocop:disable RSpec/AnyInstance
+        ActiveRecord::RecordInvalid.new(PurchaseOrder.new)
+      )
+      post confirm_purchase_order_path(po)
+      expect(response).to redirect_to(purchase_order_path(po))
+      expect(flash[:alert]).to be_present
     end
   end
 

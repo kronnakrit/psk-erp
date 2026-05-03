@@ -43,6 +43,13 @@ RSpec.describe "Uploads", type: :request do
         expect(response).to redirect_to(uploads_path)
         expect(Upload.last.status).to eq("pending")
       end
+
+      it "redirects with alert when upload fails to save" do
+        allow_any_instance_of(Upload).to receive(:save).and_return(false)
+        post uploads_path, params: { upload: { file: xlsx_file } }
+        expect(response).to redirect_to(uploads_path)
+        expect(flash[:alert]).to include("Upload failed")
+      end
     end
 
     context "with an invalid file type" do

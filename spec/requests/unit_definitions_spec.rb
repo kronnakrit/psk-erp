@@ -70,4 +70,49 @@ RSpec.describe "UnitDefinitions", type: :request do
       end
     end
   end
+
+  describe "POST /unit_groups/:unit_group_id/unit_definitions/:id/set_main" do
+    let!(:target_def) { create(:unit_definition, unit_group: group, name: "pack", ratio: 5) }
+
+    it "sets the definition as main (turbo stream)" do
+      patch set_main_unit_group_unit_definition_path(group, target_def), as: :turbo_stream
+      expect(response).to have_http_status(:ok)
+      expect(target_def.reload.is_main).to be true
+    end
+
+    it "sets the definition as main (html fallback)" do
+      patch set_main_unit_group_unit_definition_path(group, target_def)
+      expect(response).to redirect_to(unit_group_path(group))
+    end
+  end
+
+  describe "HTML fallback paths" do
+    it "creates unit definition via HTML" do
+      post unit_group_unit_definitions_path(group),
+           params: { unit_definition: { name: "box", ratio: 12 } }
+      expect(response).to redirect_to(unit_group_path(group))
+    end
+
+    it "destroys unit definition via HTML" do
+      ud = create(:unit_definition, unit_group: group, name: "bag", ratio: 50)
+      delete unit_group_unit_definition_path(group, ud)
+      expect(response).to redirect_to(unit_group_path(group))
+    end
+  end
+
+  describe "POST /unit_groups/:id/unit_definitions/:ud_id/set_main rescue StatementInvalid" do
+    let!(:target_def) { create(:unit_definition, unit_group: group, name: "pack", ratio: 5) }
+
+    it "returns 422 turbo_stream on StatementInvalid" do
+      allow(UnitDefinition).to receive(:where).and_call_original
+      allow(UnitDefinition).to receive(:where).with(unit_group_id: group.id).and_wrap_original do |m, *args|
+        relation = m.call(*args)
+        allow(relation).to receive(:update_all).and_raise(ActiveRecord::StatementInvalid, "DB error")
+        relation
+      end
+
+      patch set_main_unit_group_unit_definition_path(group, target_def), as: :turbo_stream
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end

@@ -24,4 +24,16 @@ RSpec.describe Attribute, type: :model do
       expect(attr2).to be_valid
     end
   end
+
+  describe ".ransackable_attributes" do
+    it "includes name and product_class_id" do
+      expect(Attribute.ransackable_attributes).to include("name", "product_class_id")
+    end
+  end
+
+  describe ".ransackable_associations" do
+    it "returns empty array" do
+      expect(Attribute.ransackable_associations).to eq([])
+    end
+  end
 end

@@ -25,12 +25,5 @@ RSpec.describe "Purchase Orders show heading tokens", type: :request do
       expect(response.body).to include("page-heading")
     end
 
-    it "renders back-link" do
-      expect(response.body).to include("back-link")
-    end
-
-    it "renders ← Back text" do
-      expect(response.body).to include("\u2190 Back")
-    end
   end
 end

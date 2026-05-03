@@ -65,7 +65,9 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
     @ransack = policy_scope(Order)
                .includes(:customer, :logistic_company)
                .ransack(params[:q])
+    @ransack.sorts = "running_date desc" if @ransack.sorts.empty?
     @pagy, @orders = pagy(@ransack.result)
+    render :index
   end
 
   # POST /orders/filter
@@ -73,6 +75,8 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
     authorize Order, :index?
     scope = policy_scope(Order).includes(:customer)
     scope = scope.where(status: params[:status]) if params[:status].present?
+    @ransack = scope.ransack(params[:q])
+    @ransack.sorts = "running_date desc" if @ransack.sorts.empty?
     @pagy, @orders = pagy(scope.order(running_date: :desc))
     render :index
   end
@@ -248,6 +252,21 @@ class OrdersController < ApplicationController # rubocop:disable Metrics/ClassLe
     redirect_to orders_path, alert: result[:error] and return if result[:error]
 
     stream_combined_bills(result)
+  end
+
+  # POST /orders/export_excel
+  def export_excel
+    authorize Order, :export_excel?
+    ids = Array(params[:ids]).map(&:to_i).select(&:positive?)
+    redirect_to orders_path, alert: "No orders selected." and return if ids.empty?
+
+    orders = policy_scope(Order).where(id: ids).includes(:customer, order_lines: :product)
+    package = BulkOrderExcelExportService.new(orders).build
+    date_str = Time.zone.today.strftime("%Y%m%d")
+    send_data package.to_stream.read,
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              disposition: "attachment",
+              filename: "orders_export_#{date_str}.xlsx"
   end
 
   private

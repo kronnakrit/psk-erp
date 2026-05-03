@@ -4,6 +4,8 @@ class UploadsController < ApplicationController
   before_action :authenticate_user!
 
   XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  # XLSX files are ZIP archives; magic bytes are PK\x03\x04
+  XLSX_MAGIC = "\x50\x4B\x03\x04"
 
   def index
     @pagy, @uploads = pagy(policy_scope(Upload).includes(:file_attachment, :file_blob, :user)
@@ -17,7 +19,8 @@ class UploadsController < ApplicationController
     uploaded_file = params[:upload]&.fetch(:file, nil)
 
     unless uploaded_file.is_a?(ActionDispatch::Http::UploadedFile) &&
-           uploaded_file.content_type == XLSX_MIME
+           uploaded_file.content_type == XLSX_MIME &&
+           xlsx_magic_bytes?(uploaded_file.tempfile)
       redirect_to uploads_path, alert: "Only .xlsx files are accepted." and return
     end
 
@@ -39,5 +42,12 @@ class UploadsController < ApplicationController
 
   def upload_params
     params.expect(upload: [:file])
+  end
+
+  def xlsx_magic_bytes?(tempfile)
+    tempfile.rewind
+    tempfile.read(4) == XLSX_MAGIC
+  ensure
+    tempfile.rewind
   end
 end

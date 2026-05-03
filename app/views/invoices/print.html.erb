@@ -3,11 +3,14 @@
 <div class="max-w-4xl mx-auto p-8 font-sans" data-testid="invoice-print">
   <%# Print button (hidden on print) %>
   <div class="flex justify-end mb-6 no-print">
-    <button onclick="window.print()"
+    <button id="invoice-print-btn"
             class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
       Print
     </button>
   </div>
+  <script nonce="<%= content_security_policy_nonce %>">
+    document.getElementById("invoice-print-btn").addEventListener("click", function() { window.print(); });
+  </script>
 
   <%# Company Header %>
   <div class="flex justify-between items-start mb-8" data-testid="company-header">

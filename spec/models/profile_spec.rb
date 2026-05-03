@@ -22,4 +22,16 @@ RSpec.describe Profile, type: :model do
       expect(profile.full_name).to eq("")
     end
   end
+
+  describe ".ransackable_attributes" do
+    it "includes first_name and last_name" do
+      expect(Profile.ransackable_attributes).to include("first_name", "last_name")
+    end
+  end
+
+  describe ".ransackable_associations" do
+    it "returns array with role" do
+      expect(Profile.ransackable_associations).to include("role")
+    end
+  end
 end

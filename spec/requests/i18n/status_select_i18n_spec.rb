@@ -2,7 +2,9 @@
 
 require "rails_helper"
 
-RSpec.describe "Status select option i18n", type: :request do
+# NOTE: The status dropdown was removed from the order create/edit form.
+# This spec now verifies locale-appropriate labels appear on the new order page.
+RSpec.describe "Order form i18n", type: :request do
   let(:role) do
     create(:role, permissions: %w[view_orders add_orders change_orders view_all_orders])
   end
@@ -15,12 +17,12 @@ RSpec.describe "Status select option i18n", type: :request do
       get new_order_path
     end
 
-    it "renders ร่าง as Draft status select option" do
-      expect(response.body).to include("ร่าง")
+    it "renders the new order form successfully" do
+      expect(response).to have_http_status(:ok)
     end
 
-    it "renders เสร็จสิ้น as Completed status select option" do
-      expect(response.body).to include("เสร็จสิ้น")
+    it "renders Thai locale customer label" do
+      expect(response.body).to include("ลูกค้า")
     end
   end
 
@@ -31,12 +33,12 @@ RSpec.describe "Status select option i18n", type: :request do
       get new_order_path
     end
 
-    it "renders Draft as status select option" do
-      expect(response.body).to include("Draft")
+    it "renders the new order form successfully" do
+      expect(response).to have_http_status(:ok)
     end
 
-    it "renders Completed as status select option" do
-      expect(response.body).to include("Completed")
+    it "renders English locale label" do
+      expect(response.body).to include("Customer")
     end
   end
 end

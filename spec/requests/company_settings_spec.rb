@@ -51,6 +51,21 @@ RSpec.describe "CompanySettings", type: :request do
         expect(response).to redirect_to(edit_company_setting_path)
       end
     end
+
+    context "when a logo file is provided" do
+      it "attaches the logo and redirects" do
+        tmpfile = Tempfile.new(["logo", ".png"])
+        tmpfile.write("\x89PNG\r\n\x1A\n" + ("x" * 100))
+        tmpfile.rewind
+        file = Rack::Test::UploadedFile.new(tmpfile.path, "image/png")
+
+        patch company_setting_path,
+              params: { company_setting: { company_name: "Logo Co.", logo: file } }
+        tmpfile.close
+        tmpfile.unlink
+        expect(response).to redirect_to(edit_company_setting_path)
+      end
+    end
   end
 
   # ------------------------------------------------------------------ Unauthorised --

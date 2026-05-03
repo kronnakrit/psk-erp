@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
+         :lockable, :timeoutable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }

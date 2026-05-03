@@ -5,7 +5,6 @@
     <h1 class="text-2xl font-bold text-gray-900">
       <%= @user.new_record? ? "New User" : "Edit User — #{@user.username}" %>
     </h1>
-    <%= link_to "← Back to Users", users_path, class: "text-sm text-blue-600 hover:underline" %>
   </div>
 
   <%= form_with model: @user, class: "space-y-6" do |f| %>

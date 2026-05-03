@@ -20,7 +20,7 @@ module Api
           end
         end
 
-        def respond_to_on_destroy
+        def respond_to_on_destroy(**_opts)
           if request.headers["Authorization"].present?
             render json: { message: "Logged out successfully" }, status: :ok
           else

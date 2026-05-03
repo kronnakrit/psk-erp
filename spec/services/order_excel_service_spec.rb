@@ -56,5 +56,50 @@ RSpec.describe OrderExcelService do
       all_text = ws.rows.flat_map { |r| r.cells.map(&:value) }.map(&:to_s)
       expect(all_text).to include("Grand Total")
     end
+
+    context "when order has discount" do
+      let(:order) do
+        create(:order, customer: customer, running_date: Date.new(2026, 4, 12),
+                       has_vat: false, is_withholding_tax: false, discount_price: 50,
+                       is_discount_percentage: false)
+      end
+
+      it "includes a Discount row" do
+        package  = service.build
+        ws       = package.workbook.worksheets.first
+        all_text = ws.rows.flat_map { |r| r.cells.map(&:value) }.map(&:to_s)
+        expect(all_text).to include("Discount")
+      end
+    end
+
+    context "when order has VAT" do
+      let(:order) do
+        create(:order, customer: customer, running_date: Date.new(2026, 4, 12),
+                       has_vat: true, is_withholding_tax: false, discount_price: 0)
+      end
+
+      it "includes Excl. VAT and VAT rows" do
+        package  = service.build
+        ws       = package.workbook.worksheets.first
+        all_text = ws.rows.flat_map { |r| r.cells.map(&:value) }.map(&:to_s)
+        expect(all_text).to include("Excl. VAT")
+        expect(all_text).to include("VAT (7%)")
+      end
+    end
+
+    context "when order has withholding tax" do
+      let(:order) do
+        create(:order, customer: customer, running_date: Date.new(2026, 4, 12),
+                       has_vat: false, is_withholding_tax: true, withholding_tax: 3,
+                       discount_price: 0)
+      end
+
+      it "includes a Withholding Tax row" do
+        package  = service.build
+        ws       = package.workbook.worksheets.first
+        all_text = ws.rows.flat_map { |r| r.cells.map(&:value) }.map(&:to_s)
+        expect(all_text).to include("Withholding Tax")
+      end
+    end
   end
 end

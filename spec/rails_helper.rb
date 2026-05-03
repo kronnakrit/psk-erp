@@ -6,7 +6,7 @@ SimpleCov.start "rails" do
   add_filter "/spec/"
   add_filter "/config/"
   add_filter "app/channels/"
-  minimum_coverage 90
+  minimum_coverage 95
 end
 
 ENV["RAILS_ENV"] ||= "test"
@@ -30,6 +30,11 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Reset CurrentAttributes between tests to prevent state leakage
+  config.after(:each) do
+    Current.reset
+  end
 end
 
 Shoulda::Matchers.configure do |config|

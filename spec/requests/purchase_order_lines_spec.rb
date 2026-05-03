@@ -45,6 +45,53 @@ RSpec.describe "PurchaseOrderLines", type: :request do # rubocop:disable RSpec/M
            params: { purchase_order_line: valid_attrs }
       expect(response).to have_http_status(:forbidden)
     end
+
+    it "returns html redirect on create failure" do
+      post purchase_order_purchase_order_lines_path(po),
+           params: { purchase_order_line: valid_attrs.merge(quantity: 0) }
+      expect(response).to redirect_to(purchase_order_path(po))
+    end
+  end
+
+  describe "PATCH /purchase_orders/:id/purchase_order_lines/:line_id" do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let!(:line) do
+      create(:purchase_order_line,
+             purchase_order: po, product: product, unit_definition: unit_def)
+    end
+
+    it "updates line and responds with turbo stream" do
+      patch purchase_order_purchase_order_line_path(po, line),
+            params: { purchase_order_line: { quantity: 10, unit_cost: 20.00 } },
+            headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      expect(response).to have_http_status(:ok)
+      expect(line.reload.quantity).to eq(10)
+    end
+
+    it "returns 422 on turbo_stream when quantity is 0" do
+      patch purchase_order_purchase_order_line_path(po, line),
+            params: { purchase_order_line: { quantity: 0 } },
+            headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns html redirect on update success" do
+      patch purchase_order_purchase_order_line_path(po, line),
+            params: { purchase_order_line: { quantity: 10 } }
+      expect(response).to redirect_to(purchase_order_path(po))
+    end
+
+    it "returns html redirect on update failure" do
+      patch purchase_order_purchase_order_line_path(po, line),
+            params: { purchase_order_line: { quantity: 0 } }
+      expect(response).to redirect_to(purchase_order_path(po))
+    end
+
+    it "returns 403 when PO is confirmed" do
+      po.update_columns(status: "Cf") # rubocop:disable Rails/SkipsModelValidations
+      patch purchase_order_purchase_order_line_path(po, line),
+            params: { purchase_order_line: { quantity: 10 } }
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 
   describe "DELETE /purchase_orders/:id/purchase_order_lines/:line_id" do # rubocop:disable RSpec/MultipleMemoizedHelpers

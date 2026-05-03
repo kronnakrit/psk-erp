@@ -32,6 +32,13 @@ RSpec.describe PhantomAllocationAbsorberService do
       let!(:order_line) { create(:order_line, order: order, product: product, quantity: 5) }
       let!(:new_lot)    { make_lot(remaining: 20, cost: 40) }
 
+      before do
+        # Create phantom allocation (nil lot) as would be created by FifoLotAllocationService
+        order_line.order_line_lot_allocations.create!(
+          product_lot_id: nil, allocated_quantity: 5, unit_cost: 0
+        )
+      end
+
       it "replaces phantom allocation with real lot allocation" do
         described_class.new(product, new_lot).call
         phantom = order_line.order_line_lot_allocations.reload.where(product_lot_id: nil)
@@ -60,7 +67,13 @@ RSpec.describe PhantomAllocationAbsorberService do
       let!(:order_line) { create(:order_line, order: order, product: product, quantity: 10) }
       let!(:small_lot)  { make_lot(remaining: 3, cost: 50) }
 
-      before { described_class.new(product, small_lot).call }
+      before do
+        # Create phantom allocation representing 10 qty with no lot
+        order_line.order_line_lot_allocations.create!(
+          product_lot_id: nil, allocated_quantity: 10, unit_cost: 0
+        )
+        described_class.new(product, small_lot).call
+      end
 
       it "absorbs up to lot capacity" do
         real_alloc = order_line.order_line_lot_allocations.reload.where(product_lot: small_lot).first

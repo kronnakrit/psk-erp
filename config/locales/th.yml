@@ -342,3 +342,38 @@ th:
       line_product: "ค้นหา SKU หรือชื่อสินค้า…"
     users:
       search: "ค้นหาชื่อผู้ใช้, ชื่อ, อีเมล, เบอร์โทรศัพท์…"
+  datetime:
+    distance_in_words:
+      less_than_x_seconds:
+        one: "น้อยกว่า 1 วินาที"
+        other: "น้อยกว่า %{count} วินาที"
+      x_seconds:
+        one: "1 วินาที"
+        other: "%{count} วินาที"
+      less_than_x_minutes:
+        one: "น้อยกว่า 1 นาที"
+        other: "น้อยกว่า %{count} นาที"
+      x_minutes:
+        one: "1 นาที"
+        other: "%{count} นาที"
+      about_x_hours:
+        one: "ประมาณ 1 ชั่วโมง"
+        other: "ประมาณ %{count} ชั่วโมง"
+      x_days:
+        one: "1 วัน"
+        other: "%{count} วัน"
+      about_x_months:
+        one: "ประมาณ 1 เดือน"
+        other: "ประมาณ %{count} เดือน"
+      x_months:
+        one: "1 เดือน"
+        other: "%{count} เดือน"
+      about_x_years:
+        one: "ประมาณ 1 ปี"
+        other: "ประมาณ %{count} ปี"
+      over_x_years:
+        one: "มากกว่า 1 ปี"
+        other: "มากกว่า %{count} ปี"
+      almost_x_years:
+        one: "เกือบ 1 ปี"
+        other: "เกือบ %{count} ปี"

@@ -25,15 +25,6 @@ RSpec.describe "Orders show heading tokens", type: :request do
       expect(response.body).to include("page-heading")
     end
 
-    it "renders back-link" do
-      expect(response.body).to include("back-link")
-    end
-
-    it "renders ← Back text" do
-      expect(response.body).to include("back-link")
-      expect(response.body).to match(/←\s+(กลับ|Back)/)
-    end
-
     it "renders section-heading for sub-sections" do
       expect(response.body).to include("section-heading")
     end

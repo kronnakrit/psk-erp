@@ -14,7 +14,6 @@ module Permissions
     view_product_categories add_product_categories change_product_categories delete_product_categories
     view_product_attributes add_product_attributes change_product_attributes delete_product_attributes
     view_product_images add_product_images change_product_images delete_product_images
-    view_vendors add_vendors change_vendors delete_vendors
     view_brands add_brands change_brands delete_brands
     view_attributes add_attributes change_attributes delete_attributes
     view_customers add_customers change_customers delete_customers
@@ -27,5 +26,7 @@ module Permissions
     manage_unit_groups
     change_company_settings
     can_view_cost see_sale_graph see_price_monitor view_order_audit
+    export_orders_excel
+    view_countries
   ].freeze
 end

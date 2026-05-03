@@ -7,7 +7,7 @@ RSpec.describe "API Auth Tokens", type: :request do
   let(:user) { create(:user).tap { |u| u.profile.update!(role: admin_role) } }
   let(:token) do
     post "/api/v1/auth/sign_in",
-         params: { user: { email: user.email, password: "Password1!" } },
+         params: { user: { username: user.username, password: "Password1!" } },
          as: :json
     response.headers["Authorization"]
   end

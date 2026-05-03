@@ -174,5 +174,93 @@ RSpec.describe BulkProductImportJob, type: :job do
         expect(upload.result_summary["errors"].first).to include("No parent product")
       end
     end
+
+    context "when import_row raises a StandardError" do
+      let(:xlsx_content) do
+        generate_xlsx(sheets: {
+                        "Test" => [
+                          %w[vendor sku brand product_categories product_type barcode name unit price cost
+                             description_en description_th],
+                          ["VendorD", "SKU_ERR", "BrandA", "", "Sa", "", "Error Row", "Pc", "10", "5", "", ""]
+                        ]
+                      })
+      end
+
+      it "records the row as failed and marks upload completed" do
+        allow_any_instance_of(described_class).to receive(:import_row).and_raise(StandardError, "unexpected row error")
+        upload = build_upload(xlsx_content)
+        perform_enqueued_jobs { described_class.perform_later(upload.id) }
+
+        upload.reload
+        expect(upload.status).to eq("completed")
+        expect(upload.result_summary["rows_failed"]).to eq(1)
+        expect(upload.result_summary["errors"].first).to include("unexpected row error")
+      end
+    end
+
+    context "when a fatal StandardError occurs during processing" do
+      let(:xlsx_content) do
+        generate_xlsx(sheets: {
+                        "FatalTest" => [
+                          %w[vendor sku brand product_categories product_type barcode name unit price cost
+                             description_en description_th],
+                          ["VendorE", "SKU_FATAL", "BrandB", "", "Sa", "", "Fatal Row", "Pc", "10", "5", "", ""]
+                        ]
+                      })
+      end
+
+      it "marks upload as failed with fatal error message" do
+        allow(Roo::Spreadsheet).to receive(:open).and_raise(StandardError, "fatal spreadsheet error")
+        upload = build_upload(xlsx_content)
+        perform_enqueued_jobs { described_class.perform_later(upload.id) }
+
+        upload.reload
+        expect(upload.status).to eq("failed")
+        expect(upload.result_summary["errors"].last).to include("Fatal: fatal spreadsheet error")
+      end
+    end
+
+    context "when attribute save raises during set_attributes" do
+      let(:xlsx_content) do
+        generate_xlsx(sheets: {
+                        "Apparel2" => [
+                          ["vendor", "sku", "brand", "product_categories", "product_type", "barcode", "name", "unit",
+                           "price", "cost", "description_en", "description_th", "attrSize"],
+                          ["VendorF", "SKU_ATTR2", "BrandC", "", "Sa", "BC_A2", "Sized Item", "Pc", "50", "25",
+                           "Desc", "คำอธิบาย", "Large"]
+                        ]
+                      })
+      end
+
+      it "skips the attribute error and still marks upload completed" do
+        allow_any_instance_of(ProductAttribute).to receive(:save!).and_raise(StandardError, "attr save error")
+        upload = build_upload(xlsx_content)
+        perform_enqueued_jobs { described_class.perform_later(upload.id) }
+
+        upload.reload
+        expect(upload.status).to eq("completed")
+      end
+    end
+
+    context "when broadcast_result raises" do
+      let(:xlsx_content) do
+        generate_xlsx(sheets: {
+                        "BroadcastTest" => [
+                          %w[vendor sku brand product_categories product_type barcode name unit price cost
+                             description_en description_th],
+                          ["VendorG", "SKU_BCAST", "BrandD", "", "Sa", "", "Broadcast Item", "Pc", "10", "5", "", ""]
+                        ]
+                      })
+      end
+
+      it "swallows the broadcast error and still completes" do
+        allow(Turbo::StreamsChannel).to receive(:broadcast_replace_to).and_raise(StandardError, "broadcast failed")
+        upload = build_upload(xlsx_content)
+        perform_enqueued_jobs { described_class.perform_later(upload.id) }
+
+        upload.reload
+        expect(upload.status).to eq("completed")
+      end
+    end
   end
 end

@@ -406,4 +406,70 @@ RSpec.describe "Orders", type: :request do
       end
     end
   end
+
+  describe "GET /orders/advance_search" do
+    it "returns 200" do
+      get advance_search_orders_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "POST /orders/filter" do
+    it "returns 200 and filters orders" do
+      post filter_orders_path, params: { status: "Dr" }
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "returns 200 with no status filter" do
+      post filter_orders_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "POST /orders/bulk_update_status with invalid status" do
+    it "returns 422" do
+      post bulk_update_status_orders_path,
+           params: { ids: [order.id], status: "INVALID_STATUS" },
+           as: :json
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  describe "PATCH /orders/:id update failure" do
+    it "renders edit with unprocessable_content when updated_by is removed" do
+      patch order_path(order), params: { order: { customer_id: nil } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  describe "GET /orders/scan" do
+    let(:role) do
+      create(:role, permissions: %w[view_orders])
+    end
+
+    it "returns 200" do
+      get scan_orders_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /orders/find_by_number" do
+    it "returns order json when found" do
+      get find_by_number_orders_path, params: { q: order.order_number }, as: :json
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["order_number"]).to eq(order.order_number)
+    end
+
+    it "returns 404 when not found" do
+      get find_by_number_orders_path, params: { q: "XX-00000000-XXXX" }, as: :json
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "GET /orders with status filter" do
+    it "returns 200 with status param" do
+      get orders_path, params: { status: "Dr" }
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

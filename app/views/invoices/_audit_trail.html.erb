@@ -15,7 +15,7 @@
               <%= time_ago_in_words(audit.changed_at) %> ago
             </time>
           </div>
-          <p class="text-sm text-gray-700"><%= invoice_audit_description(audit).html_safe %></p>
+          <p class="text-sm text-gray-700"><%= invoice_audit_description(audit) %></p>
         </li>
       <% end %>
     </ol>

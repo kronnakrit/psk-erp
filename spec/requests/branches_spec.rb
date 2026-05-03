@@ -63,4 +63,25 @@ RSpec.describe "Branches", type: :request do
       expect(response).to redirect_to(branches_path)
     end
   end
+
+  describe "GET /branches/:id" do
+    it "returns 200" do
+      get branch_path(branch)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "GET /branches/:id/edit" do
+    it "returns 200" do
+      get edit_branch_path(branch)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "PATCH /branches/:id with invalid data" do
+    it "renders edit with unprocessable_content" do
+      patch branch_path(branch), params: { branch: { name: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end

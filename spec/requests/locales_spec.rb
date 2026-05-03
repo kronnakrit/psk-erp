@@ -39,4 +39,12 @@ RSpec.describe "LocalesController", type: :request do
       expect(response).to have_http_status(:redirect)
     end
   end
+
+  describe "PATCH /locale when profile update fails" do
+    it "returns 422" do
+      allow_any_instance_of(Profile).to receive(:update).and_return(false)
+      patch locale_path, params: { locale: "en" }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
 end

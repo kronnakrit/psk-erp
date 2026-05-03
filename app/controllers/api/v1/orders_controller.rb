@@ -82,6 +82,7 @@ module Api
 
       # DELETE /api/v1/orders/:id
       def destroy
+        authorize @order
         @order.destroy
         head :no_content
       end
@@ -105,6 +106,8 @@ module Api
 
       # POST /api/v1/orders/bulk_update_status
       def bulk_update_status
+        authorize Order, :bulk_update_status?
+
         ids             = params[:ids]
         is_selected_all = params[:is_selected_all].to_s == "true"
 
@@ -120,9 +123,9 @@ module Api
         end
 
         if is_selected_all
-          Order.update_all(status: new_status) # rubocop:disable Rails/SkipsModelValidations
+          policy_scope(Order).update_all(status: new_status) # rubocop:disable Rails/SkipsModelValidations
         else
-          Order.where(id: Array(ids)).update_all(status: new_status) # rubocop:disable Rails/SkipsModelValidations
+          policy_scope(Order).where(id: Array(ids)).update_all(status: new_status) # rubocop:disable Rails/SkipsModelValidations
         end
 
         render json: { message: "Status updated" }

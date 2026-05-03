@@ -7,7 +7,7 @@ class ProductsController < ApplicationController
   def index
     @default_unit_group = UnitGroup.includes(:unit_definitions).find_by(is_default: true)
     @ransack = policy_scope(Product)
-               .includes(:vendor, :brand, :product_class, :product_stocks, { unit_group: :unit_definitions },
+               .includes(:brand, :product_class, :product_stocks, { unit_group: :unit_definitions },
                          :featured_image_attachment, { product_images: { image_attachment: :blob } },
                          { children: [:product_stocks, :featured_image_attachment, { unit_group: :unit_definitions },
                                       { product_images: { image_attachment: :blob } }] })
@@ -28,7 +28,6 @@ class ProductsController < ApplicationController
 
   def new
     @product = Product.new
-    @vendors = Vendor.order(:name)
     @brands = Brand.order(:name)
     @product_classes = ProductClass.order(:name)
     @product_categories = ProductCategory.order(:name)
@@ -37,7 +36,6 @@ class ProductsController < ApplicationController
   end
 
   def edit
-    @vendors = Vendor.order(:name)
     @brands = Brand.order(:name)
     @product_classes = ProductClass.order(:name)
     @product_categories = ProductCategory.order(:name)
@@ -55,7 +53,6 @@ class ProductsController < ApplicationController
         redirect_to products_path, notice: "Product created successfully."
       end
     else
-      @vendors = Vendor.order(:name)
       @brands = Brand.order(:name)
       @product_classes = ProductClass.order(:name)
       @product_categories = ProductCategory.order(:name)
@@ -69,7 +66,6 @@ class ProductsController < ApplicationController
     if @product.update(product_params)
       redirect_to products_path, notice: "Product updated successfully."
     else
-      @vendors = Vendor.order(:name)
       @brands = Brand.order(:name)
       @product_classes = ProductClass.order(:name)
       @product_categories = ProductCategory.order(:name)
@@ -110,7 +106,7 @@ class ProductsController < ApplicationController
   private
 
   def set_product
-    @product = Product.includes(:vendor, :brand, :product_class, :product_categories,
+    @product = Product.includes(:brand, :product_class, :product_categories,
                                 :product_stocks, :product_images, { unit_group: :unit_definitions },
                                 { product_attributes: :product_attr },
                                 { children: [:product_stocks, { unit_group: :unit_definitions }] }).find(params[:id])
@@ -119,7 +115,7 @@ class ProductsController < ApplicationController
   def product_params
     params.expect(
       product: [:name, :description, :description_th, :sku, :barcode, :product_type,
-                :unit_group_id, :price, :remark, :vendor_id, :brand_id, :product_class_id,
+                :unit_group_id, :price, :remark, :brand_id, :product_class_id,
                 :parent_id, :enable_stock,
                 { product_category_ids: [] },
                 product_attributes_attributes: [%i[id attribute_id value _destroy]]]

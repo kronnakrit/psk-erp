@@ -50,4 +50,12 @@ class OrderPolicy < ApplicationPolicy
   def audit?
     permission?("view_order_audit")
   end
+
+  def cost?
+    permission?("can_view_cost")
+  end
+
+  def export_excel?
+    permission?("export_orders_excel")
+  end
 end

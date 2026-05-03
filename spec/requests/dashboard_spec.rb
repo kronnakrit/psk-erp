@@ -54,5 +54,22 @@ RSpec.describe "Root route smoke test", type: :request do
       end
     end
   end
+
+  describe "Sale graph section" do
+    context "when user has see_sale_graph permission" do
+      let(:role) { create(:role, permissions: %w[see_sale_graph]) }
+      let(:user) { create(:user) }
+
+      before do
+        user.profile.update!(role: role)
+        sign_in user
+      end
+
+      it "renders with 200 and sets chart data" do
+        get root_path
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
 end
 

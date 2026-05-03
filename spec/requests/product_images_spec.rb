@@ -24,6 +24,11 @@ RSpec.describe "ProductImages", type: :request do
   end
 
   describe "POST /products/:product_id/product_images" do
+    it "redirects with alert when no image provided" do
+      post product_product_images_path(product), params: { product_image: { image: nil } }
+      expect(response).to redirect_to(product_path(product))
+    end
+
     it "creates a product image record" do
       image_file = Rack::Test::UploadedFile.new(
         Rails.root.join("spec/fixtures/test_image.png"),
@@ -33,6 +38,17 @@ RSpec.describe "ProductImages", type: :request do
         post product_product_images_path(product),
              params: { product_image: { image: image_file } }
       end.to change { product.product_images.count }.by(1)
+    end
+
+    it "responds with turbo_stream on success" do
+      image_file = Rack::Test::UploadedFile.new(
+        Rails.root.join("spec/fixtures/test_image.png"),
+        "image/png"
+      )
+      post product_product_images_path(product),
+           params: { product_image: { image: image_file } },
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      expect(response).to have_http_status(:ok)
     end
   end
 

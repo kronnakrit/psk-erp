@@ -53,9 +53,9 @@
       <div style="height: 300px; position: relative;">
         <canvas id="revenueChart"></canvas>
       </div>
-      <script>
+      <script nonce="<%= content_security_policy_nonce %>">
         (function() {
-          var chartData = <%= @chart_data.to_json.html_safe %>;
+          var chartData = <%= json_escape(@chart_data.to_json) %>;
           var labels = Object.keys(chartData);
           var values = Object.values(chartData);
           function initChart() {
@@ -121,7 +121,7 @@
     </div>
   <% end %>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     function downloadReport(url, name) {
       const start = document.getElementById('report_start_date').value;
       const end   = document.getElementById('report_end_date').value;
