@@ -73,7 +73,7 @@ RSpec.describe "API Customers", type: :request do
   end
 
   describe "GET /api/v1/customers/search" do
-    let!(:matching_customer) { create(:customer, first_name: "Searchable", last_name: "Person", telephone: "0812345678") }
+    let!(:matching_customer) { create(:customer, first_name: "Searchable", last_name: "Person", telephones: ["0812345678"]) }
 
     it "returns matching customers as JSON array" do
       get "/api/v1/customers/search", params: { q: "Searchable" }, headers: headers, as: :json

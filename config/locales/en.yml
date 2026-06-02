@@ -202,6 +202,9 @@ en:
       errors: "Please fix the following errors:"
       submit_create: "Create Customer"
       submit_update: "Update Customer"
+      add_telephone: "Add telephone"
+      remove_telephone: "Remove telephone"
+      telephone_placeholder: "0812345678"
     status:
       active: "Active"
       inactive: "Inactive"

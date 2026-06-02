@@ -22,6 +22,30 @@ RSpec.describe Customer, type: :model do
     end
   end
 
+  describe "telephones" do
+    it "strips blank entries on save" do
+      customer = create(:customer, telephones: ["0811111111", "", "  ", "0822222222"])
+      expect(customer.telephones_list).to eq(%w[0811111111 0822222222])
+    end
+
+    it "coerces hash-shaped telephones from params" do
+      customer = build(:customer)
+      customer.assign_attributes(telephones: { "0" => "0811111111", "1" => "0822222222" })
+      customer.valid?
+      expect(customer.telephones_list).to eq(%w[0811111111 0822222222])
+    end
+
+    it "#telephone returns the first number" do
+      customer = build(:customer, telephones: %w[0811111111 0822222222])
+      expect(customer.telephone).to eq("0811111111")
+    end
+
+    it "#telephones_display joins numbers for display" do
+      customer = build(:customer, telephones: %w[0811111111 0822222222])
+      expect(customer.telephones_display).to eq("0811111111, 0822222222")
+    end
+  end
+
   describe "soft delete" do
     let!(:customer) { create(:customer) }
 

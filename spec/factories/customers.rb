@@ -4,7 +4,7 @@ FactoryBot.define do
     last_name { "Doe" }
     address { "123 Test Road" }
     remark { nil }
-    telephone { "0891234567" }
+    telephones { ["0891234567"] }
     country_id { nil }
     logistic_company_id { nil }
     deleted_at { nil }

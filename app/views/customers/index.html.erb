@@ -35,7 +35,7 @@
         <% @customers.each do |customer| %>
           <tr class="hover:bg-gray-50">
             <td class="px-4 py-3 font-medium text-gray-900"><%= customer.get_fullname %></td>
-            <td class="px-4 py-3 text-gray-600"><%= customer.telephone.presence || "—" %></td>
+            <td class="px-4 py-3 text-gray-600"><%= customer.telephones_list.any? ? customer.telephones_display : "—" %></td>
             <td class="px-4 py-3 text-gray-600"><%= customer.country&.printable_name || "—" %></td>
             <td class="px-4 py-3 text-gray-600"><%= customer.logistic_company&.name || "—" %></td>
             <td class="px-4 py-3">

@@ -175,6 +175,9 @@ th:
       errors: "กรุณาแก้ไขข้อผิดพลาดต่อไปนี้:"
       submit_create: "เพิ่มลูกค้า"
       submit_update: "อัปเดตลูกค้า"
+      add_telephone: "เพิ่มเบอร์โทรศัพท์"
+      remove_telephone: "ลบเบอร์โทรศัพท์"
+      telephone_placeholder: "0812345678"
     status:
       active: "ใช้งาน"
       inactive: "ไม่ได้ใช้งาน"

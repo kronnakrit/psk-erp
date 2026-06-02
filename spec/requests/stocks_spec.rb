@@ -105,26 +105,4 @@ RSpec.describe "Stocks", type: :request do
     end
   end
 
-  describe "POST /stocks/:id/reset_stock" do
-    it "resets stock to zero with valid reason" do
-      post reset_stock_stock_path(stock), params: { reason: "End of period reset" }
-      expect(response).to redirect_to(stock_path(stock))
-      expect(stock.reload.amount).to eq(0)
-      expect(stock.product_stock_transactions.where(transaction_type: "RS").count).to eq(1)
-    end
-
-    it "rejects blank reason" do
-      post reset_stock_stock_path(stock), params: { reason: "" }
-      expect(response).to redirect_to(stock_path(stock))
-      expect(stock.reload.amount).to eq(100)
-    end
-
-    it "returns already-zero notice when stock is already 0" do
-      stock.update!(amount: 0)
-      post reset_stock_stock_path(stock), params: { reason: "Test" }
-      expect(response).to redirect_to(stock_path(stock))
-      follow_redirect!
-      expect(response.body).to include("already at zero")
-    end
-  end
 end

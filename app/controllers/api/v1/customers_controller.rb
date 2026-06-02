@@ -1,6 +1,8 @@
 module Api
   module V1
     class CustomersController < Api::V1::BaseController
+      include CustomerParams
+
       before_action :set_customer, only: %i[show update destroy]
 
       def index
@@ -59,8 +61,10 @@ module Api
         q = params[:q].to_s.strip
         safe_q = ActiveRecord::Base.sanitize_sql_like(q)
         customers = policy_scope(Customer)
-                    .where("first_name ILIKE ? OR last_name ILIKE ? OR telephone ILIKE ?",
-                           "%#{safe_q}%", "%#{safe_q}%", "%#{safe_q}%")
+                    .where(
+                      "first_name ILIKE :q OR last_name ILIKE :q OR telephones::text ILIKE :q",
+                      q: "%#{safe_q}%"
+                    )
                     .order(:first_name)
                     .limit(20)
         render json: customers.map { |c| customer_json(c) }
@@ -72,10 +76,6 @@ module Api
         @customer = Customer.find(params[:id])
       end
 
-      def customer_params
-        params.expect(customer: %i[first_name last_name address remark telephone country_id logistic_company_id])
-      end
-
       def customer_json(customer)
         {
           id: customer.id,
@@ -84,6 +84,7 @@ module Api
           full_name: customer.get_fullname,
           address: customer.address,
           remark: customer.remark,
+          telephones: customer.telephones_list,
           telephone: customer.telephone,
           country_id: customer.country_id,
           logistic_company_id: customer.logistic_company_id

@@ -47,7 +47,7 @@ export default class extends Controller {
       customers.forEach(c => {
         const item = document.createElement("div")
         item.className = "px-3 py-2 text-sm text-gray-800 hover:bg-blue-50 cursor-pointer flex justify-between items-center gap-2"
-        item.innerHTML = `<span class="font-medium">${this.escape(c.full_name)}</span><span class="text-gray-400 text-xs">${this.escape(c.telephone || "")}</span>`
+        item.innerHTML = `<span class="font-medium">${this.escape(c.full_name)}</span><span class="text-gray-400 text-xs">${this.escape((c.telephones || []).join(", ") || c.telephone || "")}</span>`
         item.addEventListener("mousedown", (e) => { e.preventDefault(); this.select(c) })
         dd.appendChild(item)
       })
@@ -68,7 +68,7 @@ export default class extends Controller {
     this.dispatch("selected", {
       detail: {
         id: customer.id,
-        telephone: customer.telephone || "",
+        telephone: customer.telephone || (customer.telephones && customer.telephones[0]) || "",
         address: customer.address || "",
         logistic_company_id: customer.logistic_company_id
       }

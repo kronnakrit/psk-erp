@@ -82,49 +82,6 @@ RSpec.describe "TC-04 — Stock Management", type: :system do
   end
 
   # ──────────────────────────────────────────────────────────────────
-  # TC-04-03 — Stock Reset
-  # ──────────────────────────────────────────────────────────────────
-  describe "TC-04-03 — Stock Reset" do
-    before do
-      stock.deposit!(amount: 50, reason: "setup", adjuster: admin)
-      sign_in_as(admin)
-    end
-
-    it "TC-04-03-01: reset sets amount to zero and records RS transaction" do
-      visit stock_path(stock)
-      within("form[action*='reset_stock']") do
-        fill_in "reason", with: "End of period reset"
-        click_button "Reset Stock"
-      end
-      expect(page).to have_text("Stock has been reset to 0")
-      stock.reload
-      expect(stock.amount).to eq(0)
-      tx = stock.product_stock_transactions.where(transaction_type: "RS").last
-      expect(tx).to be_present
-    end
-
-    it "TC-04-03-02: reset when already zero shows informational notice" do
-      stock.update!(amount: 0)
-      visit stock_path(stock)
-      within("form[action*='reset_stock']") do
-        fill_in "reason", with: "Already zero test"
-        click_button "Reset Stock"
-      end
-      expect(page).to have_text("already at zero")
-    end
-
-    it "TC-04-03-03: reset requires change_product_stocks permission" do
-      viewer = create_user_with_permissions("view_product_stocks")
-      # Sign in as the viewer (sign out admin first by resetting session)
-      Capybara.reset_sessions!
-      sign_in_as(viewer)
-      visit stock_path(stock)
-      # Reset Stock section should not be visible for read-only user
-      expect(page).not_to have_css("form[action*='reset_stock']")
-    end
-  end
-
-  # ──────────────────────────────────────────────────────────────────
   # TC-04-04 — Stock Transactions
   # ──────────────────────────────────────────────────────────────────
   describe "TC-04-04 — Stock Transactions" do

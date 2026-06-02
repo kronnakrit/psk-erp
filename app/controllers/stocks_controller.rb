@@ -2,7 +2,7 @@
 
 class StocksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_stock, only: %i[show update deposit withdraw recalculate_checkpoint transactions reset_stock]
+  before_action :set_stock, only: %i[show update deposit withdraw recalculate_checkpoint transactions]
 
   def index
     @branches = Branch.order(:name)
@@ -58,21 +58,6 @@ class StocksController < ApplicationController
     authorize @stock, :update?
     @stock.recalculate_checkpoint!
     redirect_to stock_path(@stock), notice: "Checkpoint recalculated successfully."
-  end
-
-  def reset_stock
-    authorize @stock, :update?
-    reason = params[:reason].presence
-    unless reason
-      redirect_to stock_path(@stock), alert: "Reason is required to reset stock."
-      return
-    end
-    result = @stock.reset_stock!(reason: reason, adjuster: current_user)
-    if result == :already_zero
-      redirect_to stock_path(@stock), notice: "Stock is already at zero — no changes made."
-    else
-      redirect_to stock_path(@stock), notice: "Stock has been reset to 0."
-    end
   end
 
   def transactions

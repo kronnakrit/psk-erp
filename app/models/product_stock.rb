@@ -49,18 +49,6 @@ class ProductStock < ApplicationRecord
     end
   end
 
-  # Resets stock to zero and records an RS (reset) transaction
-  def reset_stock!(reason:, adjuster: nil)
-    with_lock do
-      return :already_zero if amount.zero?
-
-      pre_amount = amount
-      update_columns(amount: 0) # rubocop:disable Rails/SkipsModelValidations
-      create_transaction!(transaction_type: "RS", amount: pre_amount, reason: reason, adjuster: adjuster)
-      :ok
-    end
-  end
-
   # Recalculates the running balance from the last checkpoint and updates amount
   def recalculate_checkpoint!
     with_lock do
