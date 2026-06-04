@@ -23,7 +23,7 @@ class ProductsController < ApplicationController
 
   def lots
     authorize @product, :show?
-    @lots = @product.product_lots.includes(:purchase_order).order(received_date: :asc)
+    @lots = @product.product_lots.includes(:purchase_order).by_latest_received
   end
 
   def new

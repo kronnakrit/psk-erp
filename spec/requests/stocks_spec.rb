@@ -10,6 +10,9 @@ RSpec.describe "Stocks", type: :request do
   let(:branch)  { create(:branch, :main) }
   let(:product) { create(:product) }
   let!(:stock)  { create(:product_stock, branch: branch, product: product, amount: 100) }
+  let!(:lot) do
+    create(:product_lot, product: product, remaining_quantity: 80, original_quantity: 80)
+  end
 
   before do
     user.profile.update!(role: admin_role)
@@ -31,30 +34,62 @@ RSpec.describe "Stocks", type: :request do
   end
 
   describe "POST /stocks/:id/deposit" do
-    it "deposits stock and redirects" do
-      post deposit_stock_path(stock), params: { amount: "50", reason: "Purchase order" }
+    it "deposits stock and lot remaining_quantity" do
+      post deposit_stock_path(stock),
+           params: { amount: "50", reason: "Purchase order", product_lot_id: lot.id }
       expect(response).to redirect_to(stock_path(stock))
       expect(stock.reload.amount).to eq(150)
+      expect(lot.reload.remaining_quantity).to eq(130)
     end
 
     it "rejects zero amount" do
-      post deposit_stock_path(stock), params: { amount: "0" }
+      post deposit_stock_path(stock), params: { amount: "0", product_lot_id: lot.id }
       expect(response).to redirect_to(stock_path(stock))
       expect(stock.reload.amount).to eq(100)
+      expect(lot.reload.remaining_quantity).to eq(80)
     end
 
-    it "records adjuster_id as current_user.id" do
-      post deposit_stock_path(stock), params: { amount: "10", reason: "In" }
+    it "rejects missing product_lot_id" do
+      post deposit_stock_path(stock), params: { amount: "10" }
+      expect(response).to redirect_to(stock_path(stock))
+      follow_redirect!
+      expect(response.body).to include(I18n.t("stocks.adjustment.lot_required"))
+    end
+
+    it "records adjuster_id and links transaction to lot" do
+      post deposit_stock_path(stock),
+           params: { amount: "10", reason: "In", product_lot_id: lot.id }
       txn = stock.product_stock_transactions.last
       expect(txn.adjuster_id).to eq(user.id)
+      expect(txn.related_object).to eq(lot)
+    end
+
+    context "when product has no lots" do
+      before { lot.destroy! }
+
+      it "redirects with no lots message" do
+        post deposit_stock_path(stock), params: { amount: "10", product_lot_id: 1 }
+        follow_redirect!
+        expect(response.body).to include(I18n.t("stocks.adjustment.no_lots_available"))
+      end
     end
   end
 
   describe "POST /stocks/:id/withdraw" do
-    it "withdraws stock and redirects" do
-      post withdraw_stock_path(stock), params: { amount: "20", reason: "Sale" }
+    it "withdraws stock and lot remaining_quantity" do
+      post withdraw_stock_path(stock),
+           params: { amount: "20", reason: "Sale", product_lot_id: lot.id }
       expect(response).to redirect_to(stock_path(stock))
       expect(stock.reload.amount).to eq(80)
+      expect(lot.reload.remaining_quantity).to eq(60)
+    end
+
+    it "rejects withdraw exceeding lot remaining_quantity" do
+      post withdraw_stock_path(stock),
+           params: { amount: "81", product_lot_id: lot.id }
+      expect(response).to redirect_to(stock_path(stock))
+      expect(stock.reload.amount).to eq(100)
+      expect(lot.reload.remaining_quantity).to eq(80)
     end
   end
 
@@ -77,6 +112,17 @@ RSpec.describe "Stocks", type: :request do
       stock.deposit!(amount: 25, reason: "Delivery")
       get transactions_stock_path(stock)
       expect(response.body).to include("Delivery")
+    end
+
+    it "shows linked lot information when transaction has a product lot" do
+      lot = create(:product_lot, product: product)
+      stock.deposit!(amount: 10, reason: "Lot deposit", related_object: lot)
+
+      get transactions_stock_path(stock)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(lot.lot_number)
+      expect(response.body).to include(lot.purchase_order.po_number)
     end
   end
 
@@ -105,26 +151,4 @@ RSpec.describe "Stocks", type: :request do
     end
   end
 
-  describe "POST /stocks/:id/reset_stock" do
-    it "resets stock to zero with valid reason" do
-      post reset_stock_stock_path(stock), params: { reason: "End of period reset" }
-      expect(response).to redirect_to(stock_path(stock))
-      expect(stock.reload.amount).to eq(0)
-      expect(stock.product_stock_transactions.where(transaction_type: "RS").count).to eq(1)
-    end
-
-    it "rejects blank reason" do
-      post reset_stock_stock_path(stock), params: { reason: "" }
-      expect(response).to redirect_to(stock_path(stock))
-      expect(stock.reload.amount).to eq(100)
-    end
-
-    it "returns already-zero notice when stock is already 0" do
-      stock.update!(amount: 0)
-      post reset_stock_stock_path(stock), params: { reason: "Test" }
-      expect(response).to redirect_to(stock_path(stock))
-      follow_redirect!
-      expect(response.body).to include("already at zero")
-    end
-  end
 end

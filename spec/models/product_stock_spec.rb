@@ -104,26 +104,4 @@ RSpec.describe ProductStock, type: :model do
     end
   end
 
-  describe "#reset_stock!" do
-    before { stock.update!(amount: 50) }
-
-    it "sets amount to 0 and creates an RS transaction" do
-      adjuster = create(:user)
-      result = stock.reset_stock!(reason: "End of period", adjuster: adjuster)
-      expect(result).to eq(:ok)
-      expect(stock.reload.amount).to eq(0)
-      txn = stock.product_stock_transactions.last
-      expect(txn.transaction_type).to eq("RS")
-      expect(txn.amount).to eq(50)
-      expect(txn.adjuster_id).to eq(adjuster.id)
-    end
-
-    it "returns :already_zero and creates no transaction when amount is 0" do
-      stock.update!(amount: 0)
-      expect do
-        result = stock.reset_stock!(reason: "Test")
-        expect(result).to eq(:already_zero)
-      end.not_to change(ProductStockTransaction, :count)
-    end
-  end
 end

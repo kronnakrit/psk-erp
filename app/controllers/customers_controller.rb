@@ -1,4 +1,6 @@
 class CustomersController < ApplicationController
+  include CustomerParams
+
   before_action :authenticate_user!
   before_action :set_customer, only: %i[show edit update destroy]
 
@@ -62,7 +64,4 @@ class CustomersController < ApplicationController
     @logistic_companies = LogisticCompany.order(:name)
   end
 
-  def customer_params
-    params.expect(customer: %i[first_name last_name address remark telephone country_id logistic_company_id])
-  end
 end

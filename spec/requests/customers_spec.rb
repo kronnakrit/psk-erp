@@ -40,7 +40,7 @@ RSpec.describe "Customers", type: :request do
   end
 
   describe "POST /customers" do
-    let(:valid_attrs) { { first_name: "Bob", last_name: "Jones", telephone: "0811111111" } }
+    let(:valid_attrs) { { first_name: "Bob", last_name: "Jones", telephones: ["0811111111"] } }
 
     it "creates customer and redirects" do
       expect do
@@ -61,6 +61,20 @@ RSpec.describe "Customers", type: :request do
       expect(response).to redirect_to(customers_path)
       expect(customer.reload.last_name).to eq("Updated")
     end
+
+    it "updates multiple telephone numbers" do
+      patch customer_path(customer),
+            params: { customer: { telephones: %w[0811111111 0822222222 0833333333] } }
+      expect(response).to redirect_to(customers_path)
+      expect(customer.reload.telephones_list).to eq(%w[0811111111 0822222222 0833333333])
+    end
+
+    it "updates multiple telephone numbers from hash-shaped params" do
+      patch customer_path(customer),
+            params: { customer: { telephones: { "0" => "0811111111", "1" => "0822222222" } } }
+      expect(response).to redirect_to(customers_path)
+      expect(customer.reload.telephones_list).to eq(%w[0811111111 0822222222])
+    end
   end
 
   describe "GET /customers/:id" do
@@ -74,6 +88,13 @@ RSpec.describe "Customers", type: :request do
     it "returns 200" do
       get edit_customer_path(customer)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "includes telephones list markup" do
+      get edit_customer_path(customer)
+      expect(response.body).to include("data-telephones-list-add")
+      expect(response.body).to include("data-telephones-list-remove")
+      expect(response.body).to include("data-telephones-list")
     end
   end
 

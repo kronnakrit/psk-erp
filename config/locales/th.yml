@@ -57,6 +57,32 @@ th:
     saved: "บันทึกเรียบร้อยแล้ว"
     deleted: "ลบเรียบร้อยแล้ว"
     updated: "อัปเดตเรียบร้อยแล้ว"
+  stocks:
+    adjustment:
+      amount_must_be_positive: "จำนวนต้องมากกว่า 0"
+      lot_required: "กรุณาเลือกล็อตสินค้า"
+      lot_product_mismatch: "ล็อตที่เลือกไม่ตรงกับสินค้านี้"
+      no_lots_available: "ยังไม่มีล็อต FIFO กรุณายืนยันใบสั่งซื้อเพื่อสร้างล็อตก่อน"
+      insufficient_lot_quantity: "จำนวนในล็อตไม่เพียงพอ: ต้องการ %{amount} คงเหลือในล็อต %{available}"
+      insufficient_available_stock: "สต็อกที่ใช้ได้ไม่เพียงพอ: ต้องการ %{amount} คงเหลือ %{available}"
+      deposited: "ฝาก %{amount} หน่วยเข้าล็อต %{lot_number} เรียบร้อยแล้ว"
+      withdrew: "ถอน %{amount} หน่วยจากล็อต %{lot_number} เรียบร้อยแล้ว"
+    modal:
+      actions_title: "ปรับสต็อก"
+      actions_hint: "เลือกล็อต FIFO ก่อนฝากหรือถอนจำนวนสินค้า"
+      deposit_title: "ฝากสต็อก"
+      withdraw_title: "ถอนสต็อก"
+      lot_label: "ล็อตสินค้า"
+      lot_helper: "ล็อตล่าสุดถูกเลือกเป็นค่าเริ่มต้น"
+      amount_label: "จำนวน"
+      reason_label: "เหตุผล (ไม่บังคับ)"
+      reason_placeholder: "เช่น ปรับยอดจากการนับสต็อก"
+      confirm_deposit: "ยืนยันฝาก"
+      confirm_withdraw: "ยืนยันถอน"
+      no_eligible_lots: "ไม่มีล็อตที่ใช้ได้สำหรับการดำเนินการนี้"
+      close: "ปิดหน้าต่าง"
+    transactions:
+      lot: "ล็อต"
   orders:
     title: "ออเดอร์"
     new: "สร้างออเดอร์"
@@ -175,6 +201,9 @@ th:
       errors: "กรุณาแก้ไขข้อผิดพลาดต่อไปนี้:"
       submit_create: "เพิ่มลูกค้า"
       submit_update: "อัปเดตลูกค้า"
+      add_telephone: "เพิ่มเบอร์โทรศัพท์"
+      remove_telephone: "ลบเบอร์โทรศัพท์"
+      telephone_placeholder: "0812345678"
     status:
       active: "ใช้งาน"
       inactive: "ไม่ได้ใช้งาน"

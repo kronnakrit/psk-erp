@@ -12,7 +12,7 @@ admin_user.assign_attributes(
   password:  if Rails.env.production?
                ENV.fetch("ADMIN_DEFAULT_PASSWORD") # raises KeyError if unset in production
              else
-               ENV.fetch("ADMIN_DEFAULT_PASSWORD", "seed")
+               ENV.fetch("ADMIN_DEFAULT_PASSWORD", "Dev@seed0!")
              end
 )
 admin_user.save!

@@ -26,16 +26,46 @@ RSpec.describe "TC-05-01 — Customer CRUD", type: :system do
   end
 
   # TC-05-01-03
-  it "TC-05-01-03: edits customer telephone" do
-    customer = create(:customer, first_name: "Edit", last_name: "Customer TC0503")
+  it "TC-05-01-03: edits customer telephone", js: true do
+    customer = create(:customer, first_name: "Edit", last_name: "Customer TC0503", telephones: ["0812340503"])
 
     visit edit_customer_path(customer)
-    fill_in "เบอร์โทรศัพท์", with: "0899990503"
+    fill_in "customer_telephone", with: "0899990503"
     click_button "อัปเดตลูกค้า"
 
-    expect(page).to have_text("Customer updated successfully.")
+    expect(page).to have_current_path(customers_path)
     customer.reload
-    expect(customer.telephone).to eq("0899990503")
+    expect(customer.telephones_list).to eq(["0899990503"])
+  end
+
+  it "adds and removes telephone rows", js: true do
+    customer = create(:customer, telephones: ["0812345678"])
+
+    visit edit_customer_path(customer)
+    expect(page).to have_css(".js-telephone-row", count: 1)
+
+    find("[data-telephones-list-add]").click
+    expect(page).to have_css(".js-telephone-row", count: 2)
+
+    all(".js-telephone-row").last.find("input").set("0899999999")
+    all(".js-telephone-row").last.find("[data-telephones-list-remove]").click
+    expect(page).to have_css(".js-telephone-row", count: 1)
+
+    click_button "อัปเดตลูกค้า"
+    expect(customer.reload.telephones).to eq(["0812345678"])
+  end
+
+  it "saves multiple telephone numbers and shows them on index", js: true do
+    customer = create(:customer, first_name: "Multi", last_name: "Phone", telephones: ["0811111111"])
+
+    visit edit_customer_path(customer)
+    find("[data-telephones-list-add]").click
+    all(".js-telephone-row")[1].find("input").set("0822222222")
+
+    click_button "อัปเดตลูกค้า"
+    expect(page).to have_current_path(customers_path)
+    expect(customer.reload.telephones_list).to contain_exactly("0811111111", "0822222222")
+    expect(page).to have_text("0811111111, 0822222222")
   end
 
   # TC-05-01-04

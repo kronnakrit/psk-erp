@@ -71,7 +71,6 @@ Rails.application.routes.draw do
       post :deposit
       post :withdraw
       post :recalculate_checkpoint
-      post :reset_stock
       get  :transactions
     end
   end

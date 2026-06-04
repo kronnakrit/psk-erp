@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_02_102632) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -94,7 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_02_102632) do
     t.string "last_name"
     t.bigint "logistic_company_id"
     t.text "remark"
-    t.string "telephone"
+    t.jsonb "telephones", default: [], null: false
     t.datetime "updated_at", null: false
     t.index ["country_id"], name: "index_customers_on_country_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
@@ -393,7 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_02_102632) do
     t.bigint "user_id", null: false
     t.index ["role_id"], name: "index_profiles_on_role_id"
     t.index ["user_id"], name: "index_profiles_on_user_id", unique: true
-    t.check_constraint "preferred_locale::text = ANY (ARRAY['th'::character varying::text, 'en'::character varying::text])", name: "chk_profiles_preferred_locale"
+    t.check_constraint "preferred_locale::text = ANY (ARRAY['th'::character varying, 'en'::character varying]::text[])", name: "chk_profiles_preferred_locale"
   end
 
   create_table "purchase_order_lines", force: :cascade do |t|

@@ -44,8 +44,8 @@
     <% if @invoice.customer&.address.present? %>
       <p class="text-sm text-gray-600 whitespace-pre-line"><%= @invoice.customer.address %></p>
     <% end %>
-    <% if @invoice.customer&.telephone.present? %>
-      <p class="text-sm text-gray-600">Tel: <%= @invoice.customer.telephone %></p>
+    <% if @invoice.customer&.telephones.present? %>
+      <p class="text-sm text-gray-600">Tel: <%= @invoice.customer.telephones_display %></p>
     <% end %>
   </div>
 

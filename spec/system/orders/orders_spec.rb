@@ -6,7 +6,7 @@ require "rails_helper"
 
 RSpec.describe "TC-03 — Orders", type: :system do
   let(:admin)    { create_admin_user }
-  let(:customer) { create(:customer, first_name: "TC03", last_name: "Customer", telephone: "0891234567", address: "99 Sukhumvit") }
+  let(:customer) { create(:customer, first_name: "TC03", last_name: "Customer", telephones: ["0891234567"], address: "99 Sukhumvit") }
   let(:unit_group) { create(:unit_group) }
   let(:unit_def)   { create(:unit_definition, unit_group: unit_group, name: "ชิ้น", ratio: 1) }
   let(:product)    { create(:product, name: "TC03 Product", price: 100, unit_group: unit_group) }
