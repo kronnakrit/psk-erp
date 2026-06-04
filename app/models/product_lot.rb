@@ -15,6 +15,7 @@ class ProductLot < ApplicationRecord
   validates :unit_cost,         numericality: { greater_than_or_equal_to: 0 }
 
   scope :active, -> { where(status: STATUS_ACTIVE) }
+  scope :by_latest_received, -> { order(received_date: :desc, id: :desc) }
 
   after_save :update_status_if_depleted
 

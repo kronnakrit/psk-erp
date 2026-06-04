@@ -16,7 +16,9 @@ class StocksController < ApplicationController
 
   def show
     authorize @stock
-    @lots = @stock.product.product_lots.includes(:purchase_order).order(received_date: :asc)
+    lots = @stock.product.product_lots.includes(:purchase_order).by_latest_received
+    @lots = lots
+    @lots_for_picker = lots
     @all_stock_locations = StockLocation.order(:name)
     @all_users = User.joins(:profile).includes(:profile).where(is_active: true).order("profiles.first_name")
   end
@@ -31,27 +33,11 @@ class StocksController < ApplicationController
   end
 
   def deposit
-    authorize @stock, :update?
-    amount = params[:amount].to_d
-    reason = params[:reason].presence
-    if amount.positive?
-      @stock.deposit!(amount: amount, reason: reason, adjuster: current_user)
-      redirect_to stock_path(@stock), notice: "Deposited #{amount} units successfully."
-    else
-      redirect_to stock_path(@stock), alert: "Amount must be greater than 0."
-    end
+    perform_lot_adjustment(:deposit)
   end
 
   def withdraw
-    authorize @stock, :update?
-    amount = params[:amount].to_d
-    reason = params[:reason].presence
-    if amount.positive?
-      @stock.withdraw!(amount: amount, reason: reason, adjuster: current_user)
-      redirect_to stock_path(@stock), notice: "Withdrew #{amount} units successfully."
-    else
-      redirect_to stock_path(@stock), alert: "Amount must be greater than 0."
-    end
+    perform_lot_adjustment(:withdraw)
   end
 
   def recalculate_checkpoint
@@ -63,7 +49,9 @@ class StocksController < ApplicationController
   def transactions
     authorize @stock, :show?
     @pagy, @transactions = pagy(
-      @stock.product_stock_transactions.includes(:adjuster).order(created_at: :desc)
+      @stock.product_stock_transactions
+            .includes(:adjuster, related_object: :purchase_order)
+            .order(created_at: :desc)
     )
     render :transactions
   end
@@ -76,5 +64,51 @@ class StocksController < ApplicationController
 
   def stock_update_params
     params.expect(product_stock: [:stock_person_id, { stock_location_ids: [] }])
+  end
+
+  def perform_lot_adjustment(action)
+    authorize @stock, :update?
+
+    if @stock.product.product_lots.none?
+      redirect_to stock_path(@stock), alert: t("stocks.adjustment.no_lots_available")
+      return
+    end
+
+    lot = find_product_lot
+    unless lot
+      redirect_to stock_path(@stock), alert: t("stocks.adjustment.lot_required")
+      return
+    end
+
+    amount = params[:amount].to_d
+    reason = params[:reason].presence
+
+    result = LotAwareStockAdjustmentService.call(
+      stock: @stock,
+      product_lot: lot,
+      amount: amount,
+      action: action,
+      reason: reason,
+      adjuster: current_user
+    )
+
+    if result.success?
+      notice_key = action == :deposit ? "stocks.adjustment.deposited" : "stocks.adjustment.withdrew"
+      redirect_to stock_path(@stock),
+                  notice: t(notice_key, amount: format_adjustment_amount(amount), lot_number: lot.lot_number)
+    else
+      redirect_to stock_path(@stock), alert: result.error
+    end
+  end
+
+  def find_product_lot
+    lot_id = params[:product_lot_id].presence
+    return nil unless lot_id
+
+    @stock.product.product_lots.find_by(id: lot_id)
+  end
+
+  def format_adjustment_amount(amount)
+    amount.frac.zero? ? amount.to_i : amount
   end
 end

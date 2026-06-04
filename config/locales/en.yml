@@ -86,6 +86,32 @@ en:
     saved: "Saved successfully."
     deleted: "Deleted successfully."
     updated: "Updated successfully."
+  stocks:
+    adjustment:
+      amount_must_be_positive: "Amount must be greater than 0."
+      lot_required: "Please select a product lot."
+      lot_product_mismatch: "Selected lot does not belong to this product."
+      no_lots_available: "No FIFO lots available. Confirm a Purchase Order to create lots first."
+      insufficient_lot_quantity: "Insufficient lot quantity: %{amount} required, %{available} available in the selected lot."
+      insufficient_available_stock: "Insufficient available stock: %{amount} required, %{available} available."
+      deposited: "Deposited %{amount} units to lot %{lot_number}."
+      withdrew: "Withdrew %{amount} units from lot %{lot_number}."
+    modal:
+      actions_title: "Adjust Stock"
+      actions_hint: "Select a FIFO lot before depositing or withdrawing units."
+      deposit_title: "Deposit Stock"
+      withdraw_title: "Withdraw Stock"
+      lot_label: "Product Lot"
+      lot_helper: "Latest lot is selected by default."
+      amount_label: "Amount"
+      reason_label: "Reason (optional)"
+      reason_placeholder: "e.g. stock count adjustment"
+      confirm_deposit: "Confirm Deposit"
+      confirm_withdraw: "Confirm Withdraw"
+      no_eligible_lots: "No eligible lots for this action."
+      close: "Close dialog"
+    transactions:
+      lot: "Lot"
   orders:
     title: "Orders"
     new: "New Order"

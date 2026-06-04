@@ -26,35 +26,18 @@
     </div>
   </div>
 
-  <%# Deposit / Withdraw forms %>
+  <%# Deposit / Withdraw (lot-aware modal) %>
   <% if policy(@stock).update? %>
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <div class="bg-white border border-gray-200 rounded-lg p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">Deposit</h2>
-        <%= form_with url: deposit_stock_path(@stock), method: :post, local: true do |f| %>
-          <div class="space-y-2">
-            <%= number_field_tag :amount, nil, step: "0.01", min: "0.01", placeholder: "Amount",
-                                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-            <%= text_field_tag :reason, nil, placeholder: "Reason (optional)",
-                               class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-            <%= submit_tag "Deposit", class: "w-full inline-flex justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors cursor-pointer" %>
-          </div>
-        <% end %>
+    <% if @lots_for_picker.any? %>
+      <%= render "stocks/adjustment_modal", stock: @stock, lots_for_picker: @lots_for_picker %>
+    <% else %>
+      <div class="mb-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="alert">
+        <svg class="h-5 w-5 flex-shrink-0 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p><%= t("stocks.adjustment.no_lots_available") %></p>
       </div>
-
-      <div class="bg-white border border-gray-200 rounded-lg p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">Withdraw</h2>
-        <%= form_with url: withdraw_stock_path(@stock), method: :post, local: true do |f| %>
-          <div class="space-y-2">
-            <%= number_field_tag :amount, nil, step: "0.01", min: "0.01", placeholder: "Amount",
-                                 class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-            <%= text_field_tag :reason, nil, placeholder: "Reason (optional)",
-                               class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-            <%= submit_tag "Withdraw", class: "w-full inline-flex justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
+    <% end %>
 
     <div class="mb-6 flex gap-3">
       <%= link_to "View Transactions", transactions_stock_path(@stock),
